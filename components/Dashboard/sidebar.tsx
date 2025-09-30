@@ -152,7 +152,7 @@ export function AppSidebar() {
             className={isCollapsed ? "flex justify-center px-2" : ""}
           >
             {isCollapsed ? (
-              <div>
+              <div onClick={() => router.push("/")}>
                 <Image
                   src={MainLogo}
                   alt="EduLearn Logo"
@@ -162,7 +162,7 @@ export function AppSidebar() {
                 />
               </div>
             ) : (
-              <div>
+              <div onClick={() => router.push("/")}>
                 <Image src={Logo} alt="EduLearn Logo" width={120} height={24} />
               </div>
             )}
