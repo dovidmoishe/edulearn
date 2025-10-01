@@ -91,19 +91,21 @@ export default function LeaderboardPage() {
       <div className="flex items-center justify-center">
         <div className="flex items-end justify-center">
             {users[1] && (
-              <div className="flex items-center w-[167px] justify-between flex-col py-[21px] px-[27px] gap-[5px] h-[227px] rounded-tl-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative"> 
+              <div className="flex items-center w-[110px] md:w-[167px] justify-between flex-col py-[10px] md:py-[21px] px-[8px] md:px-[27px] gap-[8px] md:gap-[5px] h-[160px] md:h-[227px] rounded-tl-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative"> 
                   <Image src={silver} alt="silver medal" width={45} height={45} className="absolute -top-[25px] z-10" />
-                  <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-[27px]" />
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[26px] text-[17px]">
+                  <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
+                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[1].name}
                   </p>
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[26px] text-[13px]">
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">
                     {users[1].level ? users[1].level.charAt(0).toUpperCase() + users[1].level.slice(1).toLowerCase() : 'Novice'}
                   </p>
 
-                  <div className="flex items-center gap-[6.5px]">
-                    <Image src={badge} alt="badge" width={28} height={28} />
-                    <p className="text-[#E0E0E0] text-[15px] font-[500] leading-[22px]">
+                  <div className="flex items-center gap-[3px] md:gap-[6.5px] mt-[2px]">
+                    <Image src={badge} alt="badge" width={10} height={10} className="w-[10px] h-[10px] md:w-[28px] md:h-[28px]" />
+                    <p className="text-[#E0E0E0] text-[10px] md:text-[15px] font-[500] leading-[12px] md:leading-[22px]">
                       {users[1].xp || 0} XP
                     </p>
                   </div>
@@ -111,19 +113,21 @@ export default function LeaderboardPage() {
             )}
             
             {users[0] && (
-              <div className="h-[272px] bg-[#00FF80] w-[190px] flex-col flex items-center rounded-t-[20px] gap-[8px] relative">
+              <div className="h-[180px] md:h-[272px] bg-[#00FF80] w-[130px] md:w-[190px] flex-col flex items-center rounded-t-[20px] gap-[8px] relative z-[2]">
                   <Image src={gold} alt="gold medal" width={45} height={45} className="absolute -top-[25px] z-10" />
-                  <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-[27px]" />
-                  <p className="text-[#000] text-center font-[500] leading-[26px] text-[17px]">
+                  <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
+                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[#000] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[0].name}
                   </p>
-                  <p className="text-[#000] text-center font-[500] leading-[26px] text-[13px]">
+                  <p className="text-[#000] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">
                     {users[0].level ? users[0].level.charAt(0).toUpperCase() + users[0].level.slice(1).toLowerCase() : 'Novice'}
                   </p>
 
-                  <div className="flex items-center gap-[6.5px]">
-                    <Image src={badge} alt="badge" width={28} height={28} />
-                    <p className="text-[#000] text-[15px] font-[500] leading-[22px]">
+                  <div className="flex items-center gap-[3px] md:gap-[6.5px] mt-[2px]">
+                    <Image src={badge} alt="badge" width={10} height={10} className="w-[10px] h-[10px] md:w-[28px] md:h-[28px]" />
+                    <p className="text-[#000] text-[10px] md:text-[15px] font-[500] leading-[12px] md:leading-[22px]">
                       {users[0].xp || 0} XP
                     </p>
                   </div>
@@ -131,19 +135,21 @@ export default function LeaderboardPage() {
             )}
             
             {users[2] && (
-              <div className="flex items-center w-[167px] justify-between flex-col py-[21px] px-[27px] gap-[5px] h-[227px] rounded-tr-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative">
+              <div className="flex items-center w-[100px] md:w-[167px] justify-between flex-col py-[8px] md:py-[21px] px-[8px] md:px-[27px] gap-[6px] md:gap-[5px] h-[140px] md:h-[227px] rounded-tr-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative">
                   <Image src={bronze} alt="bronze medal" width={45} height={45} className="absolute -top-[25px] z-10" />
-                  <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-[27px]" />  
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[26px] text-[17px]">
+                  <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
+                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[2].name}
                   </p>
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[26px] text-[13px]">
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">
                     {users[2].level ? users[2].level.charAt(0).toUpperCase() + users[2].level.slice(1).toLowerCase() : 'Novice'}
                   </p>
 
-                  <div className="flex items-center gap-[6.5px]">
-                    <Image src={badge} alt="badge" width={28} height={28} />
-                    <p className="text-[#E0E0E0] text-[15px] font-[500] leading-[22px]">
+                  <div className="flex items-center gap-[3px] md:gap-[6.5px] mt-[2px]">
+                    <Image src={badge} alt="badge" width={10} height={10} className="w-[10px] h-[10px] md:w-[28px] md:h-[28px]" />
+                    <p className="text-[#E0E0E0] text-[10px] md:text-[15px] font-[500] leading-[12px] md:leading-[22px]">
                       {users[2].xp || 0} XP
                     </p>
                   </div>

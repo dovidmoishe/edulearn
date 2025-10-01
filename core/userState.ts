@@ -81,7 +81,7 @@ const useUserStore = create<UserState>((set, get) => ({
   isLoading: false,
   walletBalance: {sol: 0, tokenAccount: 0},
   walletBalanceLoading: false,
-  theme: 'light',
+  theme: 'dark',
   
   setUserAsync: async () => {
     if (typeof window === "undefined") return;
