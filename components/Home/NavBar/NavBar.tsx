@@ -53,6 +53,12 @@ const NavBar = () => {
           <li className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]">
             Why us
           </li>
+          <li 
+            className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]"
+            onClick={() => router.push("/pricing")}
+          >
+            Pricing
+          </li>
         </ul>
       </div>
 
@@ -71,6 +77,14 @@ const NavBar = () => {
         </div>
       ) : (
         <div className="hidden md:flex items-center gap-[8px] lg:gap-[12px]">
+          {!user?.isPremium && (
+            <span
+              className="border border-[#00FF80] h-[40px] lg:h-[48px] rounded-[8px] px-[16px] lg:px-[24px] py-[8px] lg:py-[10px] text-[#00FF80] font-bold text-[14px] lg:text-[16px] leading-normal cursor-pointer whitespace-nowrap hover:bg-[#00FF80]/10 transition-colors"
+              onClick={() => router.push("/pricing")}
+            >
+              Upgrade
+            </span>
+          )}
           <span
             className="h-[40px] lg:h-[48px] rounded-[8px] px-[16px] lg:px-[32px] py-[8px] lg:py-[10px] bg-[#00FF80] text-[#000000] font-bold text-[14px] lg:text-[16px] leading-normal cursor-pointer whitespace-nowrap"
             onClick={() => router.push("/dashboard")}
@@ -104,13 +118,34 @@ const NavBar = () => {
               <li className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2">
                 Why us
               </li>
+              <li 
+                className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2"
+                onClick={() => router.push("/pricing")}
+              >
+                Pricing
+              </li>
               <div className="flex flex-col gap-3 mt-3">
-                <span className="border border-[#00FF80] rounded-[8px] px-[32px] py-[10px] text-[#00FF80] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/auth")}>
-                  Sign In
-                </span>
-                <span className="rounded-[8px] px-[32px] py-[10px] bg-[#00FF80] text-[#000000] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/auth")}>
-                  Sign Up
-                </span>
+                {!user ? (
+                  <>
+                    <span className="border border-[#00FF80] rounded-[8px] px-[32px] py-[10px] text-[#00FF80] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/auth")}>
+                      Sign In
+                    </span>
+                    <span className="rounded-[8px] px-[32px] py-[10px] bg-[#00FF80] text-[#000000] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/auth")}>
+                      Sign Up
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    {!user?.isPremium && (
+                      <span className="border border-[#00FF80] rounded-[8px] px-[32px] py-[10px] text-[#00FF80] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/pricing")}>
+                        Upgrade
+                      </span>
+                    )}
+                    <span className="rounded-[8px] px-[32px] py-[10px] bg-[#00FF80] text-[#000000] font-bold text-[16px] leading-normal cursor-pointer text-center" onClick={() => router.push("/dashboard")}>
+                      Dashboard
+                    </span>
+                  </>
+                )}
               </div>
             </ul>
           </div>

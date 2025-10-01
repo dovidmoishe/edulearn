@@ -290,7 +290,6 @@ export default function QuizzesPage() {
 
       <QuizHistory />
 
-      {/* Quiz Modal */}
       <QuizModal 
         isOpen={isQuizModalOpen}
         onClose={handleCloseQuiz}

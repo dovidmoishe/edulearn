@@ -5,6 +5,7 @@ import { create } from "zustand";
 
 interface UserState {
   user: User | null;
+  isLoading: boolean;
   walletBalance: {sol: number, tokenAccount: number} | null;
   walletBalanceLoading: boolean;
   theme: 'light' | 'dark';
@@ -77,6 +78,7 @@ const calculateAndUpdateStreak = async (user: User, lastSignInAt: string | undef
 
 const useUserStore = create<UserState>((set, get) => ({
   user: null,
+  isLoading: false,
   walletBalance: {sol: 0, tokenAccount: 0},
   walletBalanceLoading: false,
   theme: 'light',
@@ -84,11 +86,13 @@ const useUserStore = create<UserState>((set, get) => ({
   setUserAsync: async () => {
     if (typeof window === "undefined") return;
 
+    set({ isLoading: true });
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       
       if (!authUser || !authUser.email) {
         console.log("No authenticated user found");
+        set({ isLoading: false });
         return;
       }
       
@@ -97,6 +101,7 @@ const useUserStore = create<UserState>((set, get) => ({
       
       if (!userFromDB) {
         console.log("User not found in database");
+        set({ isLoading: false });
         return;
       }
 
@@ -125,11 +130,13 @@ const useUserStore = create<UserState>((set, get) => ({
           isPremium: userFromDB.isPremium || false,
           learning: userFromDB.learning || undefined,
         },
+        isLoading: false,
       });
       
       await get().fetchWalletBalance();
     } catch (error) {
       console.error("Failed to fetch user data:", error);
+      set({ isLoading: false });
     }
   },
   
@@ -191,7 +198,7 @@ const useUserStore = create<UserState>((set, get) => ({
       if (typeof window !== "undefined") {
         localStorage.removeItem('isReviewer');
       }
-      set({ user: null, walletBalance: null });
+      set({ user: null, walletBalance: null, isLoading: false });
     } catch (error) {
       console.error("Logout failed:", error);
     }

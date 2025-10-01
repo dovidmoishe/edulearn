@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
 
 import {
   Sidebar,
@@ -209,6 +209,43 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+              
+              <SidebarMenuItem
+                className={isCollapsed ? "flex justify-center w-full" : ""}
+              >
+                <SidebarMenuButton
+                  asChild
+                  tooltip={isCollapsed ? "Upgrade" : undefined}
+                >
+                  <Link
+                    href="/pricing"
+                    className={`flex items-center ${
+                      isCollapsed
+                        ? "justify-center w-[60px] h-8 mx-auto"
+                        : "gap-3 px-3 py-[8px]"
+                    } ${
+                      isActive("/pricing")
+                        ? "bg-[#00FF80] text-black rounded-[8px]"
+                        : isCollapsed
+                        ? "hover:bg-[#1a1a1a] hover:text-white rounded-[8px]"
+                        : "text-[#B3B3B3] hover:bg-[#1a1a1a] hover:text-white rounded-[8px]"
+                    }`}
+                  >
+                    <Sparkles 
+                      size={17}
+                      className="flex-shrink-0"
+                    />
+                    {(!isCollapsed || isMobile) && (
+                      <span>{user?.isPremium ? "Pricing" : "Upgrade"}</span>
+                    )}
+                    {!user?.isPremium && (!isCollapsed || isMobile) && (
+                      <span className="ml-auto bg-[#00FF80] text-black text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                        PRO
+                      </span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

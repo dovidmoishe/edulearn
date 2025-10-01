@@ -21,7 +21,7 @@ const planData = [
   },
   {
     name: "Premium",
-    price: 4.99,
+    price: 5,
     features: [
       "Advanced AI models (Gemini 2.5 Pro)",
       "10 quiz attempts per day",
@@ -184,7 +184,6 @@ export default function PricingPage() {
       return;
     }
 
-    // Check if user is already premium
     if (user.isPremium) {
       alert('You are already subscribed to a Premium plan!');
       return;
@@ -195,7 +194,6 @@ export default function PricingPage() {
       return;
     }
 
-    // Convert to USDC amounts (matching mobile app: monthly $8, annual $80)
     const planAmount = isAnnual ? 50 : 5;
 
     const confirmed = window.confirm(
@@ -208,11 +206,9 @@ export default function PricingPage() {
     try {
       const result = await walletService.upgradeToPremium(user.id, planAmount);
       
-      // Extract signature from result
       const signature = result?.result?.signature || result?.signature || 'N/A';
       const subscriptionType = result?.subscriptionType || (isAnnual ? 'annual' : 'monthly');
       
-      // Show success message with transaction details
       const viewTransaction = window.confirm(
         `✅ Premium upgrade successful!\n\n` +
         `Subscription: ${subscriptionType.charAt(0).toUpperCase() + subscriptionType.slice(1)}\n` +
@@ -224,20 +220,22 @@ export default function PricingPage() {
         window.open(`https://solscan.io/tx/${signature}`, '_blank');
       }
       
-      // Refresh user data to update premium status
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Premium upgrade error:', error);
       
       let errorMessage = 'Failed to process premium upgrade. Please try again.';
       
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.response?.data?.data?.error) {
-        errorMessage = error.response.data.data.error;
-      } else if (error.message) {
+      if (error instanceof Error && 'response' in error) {
+        const errorWithResponse = error as Error & { response?: { data?: { error?: string; data?: { error?: string } } } };
+        if (errorWithResponse.response?.data?.error) {
+          errorMessage = errorWithResponse.response.data.error;
+        } else if (errorWithResponse.response?.data?.data?.error) {
+          errorMessage = errorWithResponse.response.data.data.error;
+        }
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
       
@@ -250,7 +248,6 @@ export default function PricingPage() {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0D0D0D]' : 'bg-[#F9FBFC]'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${theme === 'dark' ? 'text-[#E0E0E0]' : 'text-[#2D3C52]'}`}>
             Upgrade Your Plan
@@ -269,7 +266,6 @@ export default function PricingPage() {
           )}
         </div>
 
-        {/* Toggle Switch */}
         <div className="flex justify-center mb-12">
           <div className={`
             inline-flex items-center gap-2 p-1 rounded-full
@@ -325,7 +321,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Plan Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {planData.map((plan, index) => (
             <PlanCard
@@ -342,7 +337,6 @@ export default function PricingPage() {
           ))}
         </div>
 
-        {/* Additional Info */}
         <div className="mt-16 text-center">
           <p className={`text-sm ${theme === 'dark' ? 'text-[#B3B3B3]' : 'text-[#61728C]'}`}>
             All payments are processed securely via USDC on Solana blockchain.

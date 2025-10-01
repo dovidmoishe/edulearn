@@ -1,7 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Sparkles } from "lucide-react";
 
 import Image from "next/image";
 import HomeIcon from "@/../public/assets/icons/dark/home.png";
@@ -54,6 +55,7 @@ const navItems = [
 
 export function DynamicNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const user = useUserStore((s) => s.user);
   const theme = useUserStore((s) => s.theme);
   const setTheme = useUserStore((s) => s.setTheme);
@@ -112,13 +114,28 @@ export function DynamicNavbar() {
           </div>
         </div>
 
+        {!user?.isPremium && (
+          <button
+            onClick={() => router.push("/pricing")}
+            className="flex items-center gap-2 px-4 py-2 bg-[#00FF80] text-black rounded-lg font-semibold text-sm hover:bg-[#00FF80]/90 transition-colors"
+          >
+            <Sparkles size={16} />
+            Upgrade
+          </button>
+        )}
+
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-gray-200">
             <Image src={avatar} alt="User" width={48} height={48} />
           </div>
           <div className="flex flex-col gap-[4px]">
-            <div className="text-[#E0E0E0] text-[14px] leading-[24px] font-[500]">
+            <div className="text-[#E0E0E0] text-[14px] leading-[24px] font-[500] flex items-center gap-2">
               {user?.name}
+              {user?.isPremium && (
+                <span className="bg-[#00FF80] text-black text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  PRO
+                </span>
+              )}
             </div>
             <div className="text-[#B3B3B3] text-[14px] leading-[24px] font-[500]">
               {user?.email}
