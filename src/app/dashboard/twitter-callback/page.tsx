@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TwitterService } from "@/../services/twitter.service";
 import useUserStore from "@/../core/userState";
 
-export default function TwitterCallbackPage() {
+function TwitterCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const user = useUserStore((state) => state.user);
@@ -97,9 +97,9 @@ export default function TwitterCallbackPage() {
         await setUserAsync();
 
         setTimeout(() => router.push('/dashboard/profile'), 2000);
-      } catch (error: any) {
+      } catch (error: unknown) {
         setStatus('error');
-        setMessage(error.message || 'Failed to connect X account. Please try again.');
+        setMessage((error as Error).message || 'Failed to connect X account. Please try again.');
         setTimeout(() => router.push('/dashboard/profile'), 3000);
       }
     };
@@ -154,6 +154,28 @@ export default function TwitterCallbackPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TwitterCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center p-4">
+        <div className="bg-[#1A1A1A] border border-[#2E2E2E] rounded-[24px] p-8 max-w-md w-full text-center">
+          <div className="flex justify-center mb-6">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#00FF80]"></div>
+          </div>
+          <h1 className="text-2xl font-bold mb-4 text-[#E0E0E0]">
+            Loading...
+          </h1>
+          <p className="text-[#B3B3B3] text-[16px] leading-[24px]">
+            Please wait...
+          </p>
+        </div>
+      </div>
+    }>
+      <TwitterCallbackContent />
+    </Suspense>
   );
 }
 
