@@ -14,7 +14,6 @@ const ChatIndexPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirect to a new chat with a generated ID
     const newChatId = generateUUID()
     router.replace(`/dashboard/chat/${newChatId}`)
   }, [router])

@@ -12,6 +12,7 @@ import brain from "@/../public/assets/icons/brain02.png";
 import fire from "@/../public/assets/icons/fire.png";
 import { WalletService } from "@/../services/wallet.service";
 import { UserService } from "@/../services/user.service";
+import { TwitterService } from "@/../services/twitter.service";
 import congrats from "@/../public/assets/icons/congrats.png";
 import walletIcon from "@/../public/assets/icons/wallet.png";
 import useActivityStore from "@/../core/activityState";
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import userIcon from "@/../public/assets/icons/user.png";
 import warningIcon from "@/../public/assets/icons/warning.png";
+import { FaXTwitter } from "react-icons/fa6";
 
 const levels = ["novice", "beginner", "intermediate", "advanced", "expert"];
 
@@ -55,9 +57,11 @@ export default function ProfilePage() {
   const [confirmExportModalVisible, setConfirmExportModalVisible] = useState(false);
   const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [isExportingWallet, setIsExportingWallet] = useState(false);
+  const [isConnectingTwitter, setIsConnectingTwitter] = useState(false);
 
   const walletService = new WalletService();
   const userService = new UserService();
+  const twitterService = new TwitterService();
 
   const getActiveDays = (streak: number) => {
     const todayIndex = new Date().getDay();
@@ -216,8 +220,21 @@ export default function ProfilePage() {
     }
   };
 
+  const handleConnectTwitter = async () => {
+    if (isConnectingTwitter) return;
+    
+    try {
+      setIsConnectingTwitter(true);
+      await twitterService.initiateAuth();
+    } catch (error) {
+      console.error("Error connecting Twitter:", error);
+      alert("Failed to connect to X. Please try again.");
+      setIsConnectingTwitter(false);
+    }
+  };
+
   return (
-    <div>
+    <div className="pb-[32px]">
       <div className="bg-[#00FF80] rounded-[24px] py-[20px] px-[24px]">
         <div className="flex flex-col gap-[12px] md:hidden">
           <div className="flex items-center justify-between">
@@ -267,8 +284,8 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between mb-[12px]">
               <div className="flex items-center gap-[8px] flex-1">
                 <Image src={wallet} alt="wallet" height={24} width={24} />
-                <p className="text-[#000] text-[14px] font-[500] leading-[22px] truncate flex-1">
-                  {user?.address}
+                <p className="text-[#000] text-center text-[14px] font-[500] leading-[22px] truncate flex-1">
+                  {user?.address ? `${user.address.slice(0, 6)}...${user.address.slice(-4)}` : ''}
                 </p>
                 <button
                   onClick={() => copyToClipboard(user?.address || "")}
@@ -353,8 +370,8 @@ export default function ProfilePage() {
           <div className="flex flex-col gap-[12px] bg-[rgba(255,255,255,0.6)] rounded-[16px] p-[12px]">
             <div className="flex items-center gap-[8px]">
               <Image src={wallet} alt="wallet" height={28} width={28} />
-              <p className="text-[#000] text-[14px] font-[500] leading-[22px] max-w-[120px] truncate">
-                {user?.address}
+              <p className="text-[#000] text-[14px] font-[500] leading-[22px]">
+                {user?.address ? `${user.address.slice(0, 6)}...${user.address.slice(-4)}` : ''}
               </p>
               <button
                 onClick={() => copyToClipboard(user?.address || "")}
@@ -390,7 +407,7 @@ export default function ProfilePage() {
         </div>
       </div>  
 
-      <div className="mt-[16px] grid grid-cols-2 md:grid-cols-4 gap-[16px]">
+      <div className="mt-[32px] grid grid-cols-2 md:grid-cols-4 gap-[16px]">
         <div className="bg-[#1A1A1A] dark:bg-[#1A1A1A] border border-[#2E2E2E] dark:border-[#2E2E2E] rounded-lg p-4 flex flex-col items-center justify-center h-[160px]">
           <div className="flex flex-col items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-[#2E2E2E] rounded-lg flex items-center justify-center">
@@ -468,8 +485,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="mt-[16px] bg-[#1A1A1A] dark:bg-[#1A1A1A] border border-[#2E2E2E] dark:border-[#2E2E2E] rounded-[24px] p-[16px]">
-        <div className="flex items-center justify-between gap-[24px]">
+      <div className="mt-[32px] bg-[#1A1A1A] dark:bg-[#1A1A1A] border border-[#2E3033] dark:border-[#2E2E2E] rounded-[24px] p-[16px]">
+        <div className="flex items-center flex-col md:flex-row md:justify-between gap-[24px]">
           <div className="flex items-center gap-[16px]">
             <Image
               src={congrats}
@@ -487,13 +504,13 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center bg-[#2E2E2E] dark:bg-[#2E2E2E] border border-[#2E2E2E] dark:border-[#2E2E2E] rounded-[16px] py-[8px] pl-[24px] pr-[12px]">
+          <div className="flex items-center justify-between gap-[16px] bg-[#0D0D0D] dark:bg-[#0D0D0D] border border-[#2E2E2E] dark:border-[#2E2E2E] rounded-[16px] py-[8px] pl-[24px] pr-[12px]">
             <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
               {user?.referralCode}
             </p>
             <button
               onClick={() => copyToClipboard(user?.referralCode || "")}
-              className="flex items-center gap-[8px] hover:bg-[#3E3E3E] rounded-[8px] px-[8px] py-[4px] transition-colors ml-auto"
+              className="flex items-center gap-[8px] bg-[#131313] border border-[#2E3033] dark:border-[#2E2E2E] hover:bg-[#3E3E3E] rounded-[8px] px-[8px] py-[4px] transition-colors ml-auto"
             >
               <span className="text-[#B3B3B3] text-[16px] font-[400] leading-[26px]">Copy Code</span>
               <Image
@@ -507,7 +524,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="mt-[16px] flex flex-col gap-[16px]">
+      <div className="mt-[32px] flex flex-col gap-[16px]">
         <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px]">
           <div className="flex-1 text-center md:text-left">
             <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
@@ -542,13 +559,15 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="rounded-[24px] border border-[#2E3033] bg-[#131313] gap-[24px] p-[16px] items-start flex-col mt-[16px]">
+      <div className="rounded-[24px] border border-[#2E3033] bg-[#131313] gap-[24px] p-[16px] items-start flex-col mt-[32px]">
+            <div>
             <p className="text-[#E0E0E0] text-[20px] font-[500] leading-[30px]">Settings</p>
+            </div>
 
-            <div className="flex items-center justify-between gap-[16px]">
+            <div className="flex items-center justify-between flex-col md:flex-row gap-[16px] mt-[16px]">
               <button 
                 onClick={handleEditProfile}
-                className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-[#00FF80] hover:bg-opacity-10 transition-colors"
+                className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-opacity-10 transition-colors cursor-pointer"
               >
                 <Image src={userIcon} alt="user" width={20} height={20} />
                 <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">Edit Profile Info</p>
@@ -556,10 +575,25 @@ export default function ProfilePage() {
 
               <button 
                 onClick={handleExportWallet}
-                className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-[#00FF80] hover:bg-opacity-10 transition-colors"
+                className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-opacity-10 transition-colors cursor-pointer"
               >
                 <Image src={walletIcon} alt="user" width={20} height={20} />
                 <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">Export Secret Key</p>
+              </button>
+
+              <button 
+                onClick={handleConnectTwitter}
+                disabled={isConnectingTwitter || user?.isVerified}
+                className={`flex items-center gap-[12px] py-[10px] px-[16px] rounded-[8px] w-full transition-colors cursor-pointer ${
+                  user?.isVerified 
+                    ? 'bg-[#00FF80] bg-opacity-20 border border-[#00FF80] cursor-default' 
+                    : 'bg-transparent border border-[#00FF80] hover:bg-opacity-10'
+                } disabled:opacity-70`}
+              >
+                <FaXTwitter className="text-[#00FF80]" size={20} />
+                <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">
+                  {isConnectingTwitter ? 'Connecting...' : user?.isVerified ? 'X Connected ✓' : 'Connect X Account'}
+                </p>
               </button>
             </div>
       </div>

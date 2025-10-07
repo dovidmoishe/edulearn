@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import Image from "next/image";
 import NavBar from "../../components/Home/NavBar/NavBar";
 import Hero from "../../components/Home/Hero/Hero";
@@ -13,7 +14,11 @@ import useUserStore from "../../core/userState";
 
 export default function Home() {
   const {setTheme} = useUserStore();
-  setTheme('dark');
+  
+  useEffect(() => {
+    setTheme('dark');
+  }, [setTheme]);
+  
   return (
     <>
       <div className="md:px-[86px] px-[16px]">

@@ -21,20 +21,22 @@ interface UserState {
   loadTheme: () => void;
 }
 
-const supabase = createClient();
+const getSupabaseClient = () => {
+  return createClient();
+};
 
-const calculateAndUpdateStreak = async (user: User, lastSignInAt: string | undefined): Promise<number> => {
+const calculateAndUpdateStreak = async (user: User, lastLoggedIn: string | Date | undefined): Promise<number> => {
   const userService = new UserService();
   const activityService = new ActivityService();
   
-  if (!lastSignInAt) {
+  if (!lastLoggedIn) {
     const newStreak = 1;
     await userService.updateUserStreak(user.id, newStreak);
     return newStreak;
   }
   
   try {
-    const lastActive = new Date(lastSignInAt);
+    const lastActive = new Date(lastLoggedIn);
     const now = new Date();
     
     const lastActiveDate = lastActive.toISOString().split('T')[0];
@@ -88,10 +90,10 @@ const useUserStore = create<UserState>((set, get) => ({
 
     set({ isLoading: true });
     try {
+      const supabase = getSupabaseClient();
       const { data: { user: authUser } } = await supabase.auth.getUser();
       
       if (!authUser || !authUser.email) {
-        console.log("No authenticated user found");
         set({ isLoading: false });
         return;
       }
@@ -105,13 +107,11 @@ const useUserStore = create<UserState>((set, get) => ({
         return;
       }
 
-      console.log(authUser.last_sign_in_at)
-
       const updatedStreak = await calculateAndUpdateStreak(
         userFromDB,
-        authUser.last_sign_in_at
+        userFromDB.lastLoggedIn
       );
-      
+
       set({
         user: {
           id: userFromDB.id,
@@ -129,6 +129,7 @@ const useUserStore = create<UserState>((set, get) => ({
           quizCompleted: userFromDB.quizCompleted,
           isPremium: userFromDB.isPremium || false,
           learning: userFromDB.learning || undefined,
+          isVerified: userFromDB.isVerified || false,
         },
         isLoading: false,
       });
@@ -194,6 +195,7 @@ const useUserStore = create<UserState>((set, get) => ({
   
   logout: async () => {
     try {
+      const supabase = getSupabaseClient();
       await supabase.auth.signOut();
       if (typeof window !== "undefined") {
         localStorage.removeItem('isReviewer');

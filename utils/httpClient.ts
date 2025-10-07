@@ -13,7 +13,8 @@ const httpClient = axios.create({
 
 httpClient.interceptors.request.use(
   async (config) => {
-    const supabase = createClient()
+    const supabase = createClient();
+    
     try {
         const { data: { session } } = await supabase.auth.getSession();
         
