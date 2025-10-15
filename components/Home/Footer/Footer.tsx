@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import logo from "@/../public/assets/images/logo.png";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaTelegram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
@@ -23,12 +23,21 @@ const Footer = () => {
               Incentivized Web3 AI study companion
             </p>
             <div className="gap-[10px] flex items-center">
-              <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px]">
-                <FaDiscord color="black" size={20} />
-              </div>
-              <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px]">
-                <FaXTwitter color="black" size={20} />
-              </div>
+              <a href="https://discord.com/invite/7ErYsnc5ty" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+                <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px] cursor-pointer hover:bg-[#00E070] transition-colors">
+                  <FaDiscord color="black" size={20} />
+                </div>
+              </a>
+              <a href="https://t.me/verificationedu" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+                <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px] cursor-pointer hover:bg-[#00E070] transition-colors">
+                  <FaTelegram color="black" size={20} />
+                </div>
+              </a>
+              <a href="https://x.com/thedulearn" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px] cursor-pointer hover:bg-[#00E070] transition-colors">
+                  <FaXTwitter color="black" size={20} />
+                </div>
+              </a>
             </div>
           </div>
 
@@ -36,18 +45,18 @@ const Footer = () => {
             <p className="text-[#E0E0E0] font-bold leading-[24px] text-[16px]">
               Quick Links
             </p>
-            <p className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer">
+            <a href="#howItWorks" className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors">
               How it works
-            </p>
-            <p className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer">
+            </a>
+            <a href="#features" className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors">
               Features
-            </p>
-            <p className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer">
+            </a>
+            <a href="#testimonial" className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors">
               Testimonial
-            </p>
-            <p className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer">
+            </a>
+            <a href="#faq" className="text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors">
               FAQ&apos;s
-            </p>
+            </a>
           </div>
         </div>
 
@@ -58,12 +67,12 @@ const Footer = () => {
           </p>
 
           <div className="flex items-center gap-[24px]">
-            <p className="text-[#B3B3B3] text-[20px] font-medium leading-[30px]">
+            <a href="/terms" className="text-[#B3B3B3] text-[20px] font-medium leading-[30px] hover:text-[#00FF80] transition-colors">
               Terms
-            </p>
-            <p className="text-[#B3B3B3] text-[20px] font-medium leading-[30px]">
+            </a>
+            <a href="/privacy" className="text-[#B3B3B3] text-[20px] font-medium leading-[30px] hover:text-[#00FF80] transition-colors">
               Privacy Policy
-            </p>
+            </a>
           </div>
         </div>
         </div>

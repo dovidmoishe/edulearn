@@ -7,7 +7,7 @@ import LeaderBoard from "@/../public/leaderboard.png";
 
 const HowItWorks = () => {
   return (
-    <div className="px-4 sm:px-6 md:px-8 overflow-x-hidden">
+    <div id="howItWorks" className="px-4 sm:px-6 md:px-8 overflow-x-hidden">
       <div className="mt-10 md:mt-20 lg:mt-30 flex flex-col gap-8 md:gap-12 lg:gap-20">
         <div className="rounded-[16px] border-2 border-[#2E3033] bg-[#131313] text-[#00FF80] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base">
           How It Works

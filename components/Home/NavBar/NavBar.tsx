@@ -44,20 +44,32 @@ const NavBar = () => {
 
       <div className="hidden md:block">
         <ul className="list-none flex items-center gap-[16px] lg:gap-[24px]">
-          <li className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]">
-            Home
+          <li>
+            <a href="#" className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+              Home
+            </a>
           </li>
-          <li className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]">
-            About
+          <li>
+            <a href="#howItWorks" className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+              How it works
+            </a>
           </li>
-          <li className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]">
-            Why us
+          <li>
+            <a href="#features" className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+              Features
+            </a>
           </li>
-          <li 
-            className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80]"
-            onClick={() => router.push("/pricing")}
-          >
-            Pricing
+          <li>
+            <a 
+              href="/pricing"
+              className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/pricing");
+              }}
+            >
+              Pricing
+            </a>
           </li>
         </ul>
       </div>
@@ -109,20 +121,33 @@ const NavBar = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <ul className="list-none flex flex-col gap-4">
-              <li className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2">
-                Home
+              <li className="py-2">
+                <a href="#" className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+                  Home
+                </a>
               </li>
-              <li className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2">
-                About
+              <li className="py-2">
+                <a href="#howItWorks" className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+                  How it works
+                </a>
               </li>
-              <li className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2">
-                Why us
+              <li className="py-2">
+                <a href="#features" className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
+                  Features
+                </a>
               </li>
-              <li 
-                className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] py-2"
-                onClick={() => router.push("/pricing")}
-              >
-                Pricing
+              <li className="py-2">
+                <a 
+                  href="/pricing"
+                  className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/pricing");
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Pricing
+                </a>
               </li>
               <div className="flex flex-col gap-3 mt-3">
                 {!user ? (

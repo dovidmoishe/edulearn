@@ -38,7 +38,6 @@ export default function DashboardLayout({
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          console.log("✅ Session found for:", session.user.email);
           await setUserAsync();
           
           if (mounted) {
@@ -59,13 +58,11 @@ export default function DashboardLayout({
             }, 500 * retryCount);
             return;
           }
-          
-          console.log("No authenticated user found, redirecting to /auth");
+        
           if (mounted) router.push("/auth");
           return;
         }
         
-        console.log("✅ Auth user found:", authUser.email);
         await setUserAsync();
         
         if (mounted) {
@@ -90,7 +87,6 @@ export default function DashboardLayout({
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (_event === 'SIGNED_IN' && session && mounted) {
-        console.log("✅ Auth state changed: SIGNED_IN");
         checkAuth();
       }
     });
@@ -115,8 +111,6 @@ export default function DashboardLayout({
       </div>
     );
   }
-
-  console.log("✅ Rendering dashboard for user:", storeUser?.email);
 
   return (
     <SidebarProvider>
