@@ -27,7 +27,7 @@ const planData = [
       "15 quiz attempts per day",
       "20 chat credits per day",
       "Credit rollovers & priority support",
-      "Exclusive premium badges",
+      "Exclusive premium badges", 
       "Unlimited Chat Messages"
     ],
   },

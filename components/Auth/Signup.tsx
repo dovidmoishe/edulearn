@@ -92,10 +92,9 @@ const Signup = () => {
 
       case "username":
         return (
-          value.length === 0 ||
-          (value.length >= 3 &&
-            value.length <= 30 &&
-            /^[a-z0-9_]+$/.test(value))
+          value.length >= 3 &&
+          value.length <= 30 &&
+          /^[a-z0-9_]+$/.test(value)
         );
 
       case "referralCode":
@@ -127,7 +126,7 @@ const Signup = () => {
           return;
         }
 
-        if (formData.username && !validateInput("username", formData.username)) {
+        if (!validateInput("username", formData.username)) {
           console.error(
             "Username must be 3-30 characters, alphanumeric and underscores only"
           );
@@ -164,8 +163,8 @@ const Signup = () => {
       if (!isLogin) {
         params.append('isSignUp', 'true');
         params.append('name', formData.name);
+        params.append('username', formData.username);
         if (formData.referralCode) params.append('referralCode', formData.referralCode);
-        if (formData.username) params.append('username', formData.username);
       }
 
       router.push(`/auth/verify?${params.toString()}`);
@@ -287,7 +286,7 @@ const Signup = () => {
 
             <div className="space-y-2">
               <label className="text-[#61728C] dark:text-[#B3B3B3] font-[Satoshi] text-[16px] font-medium leading-[24px] block">
-                X Username (Optional)
+                X Username
               </label>
               <div className="relative w-full">
                 <input
@@ -299,6 +298,7 @@ const Signup = () => {
                   }
                   maxLength={30}
                   autoComplete="username"
+                  required={!isLogin}
                   className="w-full rounded-[8px] h-[48px] dark:bg-[#131313] border-[0.75px] border-[#EDF3FC] dark:border-[#2E3033] bg-[#fff] py-[12px] pl-[16px] pr-[16px] text-[#2D3C52] dark:text-[#E0E0E0] focus:outline-none focus:ring-0 focus:border-[#00FF80] dark:focus:border-[#00FF80] transition-colors"
                 />
               </div>

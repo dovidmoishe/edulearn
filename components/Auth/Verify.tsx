@@ -14,7 +14,8 @@ import useUserStore from '../../core/userState';
 import { UserService } from '../../services/user.service';
 import { Loader2 } from "lucide-react";
 import { CustomAlert } from "../CustomAlert";
-
+import { generateUUID } from '@/lib/utils';
+ 
 const Verify = () => {
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(30 * 60);
@@ -126,7 +127,9 @@ const Verify = () => {
         
         try {
           const userService = new UserService();
+          const userId = generateUUID();
           const newUser = await userService.createUser({
+            id: userId,
             name,
             email,
             referralCode,
