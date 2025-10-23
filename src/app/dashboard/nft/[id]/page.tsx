@@ -173,7 +173,7 @@ export default function NFTDetailsPage() {
                   </svg>
                 </div>
                 <p className="text-[#B3B3B3] text-[14px] font-[500] leading-[20px]">
-                  Claimed on: <span className="text-[#E0E0E0] font-[700]">{formatDate(userReward.earnedAt)}</span>
+                  Received on: <span className="text-[#E0E0E0] font-[700]">{formatDate(userReward.earnedAt)}</span>
                 </p>
               </div>
             )}

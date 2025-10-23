@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
         hostname: 'syvlfqtwjnnhohajuhhg.supabase.co',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lmektyexzejjvisjpzxu.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+        port: '',
+        pathname: '/**',
       }
     ]
   }

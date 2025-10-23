@@ -26,6 +26,9 @@ import {
 import userIcon from "@/../public/assets/icons/user.png";
 import warningIcon from "@/../public/assets/icons/warning.png";
 import { FaXTwitter } from "react-icons/fa6";
+import { RoadmapService } from "@/../services/roadmap.service";
+import { Roadmap, RoadmapStep, RoadmapWithSteps } from "@/../interfaces/Roadmap";
+import { useRouter } from "next/navigation";
 
 const levels = ["novice", "beginner", "intermediate", "advanced", "expert"];
 
@@ -59,9 +62,18 @@ export default function ProfilePage() {
   const [isExportingWallet, setIsExportingWallet] = useState(false);
   const [isConnectingTwitter, setIsConnectingTwitter] = useState(false);
 
+  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+  const [isLoadingRoadmaps, setIsLoadingRoadmaps] = useState(false);
+  const [selectedRoadmap, setSelectedRoadmap] = useState<RoadmapWithSteps | null>(null);
+  const [roadmapModalVisible, setRoadmapModalVisible] = useState(false);
+  const [isLoadingRoadmapDetails, setIsLoadingRoadmapDetails] = useState(false);
+  const [isStartingStep, setIsStartingStep] = useState<string | null>(null);
+
   const walletService = new WalletService();
   const userService = new UserService();
   const twitterService = new TwitterService();
+  const roadmapService = new RoadmapService();
+  const router = useRouter();
 
   const getActiveDays = (streak: number) => {
     const todayIndex = new Date().getDay();
@@ -80,8 +92,65 @@ export default function ProfilePage() {
       fetchWalletBalance();
       fetchActivities(user.id);
       fetchQuizActivities(user.id);
+      fetchRoadmaps();
     }
   }, [user?.id, fetchWalletBalance, fetchActivities, fetchQuizActivities]);
+
+  const fetchRoadmaps = async () => {
+    if (!user?.id) return;
+    
+    setIsLoadingRoadmaps(true);
+    try {
+      const userRoadmaps = await roadmapService.getUserRoadmaps(user.id);
+      setRoadmaps(userRoadmaps);
+    } catch (error) {
+      console.error("Failed to fetch roadmaps:", error);
+    } finally {
+      setIsLoadingRoadmaps(false);
+    }
+  };
+
+  const handleViewRoadmap = async (roadmapId: string) => {
+    setIsLoadingRoadmapDetails(true);
+    setRoadmapModalVisible(true);
+    try {
+      const roadmapData = await roadmapService.getRoadmapById(roadmapId);
+      setSelectedRoadmap(roadmapData);
+    } catch (error) {
+      console.error("Failed to fetch roadmap details:", error);
+      alert("Failed to load roadmap details");
+      setRoadmapModalVisible(false);
+    } finally {
+      setIsLoadingRoadmapDetails(false);
+    }
+  };
+
+  const handleStartStep = async (stepId: string, chatId: string) => {
+    if (!user?.id) return;
+    
+    setIsStartingStep(stepId);
+    try {
+      await roadmapService.startRoadmapStep(stepId, { userId: user.id });
+      
+      // Update the step as done in the local state
+      if (selectedRoadmap) {
+        setSelectedRoadmap({
+          ...selectedRoadmap,
+          steps: selectedRoadmap.steps.map(step => 
+            step.id === stepId ? { ...step, done: true } : step
+          )
+        });
+      }
+      
+      // Navigate to the chat
+      router.push(`/dashboard/chat/${chatId}`);
+    } catch (error) {
+      console.error("Failed to start step:", error);
+      alert("Failed to start step. Please try again.");
+    } finally {
+      setIsStartingStep(null);
+    }
+  };
 
   const toggleBuyModal = () => {
     setBuyModalVisible(!isBuyModalVisible);
@@ -559,6 +628,68 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {roadmaps.length > 0 && (
+        <div className="mt-[32px]">
+          <h2 className="text-[#E0E0E0] text-[20px] font-[600] leading-[30px] mb-[16px]">
+            Your Learning Paths
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
+            {roadmaps.map((roadmap) => (
+              <div
+                key={roadmap.id}
+                className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col gap-[16px] hover:border-[#00FF80] transition-all cursor-pointer"
+                onClick={() => handleViewRoadmap(roadmap.id)}
+              >
+                <div className="flex items-start gap-[12px]">
+                  <div className="w-[40px] h-[40px] bg-[#2E2E2E] dark:bg-[#2E3033] rounded-[12px] flex items-center justify-center flex-shrink-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4" stroke="#00FF80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[#E0E0E0] text-[16px] font-[600] leading-[22px] mb-[4px] line-clamp-2">
+                      {roadmap.title}
+                    </h3>
+                    <p className="text-[#B3B3B3] text-[14px] font-[400] leading-[18px] line-clamp-2">
+                      {roadmap.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-[12px] text-[#B3B3B3] text-[12px]">
+                  <div className="flex items-center gap-[4px]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>~45 mins</span>
+                  </div>
+                  <div className="flex items-center gap-[4px]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>5 Steps</span>
+                  </div>
+                  <div className="flex items-center gap-[4px]">
+                    <Image src={badge} alt="XP" width={16} height={16} />
+                    <span>Earn up to 16 XP</span>
+                  </div>
+                </div>
+
+                <button
+                  className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[12px] rounded-[12px] font-[600] text-[14px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors w-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewRoadmap(roadmap.id);
+                  }}
+                >
+                  View Learning Path
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="rounded-[24px] border border-[#2E3033] bg-[#131313] gap-[24px] p-[16px] items-start flex-col mt-[32px]">
             <div>
             <p className="text-[#E0E0E0] text-[20px] font-[500] leading-[30px]">Settings</p>
@@ -868,6 +999,164 @@ export default function ProfilePage() {
           >
             OK
           </button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={roadmapModalVisible} onOpenChange={setRoadmapModalVisible}>
+        <DialogContent className="bg-[#FFFFFF] dark:bg-[#0D0D0D] border-[#EDF3FC] dark:border-[#2E3033] max-w-4xl max-h-[90vh] overflow-hidden flex flex-col backdrop-blur-xl">
+          {isLoadingRoadmapDetails ? (
+            <div className="flex items-center justify-center py-[60px]">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00FF80]"></div>
+            </div>
+          ) : selectedRoadmap ? (
+            <>
+              <DialogHeader className="border-b border-[#EDF3FC] dark:border-[#2E3033] pb-[16px]">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-[12px] mb-[8px]">
+                      <div className="w-[48px] h-[48px] bg-[#F0FFF9] dark:bg-[#00FF80]/10 rounded-[12px] flex items-center justify-center">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4" stroke="#00FF80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <DialogTitle className="text-[#2D3C52] dark:text-[#E0E0E0] text-[24px] font-[700] leading-[32px]">
+                          {selectedRoadmap.roadmap.title}
+                        </DialogTitle>
+                      </div>
+                    </div>
+                    <DialogDescription className="text-[#61728C] dark:text-[#B3B3B3] text-[16px] font-[400] leading-[24px]">
+                      {selectedRoadmap.roadmap.description}
+                    </DialogDescription>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-[16px] mt-[16px] text-[#61728C] dark:text-[#B3B3B3] text-[14px]">
+                  <div className="flex items-center gap-[6px]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>~{selectedRoadmap.steps.reduce((acc, step) => acc + step.time, 0)} mins</span>
+                  </div>
+                  <div className="flex items-center gap-[6px]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>{selectedRoadmap.steps.length} Steps</span>
+                  </div>
+                  <div className="flex items-center gap-[6px]">
+                    <Image src={badge} alt="XP" width={18} height={18} />
+                    <span>{selectedRoadmap.steps.filter(s => s.done).length} / {selectedRoadmap.steps.length} completed</span>
+                  </div>
+                </div>
+              </DialogHeader>
+              
+              <div className="flex-1 overflow-y-auto py-[24px] custom-scrollbar">
+                <div className="space-y-[12px]">
+                  {selectedRoadmap.steps.map((step, index) => (
+                    <div
+                      key={step.id}
+                      className={`border rounded-[16px] p-[20px] transition-all ${
+                        step.done 
+                          ? 'bg-[#F0FFF9] dark:bg-[#00FF80]/5 border-[#00FF80]/30 dark:border-[#00FF80]/30' 
+                          : 'bg-[#F9FBFC] dark:bg-[#1A1A1A] border-[#EDF3FC] dark:border-[#2E3033] hover:border-[#00FF80]/50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-[16px]">
+                        <div className="flex items-center justify-center w-[32px] h-[32px] flex-shrink-0">
+                          {step.done ? (
+                            <div className="w-[24px] h-[24px] rounded-full bg-[#00FF80] flex items-center justify-center">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 13L9 17L19 7" stroke="#000000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          ) : (
+                            <div className="w-[32px] h-[32px] rounded-full bg-[#2E2E2E] dark:bg-[#2E3033] flex items-center justify-center text-[#E0E0E0] font-[600] text-[14px]">
+                              {index + 1}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-[8px]">
+                            <h3 className={`text-[18px] font-[600] leading-[24px] ${
+                              step.done 
+                                ? 'text-[#00FF80] line-through decoration-[#00FF80]/50' 
+                                : 'text-[#2D3C52] dark:text-[#E0E0E0]'
+                            }`}>
+                              {step.title}
+                            </h3>
+                            <span className="text-[#61728C] dark:text-[#B3B3B3] text-[12px] font-[500] whitespace-nowrap ml-[8px]">
+                              {step.time} min
+                            </span>
+                          </div>
+                          
+                          <p className={`text-[14px] font-[400] leading-[20px] mb-[16px] ${
+                            step.done 
+                              ? 'text-[#61728C] dark:text-[#B3B3B3]' 
+                              : 'text-[#61728C] dark:text-[#B3B3B3]'
+                          }`}>
+                            {step.description}
+                          </p>
+
+                          {!step.done && (
+                            <button
+                              onClick={() => handleStartStep(step.id, selectedRoadmap.roadmap.chatId)}
+                              disabled={isStartingStep === step.id}
+                              className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[10px] rounded-[12px] font-[600] text-[14px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-50 flex items-center justify-center gap-[8px]"
+                            >
+                              {isStartingStep === step.id ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                                  <span>Starting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 3L19 12L5 21V3Z" fill="currentColor"/>
+                                  </svg>
+                                  <span>Start Step</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+
+                          {step.done && (
+                            <div className="flex items-center gap-[8px] text-[#00FF80] text-[14px] font-[500]">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              <span>Completed</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-[#EDF3FC] dark:border-[#2E3033] pt-[16px] flex items-center justify-between">
+                <div className="text-[#61728C] dark:text-[#B3B3B3] text-[14px]">
+                  {selectedRoadmap.steps.filter(s => s.done).length === selectedRoadmap.steps.length ? (
+                    <span className="text-[#00FF80] font-[600]">🎉 Roadmap completed!</span>
+                  ) : (
+                    <span>Keep going! You&apos;re doing great.</span>
+                  )}
+                </div>
+                <button
+                  onClick={() => setRoadmapModalVisible(false)}
+                  className="bg-[#FFFFFF] dark:bg-[#1A1A1A] border border-[#000000] dark:border-[#2E3033] rounded-[12px] py-[10px] px-[24px] text-[#000000] dark:text-[#E0E0E0] text-[14px] font-[600] hover:bg-[#F9FBFC] dark:hover:bg-[#2E3033] transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="py-[60px] text-center text-[#61728C] dark:text-[#B3B3B3]">
+              Failed to load roadmap details
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

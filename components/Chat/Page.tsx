@@ -35,6 +35,15 @@ const scrollbarStyles = `
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #CCCCCC;
   }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 type Props = {
@@ -258,14 +267,17 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
       <div className="flex h-screen relative">
         {drawerOpen && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden animate-[fadeIn_0.3s_ease-out]"
             onClick={() => setDrawerOpen(false)}
+            style={{
+              animation: 'fadeIn 0.3s ease-out'
+            }}
           />
         )}
 
         <div className={`
           fixed md:relative z-50 h-full bg-[#0A0A0A] border-r border-[#2E3033] flex flex-col
-          transform transition-transform duration-300 ease-in-out
+          transform transition-all duration-300 ease-out
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           ${drawerOpen ? 'block' : 'hidden md:block'}
         `}
@@ -274,14 +286,7 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
           <ChatDrawer onClose={() => setDrawerOpen(false)} />
         </div>
 
-        <button
-          className="md:hidden fixed top-4 left-4 z-30 p-2 bg-[#0A0A0A] border border-[#2E3033] rounded-lg hover:bg-[#1A1A1A] transition-colors"
-          onClick={() => setDrawerOpen(!drawerOpen)}
-        >
-          <svg className="w-5 h-5 text-[#E0E0E0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        
         <div className="flex-1 rounded-[24px] bg-[#131313] border border-[#2E3033] py-[12px] px-[24px] flex flex-col relative min-h-0">
         <div className="py-[16px] flex items-center justify-between border-b border-[#2E3033]">
           <div className="flex items-center gap-[16px]">

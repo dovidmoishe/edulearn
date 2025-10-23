@@ -67,10 +67,8 @@ const Footer = () => {
           </p>
 
           <div className="flex items-center gap-[24px]">
-            <a href="/terms" className="text-[#B3B3B3] text-[20px] font-medium leading-[30px] hover:text-[#00FF80] transition-colors">
-              Terms
-            </a>
-            <a href="/privacy" className="text-[#B3B3B3] text-[20px] font-medium leading-[30px] hover:text-[#00FF80] transition-colors">
+            
+            <a href="https://support.edulearn.fun/privacy-policy" className="text-[#B3B3B3] text-[20px] font-medium leading-[30px] hover:text-[#00FF80] transition-colors">
               Privacy Policy
             </a>
           </div>

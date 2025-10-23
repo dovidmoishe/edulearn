@@ -21,7 +21,6 @@ const ChatPage = () => {
       
       setLoading(true)
       try {
-        // Load messages for this chat
         const chatMessages = await chatService.getMessagesInChat(chatId)
         setMessages(chatMessages || [])
         

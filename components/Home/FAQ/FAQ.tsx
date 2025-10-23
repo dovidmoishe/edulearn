@@ -90,7 +90,7 @@ const FAQ = () => {
       <div className="flex items-center justify-center">
         <div className="mt-[64px] flex items-center gap-3">
           <p className="leading-[30px] font-[400] opacity-[0.7] text-[20px] ">Still have any questions?</p>
-          <p className="text-[#00FF80] opacity-[0.7] leading-[30px] text-[20px]">Contact Support</p>
+          <p className="text-[#00FF80] opacity-[0.7] leading-[30px] text-[20px] cursor-pointer" onClick={() => window.open("https://support.edulearn.fun", "_blank")}>Contact Support</p>
         </div>
       </div>
 

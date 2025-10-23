@@ -24,6 +24,58 @@ const drawerScrollbarStyles = `
   .drawer-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #CCCCCC;
   }
+
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .drawer-content {
+    animation: slideInFromLeft 0.3s ease-out;
+  }
+
+  .drawer-header {
+    animation: slideDown 0.4s ease-out;
+  }
+
+  .drawer-search {
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .drawer-chat-item {
+    animation: fadeIn 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  .drawer-section {
+    animation: fadeIn 0.3s ease-out;
+  }
 `;
 
 interface ChatDrawerProps {
@@ -134,7 +186,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
     if (sectionChats.length === 0) return null
     
     return (
-      <div key={title} className="mb-4">
+      <div key={title} className="mb-4 drawer-section">
         <div className="flex items-center justify-between px-4 py-2">
           <h3 className="text-xs font-medium text-[#888] uppercase tracking-wider">
             {title}
@@ -143,7 +195,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
             <Image src={CaretRight} alt="Expand" width={12} height={12} className="transform rotate-90" />
           </button>
         </div>
-        {sectionChats.map((chat) => (
+        {sectionChats.map((chat, index) => (
           <button
             key={chat.id}
             onClick={() => goToChat(chat.id)}
@@ -151,8 +203,12 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
             className={`
               w-full flex items-center justify-between px-4 py-3 
               hover:bg-[#1A1A1A] transition-colors text-left group
+              drawer-chat-item
               ${isNavigating ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
             `}
+            style={{
+              animationDelay: `${index * 0.05}s`
+            }}
           >
             <div className="flex-1 min-w-0">
               <p className="text-sm text-[#E5E5E5] truncate group-hover:text-white">
@@ -168,8 +224,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
   return (
     <>
       <style jsx>{drawerScrollbarStyles}</style>
-      <div className="h-full flex flex-col bg-[#0A0A0A]">
-        <div className="flex items-center justify-between p-4 border-b border-[#2E3033] md:hidden">
+      <div className="h-full flex flex-col bg-[#0A0A0A] drawer-content">
+        <div className="flex items-center justify-between p-4 border-b border-[#2E3033] md:hidden drawer-header">
           <h2 className="text-lg font-medium text-white">Chat History</h2>
           <button
             onClick={onClose}
@@ -181,7 +237,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="p-4 border-b border-[#2E3033]">
+        <div className="p-4 border-b border-[#2E3033] drawer-search">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleCreateNewChat}

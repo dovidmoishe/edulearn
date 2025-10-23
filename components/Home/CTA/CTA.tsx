@@ -15,12 +15,12 @@ const CTA = () => {
         </div>
 
         <div className="flex items-center justify-center flex-col md:flex-row gap-[24px]">
-            <button className="rounded-[8px] bg-[#00FF80] py-[10px] px-[16px] w-[198px] text-black flex items-center justify-center gap-[12px]">
-                <FaGooglePlay size={20} />
-                Play Store
+        <button className="rounded-[8px] border border-[#00FF80] py-[10px] px-[16px] text-[#00FF80] w-[198px] flex items-center justify-center gap-[12px] cursor-pointer" onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}>
+                
+                Sign Up
             </button>
 
-            <button className="rounded-[8px] border border-[#00FF80] py-[10px] px-[16px] text-[#00FF80] w-[198px] flex items-center justify-center gap-[12px]">
+            <button className="rounded-[8px] border border-[#00FF80] py-[10px] px-[16px] text-[#00FF80] w-[198px] flex items-center justify-center gap-[12px] cursor-pointer" onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}>
                 <FaApple size={20} />
                 App Store
             </button>
