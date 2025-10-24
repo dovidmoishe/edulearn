@@ -53,8 +53,8 @@ const Testemonial = () => {
   const testimonials = [
     {
       name: "itsdave.solana",
-      username: "sarahj_learns",
-      content: "EduLearn has completely transformed my learning experience. The interactive quizzes and AI-powered chat make it so easy to stay engaged. I've earned 5 NFTs already and my streak is at 45 days!",
+      username: "itsdavetech",
+      content: "EduLearn helps me brush up on my web3 knowledge and random fact checks.",
       avatar: "/assets/avatar.jpg"
     },
     {
