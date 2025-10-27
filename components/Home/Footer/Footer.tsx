@@ -33,7 +33,7 @@ const Footer = () => {
                   <FaTelegram color="black" size={20} />
                 </div>
               </a>
-              <a href="https://x.com/thedulearn" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+              <a href="https://x.com/edulearndotfun" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
                 <div className="flex items-center justify-center rounded-full border bg-[#00FF80] border-[#2E3033] w-[40px] h-[40px] cursor-pointer hover:bg-[#00E070] transition-colors">
                   <FaXTwitter color="black" size={20} />
                 </div>

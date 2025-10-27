@@ -15,6 +15,7 @@ import { UserService } from "@/../services/user.service";
 import { TwitterService } from "@/../services/twitter.service";
 import congrats from "@/../public/assets/icons/congrats.png";
 import walletIcon from "@/../public/assets/icons/wallet.png";
+import roadmapIcon from "@/../public/assets/icons/roadmap.png"
 import useActivityStore from "@/../core/activityState";
 import {
   Dialog,
@@ -132,7 +133,6 @@ export default function ProfilePage() {
     try {
       await roadmapService.startRoadmapStep(stepId, { userId: user.id });
       
-      // Update the step as done in the local state
       if (selectedRoadmap) {
         setSelectedRoadmap({
           ...selectedRoadmap,
@@ -142,7 +142,6 @@ export default function ProfilePage() {
         });
       }
       
-      // Navigate to the chat
       router.push(`/dashboard/chat/${chatId}`);
     } catch (error) {
       console.error("Failed to start step:", error);
@@ -197,8 +196,16 @@ export default function ProfilePage() {
   const handleBurnTokens = async () => {
     try {
       setIsBurning(true);
-      await walletService.burnEDLN(user?.id || "", 1000);
-      await userService.incrementCredits(user?.id || "", 3);
+      try {
+        const response = await walletService.burnEDLN(user?.id || "", 1000);
+        if(response.signature) {
+          await userService.incrementCredits(user?.id as unknown as string, 3)
+        }
+      } catch (error) {
+        console.error("Error burning EDLN tokens", error);
+        alert("Failed to burn EDLN tokens. Buy more or Please try again later.");
+      }
+      
       await fetchWalletBalance();
       setIsBurning(false);
       setBurnSuccessModalVisible(true);
@@ -568,7 +575,7 @@ export default function ProfilePage() {
                 Invite friends, earn rewards!
               </h3>
               <p className="text-[#B3B3B3] text-[14px] font-[400] leading-[18px] md:leading-[24px]">
-                Share your referral link and earn XP when they join.
+                Share your referral code and earn XP when they join.
               </p>
             </div>
           </div>
@@ -640,11 +647,9 @@ export default function ProfilePage() {
                 className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col gap-[16px] hover:border-[#00FF80] transition-all cursor-pointer"
                 onClick={() => handleViewRoadmap(roadmap.id)}
               >
-                <div className="flex items-start gap-[12px]">
+                <div className="flex items-start   gap-[12px]">
                   <div className="w-[40px] h-[40px] bg-[#2E2E2E] dark:bg-[#2E3033] rounded-[12px] flex items-center justify-center flex-shrink-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4" stroke="#00FF80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <Image src={roadmapIcon} height={24} width={24} alt="roadmap icon" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-[#E0E0E0] text-[16px] font-[600] leading-[22px] mb-[4px] line-clamp-2">
@@ -1015,9 +1020,7 @@ export default function ProfilePage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-[12px] mb-[8px]">
                       <div className="w-[48px] h-[48px] bg-[#F0FFF9] dark:bg-[#00FF80]/10 rounded-[12px] flex items-center justify-center">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M9 20L3 17V4L9 7M9 20L15 17M9 20V7M15 17L21 20V7L15 4M15 17V4M9 7L15 4" stroke="#00FF80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                        <Image src={roadmapIcon} height={24} width={24} alt="roadmap icon" /> 
                       </div>
                       <div className="flex-1">
                         <DialogTitle className="text-[#2D3C52] dark:text-[#E0E0E0] text-[24px] font-[700] leading-[32px]">
