@@ -10,7 +10,7 @@ const VerifyMain = () => {
           <Verify />
         </div>
         <div className='w-1/2 flex justify-center hidden md:flex'>
-          <Sidebar />
+          <Sidebar /> 
         </div>
     </div>
   )
