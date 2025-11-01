@@ -200,15 +200,18 @@ export default function ProfilePage() {
         const response = await walletService.burnEDLN(user?.id || "", 1000);
         if(response.signature) {
           await userService.incrementCredits(user?.id as unknown as string, 3)
+          setBurnSuccessModalVisible(true);
+        } else {
+          alert("Unable to burn EDLN tokens. Buy more or Please try again later.");
         }
       } catch (error) {
         console.error("Error burning EDLN tokens", error);
         alert("Failed to burn EDLN tokens. Buy more or Please try again later.");
+
       }
-      
+
       await fetchWalletBalance();
       setIsBurning(false);
-      setBurnSuccessModalVisible(true);
     } catch (error: unknown) {
       console.error("Error burning tokens:", error);
       setIsBurning(false);

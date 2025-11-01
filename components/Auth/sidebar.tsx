@@ -22,15 +22,15 @@ const Sidebar = () => {
 
         <div className='rounded-[20px] bg-white/10 flex flex-col gap-[16px] p-[24px]'>
           <p className='text-[16px] leading-[24px] font-[400] text-[#F0E6E6]'>
-            I was struggling with math until I discovered EduLearn. The AI-powered quizzes helped me identify my weaknesses and focus on the areas where I needed the most improvement. It&apos;s like having a personal trainer for my brain!
+          As a Web3 gaming expert, I&apos;ve seen plenty of AI tools, but EduLearn actually stands out. The AI-powered quizzes pinpoint my weak spots and help me improve fast. It feels like training my brain with precision.
           </p>
 
           <div className='flex items-center gap-[12px]'>
-            <Image src={annie} width={40} height={40} alt='annie logo' className='rounded-full'/>
+            <Image src="https://pbs.twimg.com/profile_images/1970446634363371520/AIpKFc44_400x400.jpg" width={40} height={40} alt='annie logo' className='rounded-full'/>
 
             <div className='flex flex-col gap-[4px]'>
-              <p className='text-[14px] font-[600] leading-[20px] text-white'>Annie B.</p>
-              <p className='text-[12px] font-[400] leading-[16px] text-[#A29999]'>Student</p>
+              <p className='text-[14px] font-[600] leading-[20px] text-white'>Valour</p>
+              <p className='text-[12px] font-[400] leading-[16px] text-[#A29999]'>Web3 Gaming creator</p>
             </div>
           </div>
         </div>

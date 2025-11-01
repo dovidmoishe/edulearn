@@ -143,8 +143,10 @@ const Verify = () => {
           }
 
           setUser(newUser);
-          showAlert("success", "Welcome to EduLearn!", "Account created successfully! Redirecting to dashboard...");
-          setTimeout(() => router.push("/dashboard"), 1500);
+          showAlert("success", "Welcome to EduLearn!", "Account created successfully! Setting up your profile...");
+          setTimeout(() => {
+            router.push(`/auth/learning?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`);
+          }, 1500);
           
         } catch (createError) {
           console.error("User creation failed:", createError);

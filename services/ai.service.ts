@@ -27,6 +27,7 @@ export class AIService {
         try {
             const response = await httpClient.post('/ai/message', dto);
             
+            
             return response.data;
         } catch (error) {
             console.error("Error generating messages:", error);
