@@ -132,7 +132,7 @@ const Verify = () => {
             id: userId,
             name,
             email,
-            referralCode,
+            referredBy: referralCode,
             username
           });
 
