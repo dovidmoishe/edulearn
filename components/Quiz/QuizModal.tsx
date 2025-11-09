@@ -117,12 +117,13 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
         }
 
         setLoading(false);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error fetching quiz questions:", error);
         setLoading(false);
         
-        if (error.name === 'QuizGenerationError' && error.message) {
-          setError(error.message);
+        const err = error as { name?: string; message?: string };
+        if (err.name === 'QuizGenerationError' && err.message) {
+          setError(err.message);
         } else {
           setError("Something went wrong while generating your quiz. Please try again later.");
         }
@@ -204,7 +205,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
         answers: quizAnswers,
       });
 
-      const userAnswersList: UserAnswer[] = result.validatedAnswers.map((answer: any) => ({
+      const userAnswersList: UserAnswer[] = result.validatedAnswers.map((answer: { question: string; selectedAnswer: string; correctAnswer: string; isCorrect: boolean }) => ({
         question: answer.question,
         selectedAnswer: answer.selectedAnswer,
         correctAnswer: answer.correctAnswer,

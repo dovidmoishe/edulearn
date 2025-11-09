@@ -158,12 +158,13 @@ const Verify = () => {
             router.push(`/auth/learning?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`);
           }, 1500);
           
-        } catch (createError: any) {
+        } catch (createError: unknown) {
           console.error("User creation failed:", createError);
-          console.error("Error response:", createError?.response?.data);
-          console.error("Error message:", createError?.message);
+          const error = createError as { response?: { data?: { message?: string } }; message?: string };
+          console.error("Error response:", error?.response?.data);
+          console.error("Error message:", error?.message);
           
-          const errorMessage = createError?.response?.data?.message || createError?.message || "Unknown error";
+          const errorMessage = error?.response?.data?.message || error?.message || "Unknown error";
           showAlert("destructive", "Account creation failed", `Error: ${errorMessage}. Please try again.`);
           return;
         }

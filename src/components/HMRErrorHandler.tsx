@@ -19,8 +19,8 @@ export default function HMRErrorHandler() {
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
 
     const originalError = console.error
-    console.error = (...args: any[]) => {
-      const message = args[0]?.message || args[0] || ''
+    console.error = (...args: unknown[]) => {
+      const message = (args[0] as { message?: string })?.message || args[0] || ''
       if (
         typeof message === 'string' &&
         (message.includes('unrecognized HMR message') ||

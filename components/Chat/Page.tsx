@@ -215,7 +215,7 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
       );
 
       streamCleanupRef.current = cleanup || null;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error generating message:", error);
       setInputText(textToSend);
       setIsGenerating(false);
