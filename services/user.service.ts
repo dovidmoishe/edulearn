@@ -18,6 +18,7 @@ export interface User {
     learning?: string;
     lastLoggedIn?: string | Date;
     isVerified?: boolean;
+    profilePictureURL: string | null;
 }
 
 export class UserService {
@@ -43,9 +44,10 @@ export class UserService {
 
     async createUser(userData: Partial<User>): Promise<User> {
         try {
+            
             const response = await httpClient.post('/auth/signup', userData);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating user:", error);
             throw error;
         }

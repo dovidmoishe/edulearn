@@ -130,6 +130,7 @@ const useUserStore = create<UserState>((set, get) => ({
           isPremium: userFromDB.isPremium || false,
           learning: userFromDB.learning || undefined,
           isVerified: userFromDB.isVerified || false,
+          profilePictureURL: userFromDB.profilePictureURL || null,
         },
         isLoading: false,
       });

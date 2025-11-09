@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from 'next/font/local'
 import "./globals.css";
 import UserInitializer from "../components/UserInitializer";
+import HMRErrorHandler from "../components/HMRErrorHandler";
 
 const satoshi = localFont({src: '../../public/assets/fonts/Satoshi-Regular.otf', variable: '--font-satoshi'});
 
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body
         className={`${satoshi.className} antialiased`}
       >
+        <HMRErrorHandler />
         <UserInitializer />
         {children}
       </body>

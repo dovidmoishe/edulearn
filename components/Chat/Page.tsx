@@ -44,6 +44,15 @@ const scrollbarStyles = `
       opacity: 1;
     }
   }
+
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
 `;
 
 type Props = {
@@ -75,9 +84,15 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
+  const [waitingForStream, setWaitingForStream] = useState(false);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const tokenQueueRef = useRef<string[]>([]);
+  const processingTokensRef = useRef(false);
+  const streamCleanupRef = useRef<(() => void) | null>(null);
+  const messageContentRef = useRef<Map<string, string>>(new Map());
 
   const resetChatState = useCallback(() => {
     setMessages([]);
@@ -105,9 +120,15 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
     [messages.length]
   );
 
+
   const handleSendMessage = async (messageText?: string) => {
     const textToSend = messageText || inputText.trim();
     if (textToSend === "" || isGenerating || isTransitioning) return;
+
+    if (streamCleanupRef.current) {
+      streamCleanupRef.current();
+      streamCleanupRef.current = null;
+    }
 
     setInputText("");
 
@@ -122,32 +143,94 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
     setIsGenerating(true);
+    setWaitingForStream(true);
+
+    const assistantMessageId = generateUUID();
+    let messageCreated = false;
 
     try {
-      const response = await aiService.generateMessages({
-        messages: updatedMessages,
-        chatId: activeChatId,
-        userId: user?.id as string,
-      });
+      const cleanup = await aiService.generateMessagesStream(
+        {
+          messages: updatedMessages,
+          chatId: activeChatId,
+          userId: user?.id as string,
+        },
+        (token: string, type?: string) => {
+          if (!messageCreated) {
+            setWaitingForStream(false);
+            setStreamingMessageId(assistantMessageId);
+            messageContentRef.current.set(assistantMessageId, '');
+            setMessages((currentMessages) => {
+              const messagesCopy = [...currentMessages];
+              const assistantMessage: Message = {
+                id: assistantMessageId,
+                role: "assistant",
+                content: "",
+                createdAt: new Date(),
+                chatId: activeChatId,
+              };
+              messagesCopy.push(assistantMessage);
+              return messagesCopy;
+            });
+            messageCreated = true;
+          }
+          
+          const currentContent = messageContentRef.current.get(assistantMessageId) || '';
+          const newContent = currentContent + token;
+          messageContentRef.current.set(assistantMessageId, newContent);
+          
+          setMessages((currentMessages) => {
+            const messagesCopy = [...currentMessages];
+            const messageIndex = messagesCopy.findIndex(msg => msg && msg.id === assistantMessageId);
+            if (messageIndex !== -1) {
+              messagesCopy[messageIndex].content = newContent;
+            }
+            return messagesCopy;
+          });
+        },
+        (fullMessage: Message) => {
+          messageContentRef.current.delete(assistantMessageId);
+          setIsGenerating(false);
+          setStreamingMessageId(null);
+          scrollToBottom();
+        },
+        (error: Error) => {
+          console.error("Error generating message:", error);
+          setInputText(textToSend);
+          
+          tokenQueueRef.current = [];
+          processingTokensRef.current = false;
+          messageContentRef.current.delete(assistantMessageId);
+          
+          if (messageCreated) {
+            setMessages((currentMessages) => 
+              currentMessages.filter(msg => msg.id !== assistantMessageId)
+            );
+          }
+          
+          setIsGenerating(false);
+          setWaitingForStream(false);
+          setStreamingMessageId(null);
+        }
+      );
 
-      const assistantMessage: Message = {
-        id: response.id,
-        role: "assistant",
-        content:
-          typeof response.content === "string"
-            ? response.content
-            : response.content,
-        createdAt: response.createdAt,
-        chatId: response.chatId || activeChatId,
-      };
-
-      setMessages((currentMessages) => [...currentMessages, assistantMessage]);
-    } catch (error) {
+      streamCleanupRef.current = cleanup || null;
+    } catch (error: any) {
       console.error("Error generating message:", error);
       setInputText(textToSend);
-    } finally {
       setIsGenerating(false);
-      scrollToBottom();
+      setWaitingForStream(false);
+      setStreamingMessageId(null);
+      
+      tokenQueueRef.current = [];
+      processingTokensRef.current = false;
+      messageContentRef.current.delete(assistantMessageId);
+      
+      if (messageCreated) {
+        setMessages((currentMessages) => 
+          currentMessages.filter(msg => msg.id !== assistantMessageId)
+        );
+      }
     }
   };
 
@@ -223,6 +306,15 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
       scrollToBottom();
     }
   }, [messages, isTransitioning, scrollToBottom]);
+
+  useEffect(() => {
+    return () => {
+      if (streamCleanupRef.current) {
+        streamCleanupRef.current();
+        streamCleanupRef.current = null;
+      }
+    };
+  }, []);
 
   const fetchSuggestions = useCallback(async () => {
     if (!user?.id) return;
@@ -393,18 +485,29 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
                   scrollbarColor: '#E0E0E0 transparent'
                 }}
               >
-                {messages.map((message) => (
-                  <MessageItem key={message.id} message={message} />
-                ))}
+                {messages.map((message) => {
+                  const isStreaming = message.id === streamingMessageId;
+                  return (
+                    <MessageItem 
+                      key={message.id} 
+                      message={message}
+                      isStreaming={isStreaming}
+                    />
+                  );
+                })}
 
-                {isGenerating && (
+                {waitingForStream && (
                   <div className="flex items-start gap-3">
                     <Image src={EduLearnLogo} alt="EduLearn" width={24} height={24} />
-                    <div className="bg-[#1A1A1A] rounded-lg p-4 max-w-[75%]">
+                    <div className="bg-[#1A1A1A] rounded-lg p-4 max-w-[75%] rounded-tl-sm">
                       <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#E0E0E0]"></div>
-                        <span className="text-[#E0E0E0] text-sm">
-                          Thinking...
+                        <span 
+                          className="text-[#E0E0E0] text-lg font-normal inline-block"
+                          style={{
+                            animation: 'blink 1s infinite'
+                          }}
+                        >
+                          ▊
                         </span>
                       </div>
                     </div>

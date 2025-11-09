@@ -61,14 +61,14 @@ const NavBar = () => {
           </li>
           <li>
             <a 
-              href="/pricing"
+              href="/discover"
               className="text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/pricing");
+                router.push("/discover");
               }}
             >
-              Pricing
+              Discover
             </a>
           </li>
         </ul>
@@ -134,6 +134,19 @@ const NavBar = () => {
               <li className="py-2">
                 <a href="#features" className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors">
                   Features
+                </a>
+              </li>
+              <li className="py-2">
+                <a 
+                  href="/discover"
+                  className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push("/discover");
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Discover
                 </a>
               </li>
               <li className="py-2">

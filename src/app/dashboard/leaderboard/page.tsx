@@ -18,6 +18,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import { getHighQualityImageUrl } from "@/../utils/imageHelper";
 
 interface LeaderboardUser extends User {
   rank: number;
@@ -26,11 +27,9 @@ interface LeaderboardUser extends User {
 
 export default function LeaderboardPage() {
   const { theme, user } = useUserStore();
-  const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 10;
   
   const userService = new UserService();
   const currentUserId = user?.id;
@@ -58,33 +57,33 @@ export default function LeaderboardPage() {
     fetchLeaderboard();
   }, []);
 
-  const tableUsers = users.slice(3);
-  const totalPages = Math.ceil(tableUsers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentPageUsers = tableUsers.slice(startIndex, endIndex);
-  
-  const currentUserOnPage = currentPageUsers.some(u => u.id === currentUserId);
-  
-  const currentUserData = !currentUserOnPage ? users.find(u => u.id === currentUserId) : null;
+  const getRemainingUsers = () => {
+    const remainingUsers = users.slice(3, 10).map((userData, index) => ({
+      ...userData,
+      rank: index + 4,
+      isCurrentUser: currentUserId === userData.id,
+    }));
 
-  const usersToDisplay = currentUserData ? [...currentPageUsers, currentUserData] : currentPageUsers;
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      handlePageChange(currentPage - 1);
+    const currentUserInTop3 = users.slice(0, 3).some(userData => userData.id === currentUserId);
+    const currentUserInTop10 = users.slice(0, 10).some(userData => userData.id === currentUserId);
+    
+    if (user && !currentUserInTop3 && !currentUserInTop10) {
+      const currentUserRank = users.findIndex(userData => userData.id === user.id) + 1;
+      
+      if (currentUserRank > 10) {
+        remainingUsers.push({
+          ...user,
+          rank: currentUserRank,
+          isCurrentUser: true,
+        });
+      }
     }
+
+    return remainingUsers;
   };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      handlePageChange(currentPage + 1);
-    }
-  };
+  const remainingUsers = getRemainingUsers();
+
   
   return (
     <div>
@@ -94,7 +93,13 @@ export default function LeaderboardPage() {
               <div className="flex items-center w-[110px] md:w-[167px] justify-between flex-col py-[10px] md:py-[21px] px-[8px] md:px-[27px] gap-[8px] md:gap-[5px] h-[160px] md:h-[227px] rounded-tl-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative"> 
                   <Image src={silver} alt="silver medal" width={45} height={45} className="absolute -top-[25px] z-10" />
                   <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
-                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                    <Image 
+                      src={getHighQualityImageUrl(users[1].profilePictureURL) || avatar} 
+                      alt="avatar" 
+                      width={95} 
+                      height={95} 
+                      className="rounded-full w-full h-full object-cover" 
+                    />
                   </div>
                   <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[1].name}
@@ -116,7 +121,13 @@ export default function LeaderboardPage() {
               <div className="h-[180px] md:h-[272px] bg-[#00FF80] w-[130px] md:w-[190px] flex-col flex items-center rounded-t-[20px] gap-[8px] relative z-[2]">
                   <Image src={gold} alt="gold medal" width={45} height={45} className="absolute -top-[25px] z-10" />
                   <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
-                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                    <Image 
+                      src={getHighQualityImageUrl(users[0].profilePictureURL) || avatar} 
+                      alt="avatar" 
+                      width={95} 
+                      height={95} 
+                      className="rounded-full w-full h-full object-cover" 
+                    />
                   </div>
                   <p className="text-[#000] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[0].name}
@@ -138,7 +149,13 @@ export default function LeaderboardPage() {
               <div className="flex items-center w-[100px] md:w-[167px] justify-between flex-col py-[8px] md:py-[21px] px-[8px] md:px-[27px] gap-[6px] md:gap-[5px] h-[140px] md:h-[227px] rounded-tr-[20px] border-[0.8px] border-[#2E3033] bg-[#2E3033] relative">
                   <Image src={bronze} alt="bronze medal" width={45} height={45} className="absolute -top-[25px] z-10" />
                   <div className="w-[40px] h-[40px] md:w-[95px] md:h-[95px] rounded-full bg-white p-[3px] mt-[5px]">
-                    <Image src={avatar} alt="avatar" width={95} height={95} className="rounded-full w-full h-full object-cover" />
+                    <Image 
+                      src={getHighQualityImageUrl(users[2].profilePictureURL) || avatar} 
+                      alt="avatar" 
+                      width={95} 
+                      height={95} 
+                      className="rounded-full w-full h-full object-cover" 
+                    />
                   </div>
                   <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
                     {users[2].name}
@@ -230,11 +247,11 @@ export default function LeaderboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {usersToDisplay.map((user) => {
-                const isCurrentUser = user.id === currentUserId;
+              {remainingUsers.map((userData) => {
+                const isCurrentUser = userData.isCurrentUser;
                 return (
                   <TableRow 
-                    key={user.id}
+                    key={userData.id}
                     className={`h-16 px-6 ${
                       isCurrentUser
                         ? "bg-[#00FF80] border-[#00FF80] hover:bg-[#00FF80]"
@@ -246,12 +263,12 @@ export default function LeaderboardPage() {
                     <TableCell>
                       <p className={`text-[14px] leading-[24px] font-[500] ${
                         isCurrentUser ? "text-[#000]" : "text-[#B3B3B3]"
-                      }`}>{user.rank}</p>
+                      }`}>{userData.rank}</p>
                     </TableCell>
                     <TableCell>
                       <p className={`text-[14px] leading-[24px] font-[500] ${
                         isCurrentUser ? "text-[#000]" : "text-[#B3B3B3]"
-                      }`}>{user.name}</p>
+                      }`}>{userData.name}</p>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
@@ -265,7 +282,7 @@ export default function LeaderboardPage() {
                         <span className={`text-[14px] leading-[24px] font-[500] ${
                           isCurrentUser ? "text-[#000]" : "text-[#B3B3B3]"
                         }`}>
-                          {user.xp || 0} XP
+                          {userData.xp || 0} XP
                         </span>
                       </div>
                     </TableCell>
@@ -281,7 +298,7 @@ export default function LeaderboardPage() {
                         <span className={`text-[14px] leading-[24px] font-[500] ${
                           isCurrentUser ? "text-[#000]" : "text-[#B3B3B3]"
                         }`}>
-                          {user.streak || 0}
+                          {userData.streak || 0}
                         </span>
                       </div>
                     </TableCell>
@@ -289,7 +306,7 @@ export default function LeaderboardPage() {
                       <p className={`text-[14px] leading-[24px] font-[500] ${
                         isCurrentUser ? "text-[#000]" : "text-[#B3B3B3]"
                       }`}>
-                        {user.level ? user.level.charAt(0).toUpperCase() + user.level.slice(1).toLowerCase() : 'Novice'}
+                        {userData.level ? userData.level.charAt(0).toUpperCase() + userData.level.slice(1).toLowerCase() : 'Novice'}
                       </p>
                     </TableCell>
                   </TableRow>
@@ -300,82 +317,6 @@ export default function LeaderboardPage() {
           )}
         </div>
 
-        {!loading && !error && users.length > 0 && (
-          <div className="flex justify-between items-center mt-6">
-          <div className={`text-sm ${
-            theme === "dark" ? "text-[#B3B3B3]" : "text-[#61728C]"
-          }`}>
-            Showing {startIndex + 1}-{Math.min(endIndex, tableUsers.length)} of {tableUsers.length} results
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                currentPage === 1
-                  ? `${
-                      theme === "dark" 
-                        ? "text-[#666] cursor-not-allowed" 
-                        : "text-gray-400 cursor-not-allowed"
-                    }`
-                  : `${
-                      theme === "dark"
-                        ? "text-[#E0E0E0] hover:text-[#00FF80]"
-                        : "text-[#2D3C52] hover:text-[#00FF80]"
-                    }`
-              }`}
-            >
-              Prev page
-            </button>
-            
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = i + 1;
-                const isCurrentPage = pageNum === currentPage;
-                
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`w-8 h-8 rounded text-sm font-medium transition-colors ${
-                      isCurrentPage
-                        ? "bg-[#00FF80] text-black"
-                        : `${
-                            theme === "dark"
-                              ? "text-[#E0E0E0] hover:bg-[#1A1A1A]"
-                              : "text-[#2D3C52] hover:bg-gray-100"
-                          }`
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-            
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                currentPage === totalPages
-                  ? `${
-                      theme === "dark" 
-                        ? "text-[#666] cursor-not-allowed" 
-                        : "text-gray-400 cursor-not-allowed"
-                    }`
-                  : `${
-                      theme === "dark"
-                        ? "text-[#E0E0E0] hover:text-[#00FF80]"
-                        : "text-[#2D3C52] hover:text-[#00FF80]"
-                    }`
-              }`}
-            >
-              Next page
-            </button>
-          </div>
-        </div>
-        )}
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import httpClient from "../utils/httpClient";
+import { createClient } from "../utils/supabase/client";
 
 export type Message = {
     id: string;
@@ -7,6 +8,14 @@ export type Message = {
     role: string;
     content: unknown;
 }
+
+const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+};
 
 export class AIService {
     async getTitle(message: Message) {
@@ -117,6 +126,122 @@ export class AIService {
             const processedError = new Error(errorMessage);
             processedError.name = 'SuggestionsGenerationError';
             throw processedError;
+        }
+    }
+
+    async generateMessagesStream(
+        dto: {
+            messages: Array<Message>;
+            chatId: string;
+            userId: string;
+        },
+        onToken: (token: string, type?: string) => void,
+        onComplete: (fullMessage: Message) => void,
+        onError: (error: Error) => void
+    ) {
+        let abortController: AbortController | null = null;
+        
+        try {
+            const initResponse = await httpClient.post('/ai/message-stream/init', dto);
+            const { streamId } = initResponse.data;
+            
+            const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session?.access_token) {
+                throw new Error('No access token found. Please log in again.');
+            }
+            
+            abortController = new AbortController();
+            
+            const response = await fetch(`${API_URL}/ai/message-stream/${streamId}`, {
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`,
+                    'Accept': 'text/event-stream',
+                },
+                signal: abortController.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            
+            if (!reader) {
+                throw new Error('No response body');
+            }
+
+            let fullResponse = '';
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                
+                if (done) {
+                    break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        
+                        if (data === '[DONE]') {
+                            continue;
+                        }
+
+                        try {
+                            const parsed = JSON.parse(data);
+                            
+                            if (parsed.token) {
+                                fullResponse += parsed.token;
+                                onToken(parsed.token, parsed.type);
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse SSE data:', data, e);
+                        }
+                    }
+                }
+            }
+
+            onComplete({
+                id: generateUUID(),
+                role: 'assistant',
+                content: fullResponse,
+                createdAt: new Date(),
+                chatId: dto.chatId,
+            });
+
+            return () => {
+                abortController?.abort();
+            };
+    
+        } catch (error: any) {
+            if (error.name === 'AbortError') {
+                return () => {};
+            }
+            
+            console.error("Error in streaming messages:", error);
+            
+            let errorMessage = "Failed to generate response. Please try again.";
+            
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            onError(new Error(errorMessage));
+            
+            return () => {
+                abortController?.abort();
+            };
         }
     }
 }

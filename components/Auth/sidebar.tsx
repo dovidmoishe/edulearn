@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
+import SafeImage from './SafeImage'
 import edulearn from "@/../public/assets/icons/edulearn.png"
-import annie from "@/../public/assets/annie.jpg"
 
 const Sidebar = () => {
   return (
@@ -26,7 +26,13 @@ const Sidebar = () => {
           </p>
 
           <div className='flex items-center gap-[12px]'>
-            <Image src="https://pbs.twimg.com/profile_images/1970446634363371520/AIpKFc44_400x400.jpg" width={40} height={40} alt='annie logo' className='rounded-full'/>
+            <SafeImage 
+              src="https://pbs.twimg.com/profile_images/1970446634363371520/AIpKFc44_400x400.jpg" 
+              width={40} 
+              height={40} 
+              alt='valour logo' 
+              className='rounded-full'
+            />
 
             <div className='flex flex-col gap-[4px]'>
               <p className='text-[14px] font-[600] leading-[20px] text-white'>Valour</p>

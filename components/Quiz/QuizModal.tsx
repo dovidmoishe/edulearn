@@ -10,6 +10,7 @@ import useUserStore from '@/../core/userState';
 import useActivityStore from '@/../core/activityState';
 import { AIService } from '@/../services/ai.service';
 import { ChatService } from '@/../services/chat.service';
+import { ActivityService } from '@/../services/activity.service';
 
 interface Question {
   question: string;
@@ -44,15 +45,29 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<(string | null)[]>([]);
+  const [retryCount, setRetryCount] = useState(0);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { user, theme } = useUserStore();
   const { addActivity } = useActivityStore();
 
   const aiService = new AIService();
   const chatService = new ChatService();
+  const activityService = new ActivityService();
 
   useEffect(() => {
-    if (!isOpen || quizCompleted) return;
+    if (questions.length > 0 && !loading && !error && !timerStarted && !quizCompleted) {
+      const delayTimer = setTimeout(() => {
+        setTimerStarted(true);
+      }, 2000);
+
+      return () => clearTimeout(delayTimer);
+    }
+  }, [questions.length, loading, error, timerStarted, quizCompleted]);
+
+  useEffect(() => {
+    if (quizCompleted || !timerStarted) return;
     
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -66,7 +81,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isOpen, quizCompleted]);
+  }, [quizCompleted, timerStarted]);
 
   useEffect(() => {
     if (!isOpen || !user?.id) return;
@@ -97,19 +112,31 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
           setQuestions(response);
           setQuestionAnswers(new Array(response.length).fill(null));
         } else {
-          setError("No quiz questions could be generated from this conversation.");
+          console.error("No questions returned from API");
+          setError("No quiz questions could be generated from this conversation. Please ensure you had an educational discussion and try again.");
         }
 
         setLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching quiz questions:", error);
         setLoading(false);
-        setError("Something went wrong while generating your quiz. Please try again later.");
+        
+        if (error.name === 'QuizGenerationError' && error.message) {
+          setError(error.message);
+        } else {
+          setError("Something went wrong while generating your quiz. Please try again later.");
+        }
       }
     };
 
     fetchQuestions();
-  }, [isOpen, chatId, user?.id]);
+  }, [isOpen, chatId, user?.id, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setError(null);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -124,6 +151,8 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
       setReviewAnswers(false);
       setError(null);
       setQuestionAnswers([]);
+      setTimerStarted(false);
+      setRetryCount(0);
     }
   }, [isOpen]);
 
@@ -157,41 +186,39 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
   };
 
   const handleFinishQuiz = async () => {
-    if (!questions.length) return;
+    if (!questions.length || isSubmitting) return;
 
-    const userAnswersList: UserAnswer[] = [];
-    let correctCount = 0;
+    setIsSubmitting(true);
 
-    questions.forEach((question, index) => {
-      const selectedAnswer = questionAnswers[index];
-      if (!selectedAnswer) return;
-
-      const isCorrect = selectedAnswer === question.correctAnswer;
-      if (isCorrect) correctCount++;
-
-      userAnswersList.push({
-        question: question.question,
-        selectedAnswer,
-        correctAnswer: question.correctAnswer,
-        isCorrect,
-      });
-    });
-
-    setUserAnswers(userAnswersList);
-    setScore(correctCount);
-    setQuizCompleted(true);
+    const quizAnswers = questions.map((question, index) => ({
+      question: question.question,
+      selectedAnswer: questionAnswers[index] || '',
+      correctAnswer: question.correctAnswer,
+    })).filter(answer => answer.selectedAnswer);
 
     try {
-      const activityData = {
+      const result = await activityService.submitQuiz({
         userId: user?.id as string,
-        xpEarned: correctCount,
+        chatId: chatId,
         title: chatTitle || "Quiz",
-        type: "quiz" as const,
-      };
+        answers: quizAnswers,
+      });
 
-      await addActivity(activityData);
+      const userAnswersList: UserAnswer[] = result.validatedAnswers.map((answer: any) => ({
+        question: answer.question,
+        selectedAnswer: answer.selectedAnswer,
+        correctAnswer: answer.correctAnswer,
+        isCorrect: answer.isCorrect,
+      }));
+
+      setUserAnswers(userAnswersList);
+      setScore(result.score);
+      setQuizCompleted(true);
     } catch (error) {
-      console.error("Error saving quiz result:", error);
+      console.error("Error submitting quiz:", error);
+      setQuizCompleted(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -234,7 +261,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
           
           {!quizCompleted && questions.length > 0 && (
             <div className={`text-sm font-medium ${
-              timeLeft < 60 ? "text-red-500" : theme === "dark" ? "text-[#E0E0E0]" : "text-[#2D3C52]"
+              timeLeft < 10 ? "text-red-500" : theme === "dark" ? "text-[#E0E0E0]" : "text-[#2D3C52]"
             }`}>
               Time Left: {formatTime(timeLeft)}
             </div>
@@ -274,20 +301,32 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
           )}
 
           {error && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <p className={`text-sm mb-4 ${theme === "dark" ? "text-[#B3B3B3]" : "text-[#61728C]"}`}>
+            <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+              <p className={`text-sm mb-2 ${theme === "dark" ? "text-[#B3B3B3]" : "text-[#61728C]"}`}>
                 {error}
               </p>
-              <button
-                onClick={onClose}
-                className={`px-6 py-2 rounded-lg font-medium ${
-                  theme === "dark" 
-                    ? "bg-[#00FF80] text-black" 
-                    : "bg-[#00FF80] text-black"
-                }`}
-              >
-                Close
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleRetry}
+                  className={`px-6 py-2 rounded-lg font-medium ${
+                    theme === "dark" 
+                      ? "bg-[#00FF80] text-black hover:bg-[#00E673]" 
+                      : "bg-[#00FF80] text-black hover:bg-[#00E673]"
+                  }`}
+                >
+                  Retry
+                </button>
+                <button
+                  onClick={onClose}
+                  className={`px-6 py-2 rounded-lg font-medium ${
+                    theme === "dark" 
+                      ? "bg-[#131313] text-[#E0E0E0] border border-[#2E3033] hover:bg-[#1A1A1A]" 
+                      : "bg-white text-[#2D3C52] border border-[#E0E7F0] hover:bg-gray-50"
+                  }`}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           )}
 
@@ -377,12 +416,12 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
                     </p>
                   </div>
 
-                  <p className={`text-sm mb-6 ${
+                  <p className={`text-sm mb-6 max-w-md mx-auto ${
                     theme === "dark" ? "text-[#B3B3B3]" : "text-[#61728C]"
                   }`}>
                     {score >= 3
-                      ? "You&apos;re one step closer to your next badge. Keep the momentum going! Want to sharpen your skills even more? Try a follow-up quiz or review your answers."
-                      : `You got ${score} out of 5, which means there&apos;s room to grow. You still earned ${score} XP just for trying, and now you know where to improve. Review your answers and give it another go. You&apos;ve got this!`}
+                      ? "You're one step closer to your next badge. Keep the momentum going! Want to sharpen your skills even more? Try a follow-up quiz or review your answers."
+                      : `You got ${score} out of 5, which means there's room to grow. You still earned ${score} XP just for trying, and now you know where to improve. Review your answers and give it another go. You've got this!`}
                   </p>
 
                   <div className="flex items-center justify-center gap-2 mb-6">
@@ -460,15 +499,15 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
                 
                 <button
                   onClick={currentQuestionIndex < questions.length - 1 ? handleNextQuestion : handleFinishQuiz}
-                  disabled={!selectedOption}
+                  disabled={!selectedOption || isSubmitting}
                   className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-                    !selectedOption
+                    !selectedOption || isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : "bg-[#00FF80] text-black hover:bg-[#00E673]"
                   }`}
                 >
-                  {currentQuestionIndex < questions.length - 1 ? "Next" : "Finish Quiz"}
-                  <ChevronRight className="w-4 h-4 inline ml-2" />
+                  {isSubmitting ? "Submitting..." : currentQuestionIndex < questions.length - 1 ? "Next" : "Finish Quiz"}
+                  {!isSubmitting && <ChevronRight className="w-4 h-4 inline ml-2" />}
                 </button>
               </div>
             ) : (

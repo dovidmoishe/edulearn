@@ -128,6 +128,14 @@ const Verify = () => {
         try {
           const userService = new UserService();
           const userId = generateUUID();
+          console.log("📤 Calling createUser API with data:", {
+            id: userId,
+            name,
+            email,
+            username,
+            referredBy: referralCode
+          });
+          
           const newUser = await userService.createUser({
             id: userId,
             name,
@@ -135,6 +143,8 @@ const Verify = () => {
             referredBy: referralCode,
             username
           });
+          
+          console.log("✅ User created successfully:", newUser);
 
           if (!newUser) {
             console.error("User creation failed");
@@ -148,9 +158,13 @@ const Verify = () => {
             router.push(`/auth/learning?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`);
           }, 1500);
           
-        } catch (createError) {
+        } catch (createError: any) {
           console.error("User creation failed:", createError);
-          showAlert("destructive", "Account creation failed", "Failed to create account. Please try again.");
+          console.error("Error response:", createError?.response?.data);
+          console.error("Error message:", createError?.message);
+          
+          const errorMessage = createError?.response?.data?.message || createError?.message || "Unknown error";
+          showAlert("destructive", "Account creation failed", `Error: ${errorMessage}. Please try again.`);
           return;
         }
       } else {

@@ -30,6 +30,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { RoadmapService } from "@/../services/roadmap.service";
 import { Roadmap, RoadmapStep, RoadmapWithSteps } from "@/../interfaces/Roadmap";
 import { useRouter } from "next/navigation";
+import { getHighQualityImageUrl } from "@/../utils/imageHelper";
 
 const levels = ["novice", "beginner", "intermediate", "advanced", "expert"];
 
@@ -319,8 +320,8 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-[14px]">
               <Image
-                src={avatar}
-                className="rounded-[27px]"
+                src={getHighQualityImageUrl(user?.profilePictureURL) || avatar}
+                className="rounded-[27px] object-cover"
                 alt="user image"
                 height={42}
                 width={42}
@@ -407,8 +408,8 @@ export default function ProfilePage() {
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-start gap-[14px]">
             <Image
-              src={avatar}
-              className="rounded-[27px]"
+              src={getHighQualityImageUrl(user?.profilePictureURL) || avatar}
+              className="rounded-[27px] object-cover"
               alt="user image"
               height={95}
               width={95}

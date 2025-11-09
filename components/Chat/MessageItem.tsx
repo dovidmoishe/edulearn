@@ -7,11 +7,23 @@ import { Message } from '../../services/ai.service'
 import useUserStore from '../../core/userState'
 import logo from "@/../public/assets/images/edulearn.png"
 
+const cursorStyles = `
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+`;
+
 interface MessageItemProps {
   message: Message
+  isStreaming?: boolean
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ message, isStreaming = false }) => {
   const { theme } = useUserStore()
   const isUser = message.role === 'user'
 
@@ -72,7 +84,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   }
 
   return (
-    <div className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <>
+      <style jsx>{cursorStyles}</style>
+      <div className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
         <div className="">
           <Image src={logo} alt="AI" width={27} height={27} />
@@ -87,73 +101,111 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
         }
       `}>
         <div className="prose prose-invert prose-sm max-w-none">
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => <p className="text-[#E0E0E0] mb-2 last:mb-0 leading-relaxed">{children}</p>,
-              h1: ({ children }) => <h1 className="text-[#E0E0E0] text-lg font-bold mb-3">{children}</h1>,
-              h2: ({ children }) => <h2 className="text-[#E0E0E0] text-base font-bold mb-2">{children}</h2>,
-              h3: ({ children }) => <h3 className="text-[#E0E0E0] text-sm font-bold mb-2">{children}</h3>,
-              strong: ({ children }) => <strong className="text-[#E0E0E0] font-bold">{children}</strong>,
-              em: ({ children }) => <em className="text-[#E0E0E0] italic">{children}</em>,
-              ul: ({ children }) => <ul className="text-[#E0E0E0] list-disc list-inside mb-2 space-y-1">{children}</ul>,
-              ol: ({ children }) => <ol className="text-[#E0E0E0] list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-              li: ({ children }) => <li className="text-[#E0E0E0]">{children}</li>,
-              code: ({ children, className }) => {
-                const isInline = !className
-                if (isInline) {
-                  return (
-                    <code className="bg-[#2E3033] text-[#00FF80] px-1.5 py-0.5 rounded text-sm font-mono">
-                      {children}
-                    </code>
-                  )
-                }
+          {(() => {
+            const content = getMessageContent();
+            
+            if (!content || content.trim().length === 0) {
+              if (isStreaming && !isUser) {
                 return (
-                  <code className="block bg-[#2E3033] text-[#E0E0E0] p-3 rounded-lg text-sm font-mono overflow-x-auto whitespace-pre">
-                    {children}
-                  </code>
-                )
-              },
-              pre: ({ children }) => (
-                <pre className="bg-[#2E3033] text-[#E0E0E0] p-3 rounded-lg text-sm overflow-x-auto mb-2 font-mono">
-                  {children}
-                </pre>
-              ),
-              blockquote: ({ children }) => (
-                <blockquote className="border-l-4 border-[#00FF80] pl-4 text-[#E0E0E0] italic mb-2 bg-[#1A1A1A]/50 py-2 rounded-r">
-                  {children}
-                </blockquote>
-              ),
-              a: ({ children, href }) => (
-                <a 
-                  href={href} 
-                  className="text-[#00FF80] hover:text-[#00E070] underline underline-offset-2" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                  <span 
+                    className="text-[#E0E0E0] text-lg font-normal inline-block"
+                    style={{
+                      animation: 'blink 1s infinite'
+                    }}
+                  >
+                    ▊
+                  </span>
+                );
+              }
+              return (
+                <span className="text-[#E0E0E0] opacity-50">
+                  ...
+                </span>
+              );
+            }
+            
+            return (
+              <>
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <p className="text-[#E0E0E0] mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                    h1: ({ children }) => <h1 className="text-[#E0E0E0] text-lg font-bold mb-3">{children}</h1>,
+                    h2: ({ children }) => <h2 className="text-[#E0E0E0] text-base font-bold mb-2">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-[#E0E0E0] text-sm font-bold mb-2">{children}</h3>,
+                    strong: ({ children }) => <strong className="text-[#E0E0E0] font-bold">{children}</strong>,
+                    em: ({ children }) => <em className="text-[#E0E0E0] italic">{children}</em>,
+                    ul: ({ children }) => <ul className="text-[#E0E0E0] list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                    ol: ({ children }) => <ol className="text-[#E0E0E0] list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                    li: ({ children }) => <li className="text-[#E0E0E0]">{children}</li>,
+                    code: ({ children, className }) => {
+                      const isInline = !className
+                      if (isInline) {
+                        return (
+                          <code className="bg-[#2E3033] text-[#00FF80] px-1.5 py-0.5 rounded text-sm font-mono">
+                            {children}
+                          </code>
+                        )
+                      }
+                      return (
+                        <code className="block bg-[#2E3033] text-[#E0E0E0] p-3 rounded-lg text-sm font-mono overflow-x-auto whitespace-pre">
+                          {children}
+                        </code>
+                      )
+                    },
+                    pre: ({ children }) => (
+                      <pre className="bg-[#2E3033] text-[#E0E0E0] p-3 rounded-lg text-sm overflow-x-auto mb-2 font-mono">
+                        {children}
+                      </pre>
+                    ),
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-[#00FF80] pl-4 text-[#E0E0E0] italic mb-2 bg-[#1A1A1A]/50 py-2 rounded-r">
+                        {children}
+                      </blockquote>
+                    ),
+                    a: ({ children, href }) => (
+                      <a 
+                        href={href} 
+                        className="text-[#00FF80] hover:text-[#00E070] underline underline-offset-2" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
+                    table: ({ children }) => (
+                      <div className="overflow-x-auto mb-2">
+                        <table className="min-w-full border border-[#2E3033] rounded-lg">
+                          {children}
+                        </table>
+                      </div>
+                    ),
+                    th: ({ children }) => (
+                      <th className="border border-[#2E3033] px-3 py-2 bg-[#1A1A1A] text-[#E0E0E0] font-semibold text-left">
+                        {children}
+                      </th>
+                    ),
+                    td: ({ children }) => (
+                      <td className="border border-[#2E3033] px-3 py-2 text-[#E0E0E0]">
+                        {children}
+                      </td>
+                    ),
+                  }}
                 >
-                  {children}
-                </a>
-              ),
-              table: ({ children }) => (
-                <div className="overflow-x-auto mb-2">
-                  <table className="min-w-full border border-[#2E3033] rounded-lg">
-                    {children}
-                  </table>
-                </div>
-              ),
-              th: ({ children }) => (
-                <th className="border border-[#2E3033] px-3 py-2 bg-[#1A1A1A] text-[#E0E0E0] font-semibold text-left">
-                  {children}
-                </th>
-              ),
-              td: ({ children }) => (
-                <td className="border border-[#2E3033] px-3 py-2 text-[#E0E0E0]">
-                  {children}
-                </td>
-              ),
-            }}
-          >
-            {getMessageContent()}
-          </ReactMarkdown>
+                  {content}
+                </ReactMarkdown>
+                {isStreaming && !isUser && (
+                  <span 
+                    className="text-[#E0E0E0] text-lg font-normal inline-block ml-1"
+                    style={{
+                      animation: 'blink 1s infinite'
+                    }}
+                  >
+                    ▊
+                  </span>
+                )}
+              </>
+            );
+          })()}
         </div>
         
         {!isUser && (
@@ -185,6 +237,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
 
       
     </div>
+    </>
   )
 }
 

@@ -17,6 +17,7 @@ import StreakIcon from "@/../public/assets/icons/streak.png";
 import badge from "@/../public/assets/icons/medal05.png";
 import moon from "@/../public/assets/icons/dark/moon.png";
 import MenuIcon from "@/../public/assets/icons/LOGO1.png";
+import { getHighQualityImageUrl } from "@/../utils/imageHelper";
 
 const navItems = [
   {
@@ -86,7 +87,13 @@ export function DynamicNavbar() {
 
       <div className="block md:hidden">
         <div className="rounded-full bg-gray-200">
-          <Image src={avatar} alt="User" width={46} height={46} />
+          <Image 
+            src={getHighQualityImageUrl(user?.profilePictureURL) || avatar} 
+            alt="User" 
+            width={46} 
+            height={46}
+            className="rounded-full object-cover"
+          />
         </div>
       </div>
 
@@ -114,19 +121,16 @@ export function DynamicNavbar() {
           </div>
         </div>
 
-        {!user?.isPremium && (
-          <button
-            onClick={() => router.push("/pricing")}
-            className="flex items-center gap-2 px-4 py-2 bg-[#00FF80] text-black rounded-lg font-semibold text-sm hover:bg-[#00FF80]/90 transition-colors"
-          >
-            <Sparkles size={16} />
-            Upgrade
-          </button>
-        )}
 
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-gray-200">
-            <Image src={avatar} alt="User" width={48} height={48} />
+            <Image 
+              src={getHighQualityImageUrl(user?.profilePictureURL) || avatar} 
+              alt="User" 
+              width={48} 
+              height={48}
+              className="rounded-full object-cover"
+            />
           </div>
           <div className="flex flex-col gap-[4px]">
             <div className="text-[#E0E0E0] text-[14px] leading-[24px] font-[500] flex items-center gap-2">

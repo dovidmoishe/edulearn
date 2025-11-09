@@ -13,6 +13,16 @@ const httpClient = axios.create({
 
 httpClient.interceptors.request.use(
   async (config) => {
+    const unauthenticatedEndpoints = ['/auth/signup'];
+    const isUnauthenticatedEndpoint = unauthenticatedEndpoints.some(endpoint => 
+      config.url?.includes(endpoint)
+    );
+
+    if (isUnauthenticatedEndpoint) {
+      console.log('⚠️ Skipping authentication for:', config.url);
+      return config;
+    }
+
     const supabase = createClient();
     
     try {
