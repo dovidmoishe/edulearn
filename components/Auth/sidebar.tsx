@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
-import SafeImage from './SafeImage'
+import SafeImage from '../SafeImage'
 import edulearn from "@/../public/assets/icons/edulearn.png"
 
 const Sidebar = () => {
