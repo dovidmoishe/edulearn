@@ -155,7 +155,7 @@ export class AIService {
             
             abortController = new AbortController();
             
-            const response = await fetch(`${API_URL}/ai/message-stream/${streamId}`, {
+            const response = await fetch(`${API_URL}ai/message-stream/${streamId}`, {
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`,
                     'Accept': 'text/event-stream',
