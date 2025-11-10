@@ -385,7 +385,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
               {!reviewAnswers ? (
                 <>
                   <Image
-                    src={score >= 3 ? Trophy : TrophyRed}
+                    src={score >= questions.length / 2 ? Trophy : TrophyRed}
                     alt="Trophy"
                     width={120}
                     height={120}
@@ -398,7 +398,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
                     Quiz Result
                   </h3>
                   
-                  {score < 3 && (
+                  {score < questions.length / 2 && (
                     <p className={`text-sm mb-6 ${
                       theme === "dark" ? "text-[#E0E0E0]" : "text-[#2D3C52]"
                     }`}>
@@ -413,16 +413,16 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
                     <p className={`text-4xl font-bold ${
                       theme === "dark" ? "text-[#E0E0E0]" : "text-[#2D3C52]"
                     }`}>
-                      {score}/5
+                      {score}/{questions.length}
                     </p>
                   </div>
 
                   <p className={`text-sm mb-6 max-w-md mx-auto ${
                     theme === "dark" ? "text-[#B3B3B3]" : "text-[#61728C]"
                   }`}>
-                    {score >= 3
+                    {score >= questions.length / 2
                       ? "You're one step closer to your next badge. Keep the momentum going! Want to sharpen your skills even more? Try a follow-up quiz or review your answers."
-                      : `You got ${score} out of 5, which means there's room to grow. You still earned ${score} XP just for trying, and now you know where to improve. Review your answers and give it another go. You've got this!`}
+                      : `You got ${score} out of ${questions.length}, which means there's room to grow. You still earned ${score} XP just for trying, and now you know where to improve. Review your answers and give it another go. You've got this!`}
                   </p>
 
                   <div className="flex items-center justify-center gap-2 mb-6">
