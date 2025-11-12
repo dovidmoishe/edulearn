@@ -142,6 +142,36 @@ const Signup = () => {
           );
           return;
         }
+
+        try {
+          const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+          const response = await fetch(`${API_URL}/auth/check-availability`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: formData.email,
+              username: formData.username,
+            }),
+          });
+
+          const availabilityData = await response.json();
+          
+          if (!availabilityData.emailAvailable) {
+            console.error("This email is already registered. Please use a different email or try logging in.");
+            return;
+          }
+
+          if (!availabilityData.usernameAvailable) {
+            console.error("This username is already taken. Please choose a different username.");
+            return;
+          }
+        } catch (availabilityError) {
+          console.error("Failed to check availability. Please try again.");
+          console.error(availabilityError);
+          return;
+        }
       }
 
       const supabase = createClient();

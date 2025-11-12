@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Trophy from '@/../public/assets/icons/Trophy.png';
@@ -56,6 +56,8 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
   const chatService = new ChatService();
   const activityService = new ActivityService();
 
+  const handleFinishQuizRef = useRef<(() => Promise<void>) | undefined>(undefined);
+
   useEffect(() => {
     if (questions.length > 0 && !loading && !error && !timerStarted && !quizCompleted) {
       const delayTimer = setTimeout(() => {
@@ -73,7 +75,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
-          handleFinishQuiz();
+          handleFinishQuizRef.current?.();
           return 0;
         }
         return prevTime - 1;
@@ -195,7 +197,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
       question: question.question,
       selectedAnswer: questionAnswers[index] || '',
       correctAnswer: question.correctAnswer,
-    })).filter(answer => answer.selectedAnswer);
+    }));
 
     try {
       const result = await activityService.submitQuiz({
@@ -222,6 +224,10 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    handleFinishQuizRef.current = handleFinishQuiz;
+  }, [handleFinishQuiz]);
 
   const calculateProgress = () => {
     if (!questions.length) return 0;
@@ -458,7 +464,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
                           <p className={`text-sm ${
                             answer.isCorrect ? "text-[#00FF80]" : "text-red-500"
                           }`}>
-                            Your answer: {answer.selectedAnswer}
+                            Your answer: {answer.selectedAnswer ? answer.selectedAnswer : <span className="italic opacity-60">Not answered</span>}
                           </p>
                           {!answer.isCorrect && (
                             <p className="text-sm text-[#00FF80]">
