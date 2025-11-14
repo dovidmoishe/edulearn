@@ -115,8 +115,10 @@ export default function ProfilePage() {
   const handleViewRoadmap = async (roadmapId: string) => {
     setIsLoadingRoadmapDetails(true);
     setRoadmapModalVisible(true);
+    setSelectedRoadmap(null);
     try {
       const roadmapData = await roadmapService.getRoadmapById(roadmapId);
+      console.log('Fetched roadmap data:', roadmapData);
       setSelectedRoadmap(roadmapData);
     } catch (error) {
       console.error("Failed to fetch roadmap details:", error);
