@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from 'next/font/local'
 import "./globals.css";
 import UserInitializer from "../components/UserInitializer";
+import { Toaster } from "@/components/ui/sonner"
 import HMRErrorHandler from "../components/HMRErrorHandler";
 
 const satoshi = localFont({src: '../../public/assets/fonts/Satoshi-Regular.otf', variable: '--font-satoshi'});
@@ -46,6 +47,7 @@ export default function RootLayout({
       >
         <HMRErrorHandler />
         <UserInitializer />
+        <Toaster />
         {children}
       </body>
     </html>

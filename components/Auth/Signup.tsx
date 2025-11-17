@@ -8,6 +8,7 @@ import mailDark from "@/../public/assets/icons/dark/mail.png";
 import { createClient } from "../../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 
 interface FormData {
@@ -145,7 +146,7 @@ const Signup = () => {
 
         try {
           const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-          const response = await fetch(`${API_URL}/auth/check-availability`, {
+          const response = await fetch(`${API_URL}auth/check-availability`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -160,16 +161,25 @@ const Signup = () => {
           
           if (!availabilityData.emailAvailable) {
             console.error("This email is already registered. Please use a different email or try logging in.");
+            toast.error("This email is already registered. Please use a different email or try logging in.", {
+              description: "This email is already registered. Please use a different email or try logging in.",
+            });
             return;
           }
 
           if (!availabilityData.usernameAvailable) {
             console.error("This username is already taken. Please choose a different username.");
+            toast.error("This username is already taken. Please choose a different username.", {
+              description: "This username is already taken. Please choose a different username.",
+            });
             return;
           }
         } catch (availabilityError) {
           console.error("Failed to check availability. Please try again.");
           console.error(availabilityError);
+          toast.error("Failed to check availability. Please try again.", {
+            description: "Failed to check availability. Please try again.",
+          });
           return;
         }
       }
@@ -181,6 +191,9 @@ const Signup = () => {
 
       if (error) {
         console.error(isLogin ? "Login failed:" : "Sign up failed:", error.message);
+        toast.error(isLogin ? "Login failed:" : "Sign up failed:", {
+          description: error.message,
+        });
         return;
       }
 

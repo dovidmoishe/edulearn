@@ -42,61 +42,9 @@ interface QuizHistoryProps {
   onSearch?: (searchTerm: string) => void;
 }
 
-const mockQuizHistory: QuizHistoryItem[] = [
-  {
-    id: "1",
-    sn: 1,
-    quizName: "Osmosis",
-    dateTaken: "23 June 2025",
-    score: "7/10",
-    scorePercentage: 70,
-    xpEarned: 70,
-    status: "Passed"
-  },
-  {
-    id: "2", 
-    sn: 2,
-    quizName: "Osmosis",
-    dateTaken: "23 June 2025",
-    score: "2/10",
-    scorePercentage: 20,
-    xpEarned: 2,
-    status: "Failed"
-  },
-  {
-    id: "3",
-    sn: 3,
-    quizName: "Osmosis", 
-    dateTaken: "23 June 2025",
-    score: "7/10",
-    scorePercentage: 70,
-    xpEarned: 70,
-    status: "Passed"
-  },
-  {
-    id: "4",
-    sn: 4,
-    quizName: "Osmosis",
-    dateTaken: "23 June 2025", 
-    score: "7/10",
-    scorePercentage: 70,
-    xpEarned: 70,
-    status: "Passed"
-  },
-  {
-    id: "5",
-    sn: 5,
-    quizName: "Osmosis",
-    dateTaken: "23 June 2025",
-    score: "7/10", 
-    scorePercentage: 70,
-    xpEarned: 70,
-    status: "Passed"
-  }
-];
 
 export default function QuizHistory({ 
-  data = mockQuizHistory, 
+  data, 
   totalItems = 25, 
   loading = false,
   onPageChange,
@@ -118,9 +66,9 @@ export default function QuizHistory({
     return activities
       .filter(activity => activity.type === 'quiz')
       .map((activity, index) => {
-        const scorePercentage = Math.round((activity.xpEarned / 5) * 100);
-        const correctAnswers = Math.round((activity.xpEarned / 5) * 5); 
-        const score = `${correctAnswers}/5`;
+        const scorePercentage = Math.round((activity.xpEarned / 10) * 100);
+        const correctAnswers = Math.round((activity.xpEarned / 10) * 10); 
+        const score = `${correctAnswers}/10`;
         
         const status = scorePercentage >= 60 ? "Passed" : "Failed";
         
@@ -146,15 +94,15 @@ export default function QuizHistory({
   const quizHistoryData = activities.length > 0 ? transformActivitiesToQuizHistory(activities) : data;
   const actualLoading = isLoading || loading;
 
-  const filteredData = quizHistoryData.filter(item =>
+  const filteredData = quizHistoryData?.filter(item =>
     item.quizName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const actualTotalItems = quizHistoryData.length;
+  const actualTotalItems = quizHistoryData?.length || 0;
   const totalPages = Math.ceil(actualTotalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = filteredData.slice(startIndex, endIndex);
+  const currentData = filteredData?.slice(startIndex, endIndex) || [];
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -222,7 +170,6 @@ export default function QuizHistory({
           </div>
         </div>
 
-        {/* Table Container */}
         <div className={`rounded-2xl border ${
           theme === "dark" 
             ? "bg-[#131313] border-[#2E3033]" 

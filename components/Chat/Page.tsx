@@ -17,6 +17,7 @@ import { ChatService } from "../../services/chat.service";
 import useUserStore from "../../core/userState";
 import ChatDrawer from "./ChatDrawer";
 import MessageItem from "./MessageItem";
+import QuizModal from "../Quiz/QuizModal";
 
 const scrollbarStyles = `
   .custom-scrollbar::-webkit-scrollbar {
@@ -86,6 +87,7 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
   const [waitingForStream, setWaitingForStream] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -266,15 +268,9 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
     }
   };
 
-  const handleStartQuiz = async () => {
+  const handleStartQuiz = () => {
     if (!activeChatId || !user?.id) return;
-
-    try {
-      await aiService.generateQuiz({ chatId: activeChatId, userId: user.id });
-      router.push("/quiz");
-    } catch (error) {
-      console.error("Error starting quiz:", error);
-    }
+    setIsQuizModalOpen(true);
   };
 
   useEffect(() => {
@@ -576,6 +572,12 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
         </div>
       </div>
     </div>
+
+    <QuizModal
+      isOpen={isQuizModalOpen}
+      onClose={() => setIsQuizModalOpen(false)}
+      chatId={activeChatId}
+    />
     </>
   );
 };
