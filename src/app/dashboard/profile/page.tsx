@@ -31,6 +31,8 @@ import { RoadmapService } from "@/../services/roadmap.service";
 import { Roadmap, RoadmapStep, RoadmapWithSteps } from "@/../interfaces/Roadmap";
 import { useRouter } from "next/navigation";
 import { getHighQualityImageUrl } from "@/../utils/imageHelper";
+import { Trash2 } from "lucide-react";
+import { createClient } from "../../../../utils/supabase/client";
 
 const levels = ["novice", "beginner", "intermediate", "advanced", "expert"];
 
@@ -312,6 +314,17 @@ export default function ProfilePage() {
       console.error("Error connecting Twitter:", error);
       alert("Failed to connect to X. Please try again.");
       setIsConnectingTwitter(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const supabase = createClient();
+      await userService.deleteUser(user?.id as unknown as string, (await supabase.auth.getUser()).data.user?.id as string);
+      router.push("/");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("Failed to delete account. Please try again.");
     }
   };
 
@@ -723,6 +736,14 @@ export default function ProfilePage() {
                 <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">Export Secret Key</p>
               </button>
 
+              <button
+                onClick={handleDeleteAccount}
+                className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-opacity-10 transition-colors cursor-pointer"
+              >
+                <Trash2 className="text-[#00FF80]" size={20} />
+                <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">Delete Account</p>
+              </button>
+
               <button 
                 onClick={handleConnectTwitter}
                 disabled={isConnectingTwitter || user?.isVerified}
@@ -738,6 +759,8 @@ export default function ProfilePage() {
                 </p>
               </button>
             </div>
+
+
       </div>
 
       <Dialog open={isBuyModalVisible} onOpenChange={setBuyModalVisible}>

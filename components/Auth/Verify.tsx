@@ -14,11 +14,10 @@ import useUserStore from '../../core/userState';
 import { UserService } from '../../services/user.service';
 import { Loader2 } from "lucide-react";
 import { CustomAlert } from "../CustomAlert";
-import { generateUUID } from '@/lib/utils';
  
 const Verify = () => {
   const [otp, setOtp] = useState("");
-  const [timeLeft, setTimeLeft] = useState(30 * 60);
+  const [timeLeft, setTimeLeft] = useState(120);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [canResend, setCanResend] = useState(false);
@@ -46,10 +45,7 @@ const Verify = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "example@gmail.com";
-  const isSignUp = searchParams.get("isSignUp") === "true";
-  const name = searchParams.get("name") || "";
-  const referralCode = searchParams.get("referralCode") || "";
-  const username = searchParams.get("username") || "";
+  const isLogin = searchParams.get("isLogin") !== "false";
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -81,7 +77,6 @@ const Verify = () => {
       });
 
       if (error) {
-        console.error("Resend OTP failed:", error.message);
         return;
       }
 
@@ -90,7 +85,6 @@ const Verify = () => {
       showAlert("success", "New verification code sent", "A new verification code has been sent to your email");
       
     } catch (error) {
-      console.error("Resend OTP error:", error);
       showAlert("destructive", "Resend failed", "Unable to resend code. Please try again later.");
     } finally {
       setResendLoading(false);
@@ -117,74 +111,38 @@ const Verify = () => {
       });
 
       if (error) {
-        console.error("OTP verification failed:", error.message);
         showAlert("destructive", "Verification failed", "Please check the code and try again.");
         return;
       }
 
-      if (isSignUp) {
-        setLoadingText("Creating your account...");
-        
-        try {
-          const userService = new UserService();
-          const userId = generateUUID();
-          console.log("📤 Calling createUser API with data:", {
-            id: userId,
-            name,
-            email,
-            username,
-            referredBy: referralCode
-          });
-          
-          const newUser = await userService.createUser({
-            id: userId,
-            name,
-            email,
-            referredBy: referralCode,
-            username
-          });
-          
-          console.log("✅ User created successfully:", newUser);
-
-          if (!newUser) {
-            console.error("User creation failed");
-            showAlert("destructive", "Account creation failed", "Failed to create account. Please try again.");
-            return;
-          }
-
-          setUser(newUser);
-          showAlert("success", "Welcome to EduLearn!", "Account created successfully! Setting up your profile...");
-          setTimeout(() => {
-            router.push(`/auth/learning?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}`);
-          }, 1500);
-          
-        } catch (createError: unknown) {
-          console.error("User creation failed:", createError);
-          const error = createError as { response?: { data?: { message?: string } }; message?: string };
-          console.error("Error response:", error?.response?.data);
-          console.error("Error message:", error?.message);
-          
-          const errorMessage = error?.response?.data?.message || error?.message || "Unknown error";
-          showAlert("destructive", "Account creation failed", `Error: ${errorMessage}. Please try again.`);
-          return;
-        }
-      } else {
-        setLoadingText("Loading your profile...");
-        
+      setLoadingText("Loading your profile...");
+      
+      try {
         const userService = new UserService();
         const userData = await userService.getUser(email);
+        
         if (!userData) {
-          console.error("User not found");
-          showAlert("destructive", "User not found", "Unable to find your account. Please try signing up.");
+          showAlert("destructive", "User not found", "Unable to find your account. Please contact support.");
           return;
         }
 
         setUser(userData);
-        router.push("/dashboard");
+        
+        if (!isLogin) {
+          showAlert("success", "Welcome to EduLearn!", "Account verified successfully!");
+          setTimeout(() => {
+            router.push(`/auth/learning?email=${encodeURIComponent(email)}`);
+          }, 1500);
+        } else {
+          router.push("/dashboard");
+        }
+      } catch (fetchError: unknown) {
+        const error = fetchError as { response?: { data?: { message?: string } }; message?: string };
+        const errorMessage = error?.response?.data?.message || error?.message || "Unknown error";
+        showAlert("destructive", "Login failed", `Error: ${errorMessage}`);
       }
       
     } catch (error) {
-      console.error("OTP verification failed:", error);
       showAlert("destructive", "Verification failed", "Please try again or contact support if the issue persists.");
     } finally {
       setLoading(false);

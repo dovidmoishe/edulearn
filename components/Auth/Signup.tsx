@@ -9,6 +9,8 @@ import { createClient } from "../../utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { UserService } from "../../services/user.service";
+import { generateUUID } from '@/lib/utils';
 
 
 interface FormData {
@@ -115,22 +117,15 @@ const Signup = () => {
 
     try {
       if (!validateInput("email", formData.email)) {
-        console.error("Please enter a valid email address");
         return;
       }
 
       if (!isLogin) {
         if (!validateInput("name", formData.name)) {
-          console.error(
-            "Please enter a valid name (2-50 characters, letters only)"
-          );
           return;
         }
 
         if (!validateInput("username", formData.username)) {
-          console.error(
-            "Username must be 3-30 characters, alphanumeric and underscores only"
-          );
           return;
         }
 
@@ -138,9 +133,6 @@ const Signup = () => {
           formData.referralCode &&
           !validateInput("referralCode", formData.referralCode)
         ) {
-          console.error(
-            "Referral code must be 3-20 characters, alphanumeric only"
-          );
           return;
         }
 
@@ -168,17 +160,46 @@ const Signup = () => {
           }
 
           if (!availabilityData.usernameAvailable) {
-            console.error("This username is already taken. Please choose a different username.");
             toast.error("This username is already taken. Please choose a different username.", {
               description: "This username is already taken. Please choose a different username.",
             });
             return;
           }
         } catch (availabilityError) {
-          console.error("Failed to check availability. Please try again.");
-          console.error(availabilityError);
           toast.error("Failed to check availability. Please try again.", {
             description: "Failed to check availability. Please try again.",
+          });
+          return;
+        }
+
+        toast.info("Creating your account...", {
+          description: "Please wait while we set up your account.",
+        });
+
+        try {
+          const userService = new UserService();
+          const userId = generateUUID();
+          
+          const newUser = await userService.createUser({
+            id: userId,
+            name: formData.name,
+            email: formData.email,
+            referredBy: formData.referralCode,
+            username: formData.username
+          });
+
+          if (!newUser) {
+            toast.error("Sign up failed", {
+              description: "Failed to create account. Please try again.",
+            });
+            return;
+          }
+        
+        } catch (dbError: unknown) {
+          const error = dbError as { response?: { data?: { message?: string } }; message?: string };
+          const errorMessage = error?.response?.data?.message || error?.message || "Unknown error";
+          toast.error("Sign up failed", {
+            description: `Error: ${errorMessage}`,
           });
           return;
         }
@@ -190,29 +211,29 @@ const Signup = () => {
       });
 
       if (error) {
-        console.error(isLogin ? "Login failed:" : "Sign up failed:", error.message);
         toast.error(isLogin ? "Login failed:" : "Sign up failed:", {
           description: error.message,
         });
+        
+        if (!isLogin) {
+          toast.error("Partial account created", {
+            description: "Database user created but email verification failed. Please contact support.",
+          });
+        }
         return;
       }
 
-      console.log(isLogin ? "Login result:" : "Sign up result:", data);
       
       const params = new URLSearchParams({
         email: formData.email,
       });
 
       if (!isLogin) {
-        params.append('isSignUp', 'true');
-        params.append('name', formData.name);
-        params.append('username', formData.username);
-        if (formData.referralCode) params.append('referralCode', formData.referralCode);
+        params.append('isLogin', 'false');
       }
 
       router.push(`/auth/verify?${params.toString()}`);
     } catch (error) {
-      console.error(isLogin ? "Login error:" : "Sign up error:", error);
     } finally {
       setLoading(false);
     }
