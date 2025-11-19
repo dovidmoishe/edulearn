@@ -65,6 +65,7 @@ export default function ProfilePage() {
   const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [isExportingWallet, setIsExportingWallet] = useState(false);
   const [isConnectingTwitter, setIsConnectingTwitter] = useState(false);
+  const [solBuyAmount, setSolBuyAmount] = useState(0);
 
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
   const [isLoadingRoadmaps, setIsLoadingRoadmaps] = useState(false);
@@ -78,6 +79,8 @@ export default function ProfilePage() {
   const twitterService = new TwitterService();
   const roadmapService = new RoadmapService();
   const router = useRouter();
+
+  const buttonShouldBeDisabled = isBuying || buyError !== null;
 
   const getActiveDays = (streak: number) => {
     const todayIndex = new Date().getDay();
@@ -498,6 +501,13 @@ export default function ProfilePage() {
                 <p className="text-[#61728C] text-[12px] font-[500] leading-[16px]">EDLN</p>
               </div>
             </div>
+            
+            <button
+              onClick={() => router.push('/dashboard/wallet')}
+              className="text-[#000] text-[12px] font-[500] underline decoration-black underline-offset-2 hover:opacity-80 transition-opacity text-center cursor-pointer"
+            >
+              manage cash
+            </button>
           </div>
         </div>
       </div>  
@@ -777,7 +787,14 @@ export default function ProfilePage() {
                 type="number"
                 placeholder="Amount in SOL"
                 value={buyAmount}
-                onChange={(e) => setBuyAmount(e.target.value)}
+                onChange={(e) => {
+                  setBuyAmount(e.target.value)
+                  if(parseFloat(e.target.value) > (walletBalance?.sol || 0)) {
+                    setBuyError("Insufficient SOL balance");
+                  } else {
+                    setBuyError(null);
+                  }
+                }}
                 disabled={isBuying}
                 className="bg-[#F9FBFC] dark:bg-[#2E3033] border border-[#EDF3FC] dark:border-[#2E3033] rounded-[12px] p-[12px] w-full text-[16px] font-[400] text-[#2D3C52] dark:text-[#E0E0E0] placeholder:text-[#61728C] dark:placeholder:text-[#B3B3B3] focus:outline-none focus:ring-2 focus:ring-[#00FF80] focus:border-transparent disabled:opacity-50"
               />
@@ -801,7 +818,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={handleBuyEDLN}
-                disabled={isBuying}
+                disabled={buttonShouldBeDisabled}
                 className="bg-[#000000] dark:bg-[#00FF80] rounded-[16px] py-[12px] px-[24px] flex-1 text-[#00FF80] dark:text-[#000000] text-[16px] font-[700] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-50 flex items-center justify-center"
               >
                 {isBuying ? (

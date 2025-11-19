@@ -192,15 +192,24 @@ const Signup = () => {
             toast.error("Sign up failed", {
               description: "Failed to create account. Please try again.",
             });
+            setLoading(false);
             return;
           }
         
         } catch (dbError: unknown) {
           const error = dbError as { response?: { data?: { message?: string } }; message?: string };
           const errorMessage = error?.response?.data?.message || error?.message || "Unknown error";
-          toast.error("Sign up failed", {
-            description: `Error: ${errorMessage}`,
-          });
+          
+          if (errorMessage.toLowerCase().includes('already exists') || errorMessage.toLowerCase().includes('duplicate')) {
+            toast.error("Account already exists", {
+              description: "This email is already registered. Please try logging in instead.",
+            });
+          } else {
+            toast.error("Sign up failed", {
+              description: `Error: ${errorMessage}`,
+            });
+          }
+          setLoading(false);
           return;
         }
       }

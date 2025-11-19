@@ -13,8 +13,6 @@ const httpClient = axios.create({
 
 httpClient.interceptors.request.use(
   async (config) => {
-    console.log('🌐 Making API request:', config.method?.toUpperCase(), config.url);
-    console.log('📦 Request payload:', config.data);
     
     const unauthenticatedEndpoints = ['/auth/signup'];
     const isUnauthenticatedEndpoint = unauthenticatedEndpoints.some(endpoint => 
@@ -33,9 +31,7 @@ httpClient.interceptors.request.use(
         
         if (session?.access_token) {
           config.headers.Authorization = `Bearer ${session.access_token}`;
-          console.log('🔑 Added auth token to request');
         } else {
-          console.log('⚠️ No session token available');
         }
     } catch (error) {
       console.error('❌ Error in request interceptor:', error);
