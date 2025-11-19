@@ -24,9 +24,10 @@ export class RewardsService {
     try {
       const response = await httpClient.post('/rewards/claim', { userId, rewardId });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error claiming reward ${rewardId} for user ${userId}:`, error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to claim reward';
+      throw new Error(errorMessage);
     }
   }
 
@@ -34,9 +35,10 @@ export class RewardsService {
     try {
       const response = await httpClient.get('/rewards');
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching rewards:', error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch rewards';
+      throw new Error(errorMessage);
     }
   }
 
@@ -44,18 +46,20 @@ export class RewardsService {
     try {
       const response = await httpClient.get(`/rewards/${id}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching reward with ID ${id}:`, error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch reward';
+      throw new Error(errorMessage);
     }
   }
   async getUserRewards(userId: string): Promise<UserRewardWithDetails[]> {
     try {
       const response = await httpClient.get(`/rewards/user/${userId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching rewards for user ${userId}:`, error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch user rewards';
+      throw new Error(errorMessage);
     }
   }
 
@@ -63,9 +67,10 @@ export class RewardsService {
     try {
       const response = await httpClient.get(`/rewards/user/${userId}/certificate-count`);
       return response.data.count;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching certificate count for user ${userId}:`, error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch certificate count';
+      throw new Error(errorMessage);
     }
   }
 
@@ -73,9 +78,10 @@ export class RewardsService {
     try {
       const response = await httpClient.get(`/rewards/recipients/${rewardId}`);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching users with reward ${rewardId}:`, error);
-      throw error;
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch reward recipients';
+      throw new Error(errorMessage);
     }
   }
 }

@@ -67,6 +67,25 @@ interface OnrampOrderResponse {
   order: any;
 }
 
+interface PendingWebhookEventsResponse {
+  events: Array<{
+    id: string;
+    address: string;
+    signature?: string;
+    mint: string;
+    currency: string;
+    amount: number;
+    usdcAmount: number;
+    fiatAmount: number;
+    sender: string;
+    receipiant: string;
+    rate: number;
+    status: string;
+    transactionType: string;
+  }>;
+  hasUpdates: boolean;
+}
+
 interface PriceResponse {
   SOL: number;
   EDLN: number;
@@ -229,5 +248,23 @@ export class WalletService {
   getShortenedAddress(address: string): string {
     if (!address || address.length < 10) return address;
     return `${address.substring(0, 4)}...${address.substring(address.length - 4)}`;
+  }
+
+  async getPendingWebhookEvents(address: string): Promise<PendingWebhookEventsResponse> {
+    try {
+      const response = await httpClient.get(`/wallet/onramp-webhook/pending/${address}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error fetching pending webhook events:', error);
+      return { events: [], hasUpdates: false };
+    }
+  }
+
+  async clearWebhookEvent(address: string, eventId: string): Promise<void> {
+    try {
+      await httpClient.post(`/wallet/onramp-webhook/clear/${address}`, { eventId });
+    } catch (error: any) {
+      console.error('Error clearing webhook event:', error);
+    }
   }
 }

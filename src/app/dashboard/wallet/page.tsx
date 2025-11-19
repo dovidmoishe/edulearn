@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { WalletService, DeviceInfo } from '../../../../services/wallet.service'
 import useUserStore from '../../../../core/userState'
 import { getHighQualityImageUrl } from '../../../../utils/imageHelper'
@@ -40,13 +40,20 @@ function Wallet() {
     const [cashAmount, setCashAmount] = useState("")
     const [onrampError, setOnrampError] = useState<string | null>(null)
     const [isProcessingOnramp, setIsProcessingOnramp] = useState(false)
-    const [verifiedToken, setVerifiedToken] = useState<any>(null)
+    const [verifiedToken, setVerifiedToken] = useState<string | null>(null)
     const [paymentDetails, setPaymentDetails] = useState<{
         id: string
         accountNumber: string
         accountName: string
         fiatAmount: number
         bank: string
+    } | null>(null)
+    const [onrampSuccessModalVisible, setOnrampSuccessModalVisible] = useState(false)
+    const completedEventIdsRef = useRef<Set<string>>(new Set())
+    const [completedTransactionDetails, setCompletedTransactionDetails] = useState<{
+        amount: number
+        currency: string
+        signature?: string
     } | null>(null)
 
     const { user } = useUserStore()
@@ -93,7 +100,12 @@ function Wallet() {
 
                 setSolBalance(balance.sol)
                 setEdlnBalance(balance.tokenAccount || 0)
-                setPrices(priceData)
+                setPrices(prevPrices => {
+                    if (prevPrices.SOL === priceData.SOL && prevPrices.EDLN === priceData.EDLN) {
+                        return prevPrices
+                    }
+                    return priceData
+                })
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch wallet data')
                 console.error('Error fetching wallet data:', err)
@@ -103,7 +115,88 @@ function Wallet() {
         }
 
         fillUpBalances()
-    }, [user])
+    }, [user?.address])
+
+    useEffect(() => {
+        if (!user?.address) return
+
+        const address = user.address
+        let isMounted = true
+
+        const checkWebhookUpdates = async () => {
+            if (!address || !isMounted) return
+            
+            try {
+                const result = await walletService.getPendingWebhookEvents(address)
+                
+                if (!isMounted) return
+                
+                if (result.hasUpdates && result.events.length > 0) {
+                    const completedEvents = result.events.filter(
+                        event => (event.status === 'COMPLETED' || event.status === 'PAID') && 
+                                 !completedEventIdsRef.current.has(event.id)
+                    )
+                    
+                    if (completedEvents.length > 0 && isMounted) {
+                        console.log('Webhook updates detected, refreshing balance...')
+                        
+                        const [balance, priceData] = await Promise.all([
+                            walletService.getBalance(address),
+                            walletService.getPrices()
+                        ])
+
+                        if (!isMounted) return
+
+                        setSolBalance(prev => {
+                            const newBalance = balance.sol
+                            return Math.abs(prev - newBalance) > 0.0001 ? newBalance : prev
+                        })
+                        setEdlnBalance(prev => {
+                            const newBalance = balance.tokenAccount || 0
+                            return Math.abs(prev - newBalance) > 0.0001 ? newBalance : prev
+                        })
+                        setPrices(prevPrices => {
+                            if (prevPrices.SOL === priceData.SOL && prevPrices.EDLN === priceData.EDLN) {
+                                return prevPrices
+                            }
+                            return priceData
+                        })
+                        
+                        const firstCompletedEvent = completedEvents[0]
+                        
+                        setCompletedTransactionDetails({
+                            amount: firstCompletedEvent.amount,
+                            currency: firstCompletedEvent.currency,
+                            signature: firstCompletedEvent.signature
+                        })
+                        
+                        completedEvents.forEach(event => {
+                            completedEventIdsRef.current.add(event.id)
+                        })
+                        
+                        setOnrampSuccessModalVisible(true)
+                        
+                        for (const event of completedEvents) {
+                            await walletService.clearWebhookEvent(address, event.id)
+                        }
+                    }
+                }
+            } catch (err) {
+                if (isMounted) {
+                    console.error('Error checking webhook updates:', err)
+                }
+            }
+        }
+
+        const interval = setInterval(checkWebhookUpdates, 5000)
+        
+        checkWebhookUpdates()
+
+        return () => {
+            isMounted = false
+            clearInterval(interval)
+        }
+    }, [user?.address])
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -183,7 +276,7 @@ function Wallet() {
                 const deviceInfo = getDeviceInfo()
                 const verifiedResponse = await walletService.verifyOnramp(user?.email || "", otp, deviceInfo)
                 
-                tokenToUse = verifiedResponse.verifiedResponse
+                tokenToUse = verifiedResponse.verifiedResponse as string
                 setVerifiedToken(tokenToUse)
                 localStorage.setItem('onramp_verified_token', JSON.stringify(tokenToUse))
             }
@@ -876,6 +969,53 @@ function Wallet() {
                         <button
                             onClick={() => setBuySuccessModalVisible(false)}
                             className="bg-transparent text-[#00FF80] px-[24px] py-[12px] rounded-[16px] font-[500] text-[16px] border border-[#00FF80] hover:bg-[#00FF80] hover:text-[#000] dark:hover:text-[#000] transition-colors"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={onrampSuccessModalVisible} onOpenChange={setOnrampSuccessModalVisible}>
+                <DialogContent className="bg-[#FFFFFF] dark:bg-[#131313] border-[#EDF3FC] dark:border-[#2E3033] max-w-md flex items-center flex-col">
+                    <DialogHeader className="text-center">
+                        <div className="flex justify-center mb-4">
+                            <div className="w-[60px] h-[60px] rounded-full bg-[#F0FFF9] dark:bg-[rgba(0,255,128,0.1)] border border-[#00FF80] flex items-center justify-center">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#00FF80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <DialogTitle className="text-[#2D3C52] dark:text-[#E0E0E0] text-[20px] font-[700] mb-2 text-center">
+                            Transaction Completed!
+                        </DialogTitle>
+                        <DialogDescription className="text-[#61728C] dark:text-[#B3B3B3] text-[16px] font-[400] leading-[24px] text-center mb-6">
+                            {completedTransactionDetails && (
+                                <>
+                                    Your purchase of {completedTransactionDetails.amount.toLocaleString()} {completedTransactionDetails.currency} has been completed successfully. Your EDLN tokens have been credited to your wallet.
+                                </>
+                            )}
+                            {!completedTransactionDetails && (
+                                <>
+                                    Your on-ramp transaction has been completed successfully. Your EDLN tokens have been credited to your wallet.
+                                </>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="flex flex-col gap-[16px] w-full">
+                        {completedTransactionDetails?.signature && (
+                            <button
+                                onClick={() => window.open(`https://solscan.io/tx/${completedTransactionDetails.signature}`, "_blank")}
+                                className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[24px] py-[12px] rounded-[16px] font-[700] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors"
+                            >
+                                View Transaction
+                            </button>
+                        )}
+                        
+                        <button
+                            onClick={() => setOnrampSuccessModalVisible(false)}
+                            className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[24px] py-[12px] rounded-[16px] font-[700] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors"
                         >
                             Close
                         </button>
