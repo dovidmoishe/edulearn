@@ -199,7 +199,15 @@
     background: #00FF80;
   }
 
-  /* Backdrop blur for modal */
+  .scrollbar-hide {
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  
+  }
+
   [data-state="open"] > [data-radix-dialog-overlay] {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);

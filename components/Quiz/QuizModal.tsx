@@ -35,7 +35,7 @@ interface QuizModalProps {
 const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(80);
+  const [timeLeft, setTimeLeft] = useState(90);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [chatTitle, setChatTitle] = useState("");
@@ -62,7 +62,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, chatId }) => {
     if (questions.length > 0 && !loading && !error && !timerStarted && !quizCompleted) {
       const delayTimer = setTimeout(() => {
         setTimerStarted(true);
-      }, 2000);
+      }, 1000);
 
       return () => clearTimeout(delayTimer);
     }

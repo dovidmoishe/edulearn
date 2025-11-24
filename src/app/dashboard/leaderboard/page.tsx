@@ -101,7 +101,7 @@ export default function LeaderboardPage() {
                       className="rounded-full w-full h-full object-cover" 
                     />
                   </div>
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px] overflow-hidden text-ellipsis whitespace-nowrap w-full px-1">
                     {users[1].name}
                   </p>
                   <p className="text-[#E0E0E0] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">
@@ -129,7 +129,7 @@ export default function LeaderboardPage() {
                       className="rounded-full w-full h-full object-cover" 
                     />
                   </div>
-                  <p className="text-[#000] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
+                  <p className="text-[#000] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px] overflow-hidden text-ellipsis whitespace-nowrap w-full px-1">
                     {users[0].name}
                   </p>
                   <p className="text-[#000] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">
@@ -157,7 +157,7 @@ export default function LeaderboardPage() {
                       className="rounded-full w-full h-full object-cover" 
                     />
                   </div>
-                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px]">
+                  <p className="text-[#E0E0E0] text-center font-[500] leading-[16px] md:leading-[26px] text-[13px] md:text-[17px] mt-[3px] overflow-hidden text-ellipsis whitespace-nowrap w-full px-1">
                     {users[2].name}
                   </p>
                   <p className="text-[#E0E0E0] text-center font-[500] leading-[12px] md:leading-[26px] text-[10px] md:text-[13px] mt-[1px]">

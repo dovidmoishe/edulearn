@@ -55,7 +55,6 @@ const Signup = () => {
           .toLowerCase()
           .replace(/[^a-z0-9_]/g, "")
           .substring(0, 30);
-        sanitized = sanitized.replace(/^_+|_+$/g, "");
         break;
 
       case "referralCode":

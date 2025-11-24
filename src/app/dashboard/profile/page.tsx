@@ -49,6 +49,8 @@ export default function ProfilePage() {
   const [transactionLink, setTransactionLink] = useState<string>("");
   const [isBuying, setIsBuying] = useState(false);
   const [isBurning, setIsBurning] = useState(false);
+  const [burningAmount, setBurningAmount] = useState<number | null>(null);
+  const [lastBurnedAmount, setLastBurnedAmount] = useState<number>(0);
   const [isStaking, setIsStaking] = useState(false);
   const [burnSuccessModalVisible, setBurnSuccessModalVisible] = useState(false);
 
@@ -81,6 +83,19 @@ export default function ProfilePage() {
   const router = useRouter();
 
   const buttonShouldBeDisabled = isBuying || buyError !== null;
+
+  const getCreditsFromBurnAmount = (amount: number): number => {
+    switch(amount) {
+      case 1000:
+        return 3;
+      case 5000:
+        return 10;
+      case 10000:
+        return 20;
+      default:
+        return 0;
+    }
+  };
 
   const getActiveDays = (streak: number) => {
     const todayIndex = new Date().getDay();
@@ -201,13 +216,14 @@ export default function ProfilePage() {
     }
   };
 
-  const handleBurnTokens = async () => {
+  const handleBurnTokens = async (burnAmount: number) => {
     try {
       setIsBurning(true);
+      setBurningAmount(burnAmount);
       try {
-        const response = await walletService.burnEDLN(user?.id || "", 1000);
+          const response = await walletService.burnEDLN(user?.id || "", burnAmount);
         if(response.signature) {
-          await userService.incrementCredits(user?.id as unknown as string, 3)
+          setLastBurnedAmount(burnAmount);
           setBurnSuccessModalVisible(true);
         } else {
           alert("Unable to burn EDLN tokens. Buy more or Please try again later.");
@@ -220,9 +236,11 @@ export default function ProfilePage() {
 
       await fetchWalletBalance();
       setIsBurning(false);
+      setBurningAmount(null);
     } catch (error: unknown) {
       console.error("Error burning tokens:", error);
       setIsBurning(false);
+      setBurningAmount(null);
     }
   };
 
@@ -420,6 +438,13 @@ export default function ProfilePage() {
                 <p className="text-[#61728C] text-[12px] font-[500] leading-[16px]">EDLN</p>
               </div>
             </div>
+            
+            <button
+              onClick={() => router.push('/dashboard/wallet')}
+              className="text-[#000] text-[12px] font-[500] underline decoration-black underline-offset-2 hover:opacity-80 transition-opacity text-center cursor-pointer mt-[8px]"
+            >
+              manage cash
+            </button>
           </div>
         </div>
 
@@ -630,23 +655,64 @@ export default function ProfilePage() {
       </div>
 
       <div className="mt-[32px] flex flex-col gap-[16px]">
-        <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px]">
-          <div className="flex-1 text-center md:text-left">
-            <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
-              Burn 1000 $EDLN and get 3 credits
-            </p>
+        <div className="overflow-hidden -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="flex gap-[16px] overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 md:overflow-x-visible md:grid md:grid-cols-3 md:snap-none">
+            <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px] min-w-[calc(100%-16px)] md:min-w-0 snap-center">
+              <div className="flex-1 text-center md:text-left">
+                <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
+                  Burn 1000 $EDLN and get 3 credits
+                </p>
+              </div>
+              <button
+                onClick={() => handleBurnTokens(1000)}
+                disabled={isBurning}
+                className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[10px] rounded-[12px] font-[500] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-70 flex items-center justify-center min-w-[80px] min-h-[40px]"
+              >
+                {isBurning && burningAmount === 1000 ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00FF80] dark:border-[#000000]"></div>
+                ) : (
+                  "Burn"
+                )}
+              </button>
+            </div>
+            <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px] min-w-[calc(100%-16px)] md:min-w-0 snap-center">
+              <div className="flex-1 text-center md:text-left">
+                <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
+                  Burn 5000 $EDLN and get 10 credits
+                </p>
+              </div>
+              <button
+                onClick={() => handleBurnTokens(5000)}
+                disabled={isBurning}
+                className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[10px] rounded-[12px] font-[500] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-70 flex items-center justify-center min-w-[80px] min-h-[40px]"
+              >
+                {isBurning && burningAmount === 5000 ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00FF80] dark:border-[#000000]"></div>
+                ) : (
+                  "Burn"
+                )}
+              </button>
+            </div>
+
+            <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px] min-w-[calc(100%-16px)] md:min-w-0 snap-center">
+              <div className="flex-1 text-center md:text-left">
+                <p className="text-[#E0E0E0] text-[16px] font-[500] leading-[24px]">
+                  Burn 10000 $EDLN and get 20 credits
+                </p>
+              </div>
+              <button
+                onClick={() => handleBurnTokens(10000)}
+                disabled={isBurning}
+                className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[10px] rounded-[12px] font-[500] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-70 flex items-center justify-center min-w-[80px] min-h-[40px]"
+              >
+                {isBurning && burningAmount === 10000 ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00FF80] dark:border-[#000000]"></div>
+                ) : (
+                  "Burn"
+                )}
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleBurnTokens}
-            disabled={isBurning}
-            className="bg-[#000000] dark:bg-[#00FF80] text-[#00FF80] dark:text-[#000000] px-[20px] py-[10px] rounded-[12px] font-[500] text-[16px] hover:bg-[#333333] dark:hover:bg-[#00CC66] transition-colors disabled:opacity-70 flex items-center justify-center min-w-[80px] min-h-[40px]"
-          >
-            {isBurning ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#00FF80] dark:border-[#000000]"></div>
-            ) : (
-              "Burn"
-            )}
-          </button>
         </div>
 
         <div className="bg-[#1A1A1A] dark:bg-[#131313] border border-[#2E2E2E] dark:border-[#2E3033] rounded-[16px] p-[20px] flex flex-col md:flex-row items-center justify-between gap-[16px]">
@@ -1037,10 +1103,10 @@ export default function ProfilePage() {
               </div>
             </div>
             <DialogTitle className="text-[#2D3C52] dark:text-[#E0E0E0] text-[20px] font-[700] mb-2 text-center">
-              Tokens Burned Successfully!
+              {lastBurnedAmount?.toLocaleString()} $EDLN Burned Successfully!
             </DialogTitle>
             <DialogDescription className="text-[#61728C] dark:text-[#B3B3B3] text-[16px] font-[400] leading-[24px] text-center mb-6">
-              You&apos;ve received 3 credits and your wallet balance has been updated.
+              You&apos;ve received <span className="font-[600] text-[#00FF80]">{getCreditsFromBurnAmount(lastBurnedAmount)} credits</span> and your wallet balance has been updated.
             </DialogDescription>
           </DialogHeader>
           
