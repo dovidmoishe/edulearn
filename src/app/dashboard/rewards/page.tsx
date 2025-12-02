@@ -137,8 +137,6 @@ export default function RewardsPage() {
         setSuccessModalVisible(true);
         
         fetchWalletBalance();
-        const earnings = await walletService.getUserEarnings(user.id);
-        setUserEarnings(earnings);
       } else {
         alert("Failed to claim: " + result.message);
       }
@@ -146,6 +144,13 @@ export default function RewardsPage() {
       alert("Error: " + (error instanceof Error ? error.message : "Failed to claim EDLN tokens"));
     } finally {
       setClaimingEDLN(false);
+      // Always refresh earnings after claim attempt
+      try {
+        const earnings = await walletService.getUserEarnings(user.id);
+        setUserEarnings(earnings);
+      } catch (e) {
+        console.error("Failed to refresh earnings:", e);
+      }
     }
   };
 
@@ -164,8 +169,6 @@ export default function RewardsPage() {
         setSuccessModalVisible(true);
         
         fetchWalletBalance();
-        const earnings = await walletService.getUserEarnings(user.id);
-        setUserEarnings(earnings);
       } else {
         alert("Failed to claim: " + result.message);
       }
@@ -173,6 +176,13 @@ export default function RewardsPage() {
       alert("Error: " + (error instanceof Error ? error.message : "Failed to claim USDC"));
     } finally {
       setClaimingSOL(false);
+      // Always refresh earnings after claim attempt
+      try {
+        const earnings = await walletService.getUserEarnings(user.id);
+        setUserEarnings(earnings);
+      } catch (e) {
+        console.error("Failed to refresh earnings:", e);
+      }
     }
   };
 
