@@ -70,11 +70,9 @@ export default function DashboardLayout({
           setAuthChecked(true);
         }
       } catch (error) {
-        console.error("❌ Auth check error:", error);
         
         if (retryCount < MAX_RETRIES) {
           retryCount++;
-          console.log(`⏳ Auth error, retry ${retryCount}/${MAX_RETRIES}...`);
           setTimeout(() => {
             if (mounted) checkAuth();
           }, 500 * retryCount);

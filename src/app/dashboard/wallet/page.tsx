@@ -35,6 +35,7 @@ function Wallet() {
     const [isRefreshing, setIsRefreshing] = useState(false)
     
     const [buyMethod, setBuyMethod] = useState<'sol' | 'cash' | null>(null)
+    const [purchaseType, setPurchaseType] = useState<'edln' | 'sol' | null>(null)
     const [onrampStep, setOnrampStep] = useState<'method' | 'otp' | 'payment'>('method')
     const [otp, setOtp] = useState("")
     const [cashAmount, setCashAmount] = useState("")
@@ -214,6 +215,7 @@ function Wallet() {
             setBuyAmount("")
             setBuyError(null)
             setBuyMethod(null)
+            setPurchaseType(null)
             setOnrampStep('method')
             setOtp("")
             setCashAmount("")
@@ -281,11 +283,17 @@ function Wallet() {
                 localStorage.setItem('onramp_verified_token', JSON.stringify(tokenToUse))
             }
             
-            const order = await walletService.onrampFiatToEdln(
-                user?.id || "",
-                amount,
-                tokenToUse
-            )
+            const order = purchaseType === 'sol' 
+                ? await walletService.onrampFiatToSol(
+                    user?.id || "",
+                    amount,
+                    tokenToUse
+                  )
+                : await walletService.onrampFiatToEdln(
+                    user?.id || "",
+                    amount,
+                    tokenToUse
+                  )
 
             if (order?.order) {
                 setPaymentDetails({
@@ -708,19 +716,51 @@ function Wallet() {
                 <DialogContent className="bg-[#FFFFFF] dark:bg-[#131313] border-[#EDF3FC] dark:border-[#2E3033] max-w-md">
                     <DialogHeader>
                         <DialogTitle className="text-[#2D3C52] dark:text-[#E0E0E0] text-[20px] font-[700] text-center mb-4">
-                            {buyMethod === null ? 'Buy EDLN Tokens' : buyMethod === 'sol' ? 'Buy with SOL' : 'Buy with Cash'}
+                            {buyMethod === null && purchaseType === null ? 'Buy Tokens' : 
+                             buyMethod === null && purchaseType !== null ? (purchaseType === 'sol' ? 'Buy SOL' : 'Buy EDLN') :
+                             buyMethod === 'sol' ? (purchaseType === 'sol' ? 'Buy SOL with SOL' : 'Buy with SOL') : 
+                             purchaseType === 'sol' ? 'Buy SOL with Cash' : 'Buy with Cash'}
                         </DialogTitle>
                     </DialogHeader>
                     
-                    {buyMethod === null && (
+                    {buyMethod === null && purchaseType === null && (
                         <div className="flex flex-col gap-[12px]">
+                            <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[500] mb-[8px]">What would you like to buy?</p>
                             <button
-                                onClick={() => setBuyMethod('sol')}
+                                onClick={() => setPurchaseType('edln')}
                                 className="bg-[#F9FBFC] dark:bg-[#2E3033] border-2 border-[#EDF3FC] dark:border-[#2E3033] rounded-[16px] p-[20px] hover:border-[#00FF80] dark:hover:border-[#00FF80] transition-colors text-left"
                             >
-                                <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[16px] font-[700] mb-[4px]">Buy with SOL</p>
-                                <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">Swap your SOL for EDLN tokens</p>
+                                <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[16px] font-[700] mb-[4px]">Buy EDLN Tokens</p>
+                                <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">Purchase EDLN tokens</p>
                             </button>
+                            <button
+                                onClick={() => setPurchaseType('sol')}
+                                className="bg-[#F9FBFC] dark:bg-[#2E3033] border-2 border-[#EDF3FC] dark:border-[#2E3033] rounded-[16px] p-[20px] hover:border-[#00FF80] dark:hover:border-[#00FF80] transition-colors text-left"
+                            >
+                                <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[16px] font-[700] mb-[4px]">Buy SOL</p>
+                                <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">Purchase SOL tokens</p>
+                            </button>
+                            <button
+                                onClick={toggleBuyModal}
+                                className="bg-transparent text-[#61728C] dark:text-[#B3B3B3] px-[24px] py-[12px] rounded-[16px] font-[500] text-[14px] hover:bg-[#F9FBFC] dark:hover:bg-[#2E3033] transition-colors mt-[8px]"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+
+                    {buyMethod === null && purchaseType !== null && (
+                        <div className="flex flex-col gap-[12px]">
+                            <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[500] mb-[8px]">How would you like to pay?</p>
+                            {purchaseType === 'edln' && (
+                                <button
+                                    onClick={() => setBuyMethod('sol')}
+                                    className="bg-[#F9FBFC] dark:bg-[#2E3033] border-2 border-[#EDF3FC] dark:border-[#2E3033] rounded-[16px] p-[20px] hover:border-[#00FF80] dark:hover:border-[#00FF80] transition-colors text-left"
+                                >
+                                    <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[16px] font-[700] mb-[4px]">Buy with SOL</p>
+                                    <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">Swap your SOL for EDLN tokens</p>
+                                </button>
+                            )}
                             <button
                                 onClick={() => {
                                     setBuyMethod('cash')
@@ -730,13 +770,15 @@ function Wallet() {
                                 className="bg-[#F9FBFC] dark:bg-[#2E3033] border-2 border-[#EDF3FC] dark:border-[#2E3033] rounded-[16px] p-[20px] hover:border-[#00FF80] dark:hover:border-[#00FF80] transition-colors text-left disabled:opacity-50"
                             >
                                 <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[16px] font-[700] mb-[4px]">Buy with Cash</p>
-                                <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">Purchase EDLN with bank transfer</p>
+                                <p className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[400]">
+                                    {purchaseType === 'sol' ? 'Purchase SOL with bank transfer' : 'Purchase EDLN with bank transfer'}
+                                </p>
                             </button>
                             <button
-                                onClick={toggleBuyModal}
+                                onClick={() => setPurchaseType(null)}
                                 className="bg-transparent text-[#61728C] dark:text-[#B3B3B3] px-[24px] py-[12px] rounded-[16px] font-[500] text-[14px] hover:bg-[#F9FBFC] dark:hover:bg-[#2E3033] transition-colors mt-[8px]"
                             >
-                                Cancel
+                                Back
                             </button>
                         </div>
                     )}
@@ -770,7 +812,10 @@ function Wallet() {
 
                             <div className="flex gap-[12px] mt-[8px]">
                                 <button
-                                    onClick={() => setBuyMethod(null)}
+                                    onClick={() => {
+                                        setBuyMethod(null)
+                                        setPurchaseType(null)
+                                    }}
                                     disabled={isBuying}
                                     className="bg-[#FFFFFF] dark:bg-[#000000] border border-[#000000] dark:border-[#00FF80] rounded-[16px] py-[12px] px-[24px] flex-1 text-[#000000] dark:text-[#00FF80] text-[16px] font-[700] hover:bg-[#F9FBFC] dark:hover:bg-[#1A1A1A] transition-colors disabled:opacity-50"
                                 >
@@ -852,6 +897,7 @@ function Wallet() {
                                 <button
                                     onClick={() => {
                                         setBuyMethod(null)
+                                        setPurchaseType(null)
                                         setOnrampStep('method')
                                         setOtp("")
                                         setCashAmount("")
@@ -923,7 +969,7 @@ function Wallet() {
 
                             <div className="bg-[#FFF3E0] dark:bg-[rgba(255,193,7,0.1)] rounded-[12px] p-[12px]">
                                 <p className="text-[#F57C00] dark:text-[#FFB300] text-[12px] font-[500] text-center">
-                                    Your EDLN tokens will be credited after payment confirmation
+                                    Your {purchaseType === 'sol' ? 'SOL' : 'EDLN'} tokens will be credited after payment confirmation
                                 </p>
                             </div>
 
@@ -992,12 +1038,12 @@ function Wallet() {
                         <DialogDescription className="text-[#61728C] dark:text-[#B3B3B3] text-[16px] font-[400] leading-[24px] text-center mb-6">
                             {completedTransactionDetails && (
                                 <>
-                                    Your purchase of {completedTransactionDetails.amount.toLocaleString()} {completedTransactionDetails.currency} has been completed successfully. Your EDLN tokens have been credited to your wallet.
+                                    Your purchase of {completedTransactionDetails.amount.toLocaleString()} {completedTransactionDetails.currency} has been completed successfully. Your {completedTransactionDetails.currency === 'SOL' ? 'SOL' : 'EDLN'} tokens have been credited to your wallet.
                                 </>
                             )}
                             {!completedTransactionDetails && (
                                 <>
-                                    Your on-ramp transaction has been completed successfully. Your EDLN tokens have been credited to your wallet.
+                                    Your on-ramp transaction has been completed successfully. Your tokens have been credited to your wallet.
                                 </>
                             )}
                         </DialogDescription>

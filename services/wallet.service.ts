@@ -231,6 +231,20 @@ export class WalletService {
     }
   }
 
+  async onrampFiatToSol(userId: string, amount: number, verifiedResponse: any): Promise<OnrampOrderResponse> {
+    try {
+      const response = await httpClient.post(`/wallet/onramp/create-order-sol/${userId}`, {
+        amount,
+        verifiedResponse
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Error creating SOL onramp order:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create SOL onramp order';
+      throw new Error(errorMessage);
+    }
+  }
+
   formatSolAmount(lamports: number): string {
     return (lamports / LAMPORTS_PER_SOL).toLocaleString(undefined, {
       minimumFractionDigits: 2,
