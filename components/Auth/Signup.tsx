@@ -119,6 +119,36 @@ const Signup = () => {
         return;
       }
 
+      if (isLogin) {
+        try {
+          const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+          const response = await fetch(`${API_URL}auth/check-availability`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: formData.email,
+            }),
+          });
+
+          const availabilityData = await response.json();
+
+          if (availabilityData.emailAvailable) {
+            toast.error("No account found", {
+              description: "This email isn't registered. Please sign up to continue.",
+            });
+            setIsLogin(false);
+            return;
+          }
+        } catch (availabilityError) {
+          toast.error("Login failed", {
+            description: "Unable to verify account. Please try again.",
+          });
+          return;
+        }
+      }
+
       if (!isLogin) {
         if (!validateInput("name", formData.name)) {
           return;

@@ -144,7 +144,6 @@ export default function RewardsPage() {
       alert("Error: " + (error instanceof Error ? error.message : "Failed to claim EDLN tokens"));
     } finally {
       setClaimingEDLN(false);
-      // Always refresh earnings after claim attempt
       try {
         const earnings = await walletService.getUserEarnings(user.id);
         setUserEarnings(earnings);
