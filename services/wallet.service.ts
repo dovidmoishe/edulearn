@@ -70,18 +70,22 @@ interface OnrampOrderResponse {
 interface PendingWebhookEventsResponse {
   events: Array<{
     id: string;
-    address: string;
+    address?: string;
     signature?: string;
     mint: string;
     currency: string;
     amount: number;
-    usdcAmount: number;
+    usdcAmount?: number;
     fiatAmount: number;
-    sender: string;
-    receipiant: string;
+    sender?: string;
+    recipient: string;
     rate: number;
     status: string;
     transactionType: string;
+    accountNumber?: string;
+    accountName?: string;
+    bank?: string;
+    createdAt?: string;
   }>;
   hasUpdates: boolean;
 }
