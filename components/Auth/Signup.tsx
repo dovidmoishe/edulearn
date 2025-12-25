@@ -2,7 +2,6 @@
 import Image from "next/image";
 import React from "react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import mail from "@/../public/assets/icons/mail.png";
 import mailDark from "@/../public/assets/icons/dark/mail.png";
 import { createClient } from "../../utils/supabase/client";

@@ -52,7 +52,8 @@ function Wallet() {
     const [onrampSuccessModalVisible, setOnrampSuccessModalVisible] = useState(false)
     const completedEventIdsRef = useRef<Set<string>>(new Set())
     const [completedTransactionDetails, setCompletedTransactionDetails] = useState<{
-        amount: number
+        amount: number,
+        fiatAmount: number,
         currency: string
         signature?: string
     } | null>(null)
@@ -167,6 +168,7 @@ function Wallet() {
                         
                         setCompletedTransactionDetails({
                             amount: firstCompletedEvent.amount,
+                            fiatAmount: firstCompletedEvent.fiatAmount,
                             currency: firstCompletedEvent.currency,
                             signature: firstCompletedEvent.signature
                         })
@@ -174,7 +176,7 @@ function Wallet() {
                         completedEvents.forEach(event => {
                             completedEventIdsRef.current.add(event.id)
                         })
-                        
+                        setBuyModalVisible(false)
                         setOnrampSuccessModalVisible(true)
                         
                         for (const event of completedEvents) {
@@ -1038,7 +1040,7 @@ function Wallet() {
                         <DialogDescription className="text-[#61728C] dark:text-[#B3B3B3] text-[16px] font-[400] leading-[24px] text-center mb-6">
                             {completedTransactionDetails && (
                                 <>
-                                    Your purchase of {completedTransactionDetails.amount.toLocaleString()} {completedTransactionDetails.currency} has been completed successfully. Your {completedTransactionDetails.currency === 'SOL' ? 'SOL' : 'EDLN'} tokens have been credited to your wallet.
+                                    Your purchase of {completedTransactionDetails.fiatAmount.toLocaleString()} {completedTransactionDetails.currency} has been completed successfully. Your {completedTransactionDetails.currency === 'SOL' ? 'SOL' : 'EDLN'} tokens have been credited to your wallet.
                                 </>
                             )}
                             {!completedTransactionDetails && (
