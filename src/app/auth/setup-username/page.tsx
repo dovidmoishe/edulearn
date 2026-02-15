@@ -114,11 +114,18 @@ export default function SetupUsername() {
       });
       
       router.push('/auth/learning');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let message = 'Please try again';
+    
+      if (error instanceof Error) {
+        message = error.message;
+      }
+    
       toast.error('Update failed', {
-        description: error.message || 'Please try again'
+        description: message
       });
-    } finally {
+    }
+     finally {
       setLoading(false);
     }
   };
