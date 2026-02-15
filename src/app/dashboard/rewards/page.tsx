@@ -66,6 +66,9 @@ export default function RewardsPage() {
   const [loadingEarnings, setLoadingEarnings] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [claimedAsset, setClaimedAsset] = useState<{type: 'edln' | 'USDC', amount: string} | null>(null);
+  const [earningsCardUrl, setEarningsCardUrl] = useState<string | null>(null);
+  const [shareModalVisible, setShareModalVisible] = useState(false);
+  const [loadingCard, setLoadingCard] = useState(false);
 
   const rewardService = new RewardsService();
   const walletService = new WalletService();
@@ -167,6 +170,17 @@ export default function RewardsPage() {
         });
         setSuccessModalVisible(true);
         
+        try {
+          setLoadingCard(true);
+          const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+          const cardUrl = `${API_URL}cards/earnings/${user.id}?theme=dark&t=${Date.now()}`;
+          setEarningsCardUrl(cardUrl);
+        } catch (cardError) {
+          console.error("Failed to generate earnings card:", cardError);
+        } finally {
+          setLoadingCard(false);
+        }
+        
         fetchWalletBalance();
       } else {
         alert("Failed to claim: " + result.message);
@@ -175,7 +189,6 @@ export default function RewardsPage() {
       alert("Error: " + (error instanceof Error ? error.message : "Failed to claim USDC"));
     } finally {
       setClaimingSOL(false);
-      // Always refresh earnings after claim attempt
       try {
         const earnings = await walletService.getUserEarnings(user.id);
         setUserEarnings(earnings);
@@ -188,14 +201,42 @@ export default function RewardsPage() {
   const handleShare = async () => {
     if (!claimedAsset || !user?.referralCode) return;
     
+    setSuccessModalVisible(false);
+    setShareModalVisible(true);
+  };
+
+  const handleShareToX = async () => {
+    if (!claimedAsset || !user?.referralCode) return;
+    
     try {
-      const message = `I just claimed ${claimedAsset.amount} $${claimedAsset.type.toUpperCase()} tokens on EduLearn! Get in now with my referral code: ${user.referralCode} to claim yours also on edulearn.fun`;
+      const message = `I just claimed ${claimedAsset.amount} $${claimedAsset.type.toUpperCase()} tokens on EduLearn! 🎉\n\nStart learning and earning with my referral code: ${user.referralCode}\n\n👉 edulearn.fun`;
       
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
       window.open(twitterUrl, '_blank');
+      setShareModalVisible(false);
     } catch (error) {
       console.error("Error sharing:", error);
       alert("Failed to share");
+    }
+  };
+
+  const handleDownloadCard = async () => {
+    if (!earningsCardUrl) return;
+    
+    try {
+      const response = await fetch(earningsCardUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `edulearn-earnings-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading card:", error);
+      alert("Failed to download card");
     }
   };
 
@@ -490,6 +531,66 @@ export default function RewardsPage() {
               onClick={handleShare}
               className="bg-[#00FF80] text-[#000] px-[16px] py-[12px] rounded-[8px] font-[500] text-[14px] hover:bg-[#00CC66] transition-colors"
             >
+              Share on X
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={shareModalVisible} onOpenChange={setShareModalVisible}>
+        <DialogContent className="bg-[#131313] border-[#2E3033] max-w-lg flex items-center flex-col">
+          <DialogHeader className="text-center w-full">
+            <DialogTitle className="text-[#E0E0E0] text-[18px] font-[700] mb-2 text-center">
+              Share Your Earnings
+            </DialogTitle>
+            <DialogDescription className="text-[#B3B3B3] text-[14px] font-[400] leading-[20px] text-center">
+              Share your achievement with your friends on X!
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="w-full mt-4">
+            {loadingCard ? (
+              <div className="flex justify-center items-center py-[60px] w-full bg-[#1A1A1A] rounded-[12px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00FF80]"></div>
+              </div>
+            ) : earningsCardUrl ? (
+              <div className="relative w-full aspect-[1.91/1] bg-[#1A1A1A] rounded-[12px] overflow-hidden">
+                <img
+                  src={earningsCardUrl}
+                  alt="Earnings Card"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center items-center py-[60px] w-full bg-[#1A1A1A] rounded-[12px]">
+                <p className="text-[#B3B3B3] text-[14px]">Failed to load earnings card</p>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-[12px] mt-6 w-full">
+            <button
+              onClick={() => setShareModalVisible(false)}
+              className="flex-1 bg-transparent text-[#E0E0E0] px-[16px] py-[12px] rounded-[8px] font-[500] text-[14px] border border-[#2E3033] hover:bg-[#1A1A1A] transition-colors"
+            >
+              Cancel
+            </button>
+            
+            <button
+              onClick={handleDownloadCard}
+              disabled={!earningsCardUrl}
+              className="flex-1 bg-transparent text-[#00FF80] px-[16px] py-[12px] rounded-[8px] font-[500] text-[14px] border border-[#00FF80] hover:bg-[#00FF80] hover:text-[#000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Download
+            </button>
+            
+            <button
+              onClick={handleShareToX}
+              className="flex-1 bg-[#00FF80] text-[#000] px-[16px] py-[12px] rounded-[8px] font-[500] text-[14px] hover:bg-[#00CC66] transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
               Share on X
             </button>
           </div>

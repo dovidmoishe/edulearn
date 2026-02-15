@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-icons": "node scripts/generate-icons.js"
+    "generate-icons": "node scripts/generate-icons.js",
+    "remotion:dev": "remotion studio",
+    "remotion:render": "remotion render CommunityIntro out/community-intro.mp4"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -17,6 +19,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@remotion/player": "^4.0.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.4",
     "axios": "^1.12.1",
@@ -42,15 +45,34 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@remotion/cli": "^4.0.0",
+    "@remotion/renderer": "^4.0.409",
+    "@remotion/studio": "^4.0.0",
+    "@remotion/tailwind": "^4.0.409",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "querystring-es3": "^0.2.1",
+    "remotion": "^4.0.0",
     "sharp": "^0.33.5",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
-    "typescript": "^5"
+    "typescript": "^5",
+    "url": "^0.11.4",
+    "util": "^0.12.5",
+    "vm-browserify": "^1.1.2"
   }
 }

@@ -1,0 +1,86 @@
+# EduLearn - Product Summary for LLMs
+
+## Product Overview
+
+EduLearn is a Web3-powered educational platform that combines AI tutoring, gamification, and blockchain technology. It specializes in Web3 education (blockchain, Solana, DeFi) while supporting general education.
+
+Tagline: Learn Web3 Smarter. Earn as You Go
+Website: https://edulearn.fun
+Token Contract (EDLN on Solana): CFw2KxMpWuxivoowkF8vRCrnMuDeg5VMHRR7zjE7pBLV
+
+## Core Features
+
+### AI-Powered Learning
+- AI Tutor powered by Google Generative AI (Gemini 2.5 Flash for free, Gemini 2.5 Pro for premium)
+- Interactive chat with conversation history
+- Personalized learning roadmaps (AI-generated step-by-step paths)
+- Quiz generation; educational focus on Web3, blockchain, Solana, DeFi, smart contracts
+
+### Gamification
+- XP (experience points), 5 levels (Novice to Expert), streaks, leaderboards
+- NFT achievement badges/certificates on Solana
+
+### Blockchain (Web App Only - edulearn.fun)
+- Auto-generated Solana wallets, encrypted private key storage
+- NFT badges (Metaplex), EDLN SPL utility token
+- Jupiter token swaps (SOL/EDLN), fiat on-ramp (PAJ Ramp), earnings dashboard, private key export
+
+### Community
+- Learning communities (public/private), group chat, join requests, progress sharing
+
+### Premium
+- Free: Gemini 2.5 Flash, 5 quiz attempts/day, 10 chat credits/day
+- Premium ($5/mo or $48/yr): Gemini 2.5 Pro, 15 quiz attempts/day, 20 chat credits/day, exclusive badges
+- Payment: RevenueCat (mobile), Solana (web)
+
+## Technical Architecture
+
+- API: NestJS, PostgreSQL (Drizzle ORM), Solana Web3.js, Metaplex
+- Web: Next.js 15, React 19, Tailwind CSS 4, shadcn/ui (edulearn.fun)
+- Mobile: Expo React Native (iOS/Android) - core learning only, no blockchain
+- Admin: Next.js for rewards and IPFS (Pinata)
+- Auth: Supabase, JWT, OAuth (Google, Twitter/X, Discord)
+- AI: Google Generative AI (Gemini 2.5); real-time: Socket.io; push: Expo; email: Resend
+
+## Platform Availability
+
+- Web (edulearn.fun): Full features including wallet, NFTs, EDLN, swaps, earnings, communities, premium
+- Mobile (iOS/Android): AI tutor, gamification, quizzes, roadmaps, communities, premium; no wallet/NFTs/tokens
+
+## Educational Content & AI Tutor
+
+Coverage: General Web3, wallets, transactions, token standards; Solana (runtime, accounts, Rust/Anchor, PDAs, CPIs, SPL, Metaplex, DApps); DeFi; Internet Capital Markets (ICM).
+Teaching: Socratic, hands-on challenges, metaphors, job readiness; certificates awarded for mastery (confidence 8+/10).
+Certificates: Blockchain Basics (web3Basics), DeFi Foundations (defiFoundations), Internet Capital Markets (icm), EduLearn Welcome Badge (eduLearnWelcome).
+
+## Monetization & Rewards
+
+- Users earn SOL and EDLN for quizzes/milestones; referral XP; EDLN burn for chat credits
+- Revenue: premium subscriptions, Streak Shield ($0.99), Quiz Refresh ($0.49/5 attempts), EDLN utility
+
+## API & Integrations
+
+- Marketplace AI stream: POST /ai/marketplace-stream (SSE, x-marketplace-key), free for integrations
+- Social: Twitter/X, Google, Discord OAuth; Twitter posting for achievements
+- Blockchain: Solana (Alchemy), Jupiter, Metaplex, PAJ Ramp
+
+## Design & UX
+
+- Dark theme, accent #00FF80; backgrounds #0a0a0a, #131313; borders #2E3033
+- Flows: sign up → wallet → profile → chat/quizzes/roadmaps → XP/rewards/communities
+
+## Security & Compliance
+
+- Encrypted wallet keys; key export; blockchain disclaimers; NFTs/tokens no guaranteed monetary value; Web3 features web-only
+
+## Target Audience
+
+Web3 learners, blockchain developers, Solana enthusiasts; general learners; novice to expert; web (full) and mobile (core learning)
+
+## Use Cases
+
+Web3 onboarding, Solana development learning, DeFi education, verifiable NFT skill badges, community learning, earn-while-learning with crypto rewards
+
+## Keywords
+
+Web3 education, blockchain learning platform, Solana tutorial, AI tutor, gamified learning, NFT certificates, crypto rewards, DeFi education, smart contract learning, Solana development, learn to earn, educational NFTs, Web3 onboarding, blockchain courses, Solana Rust Anchor, personalized learning roadmaps, AI-powered education, crypto learning app, Web3 study companion, blockchain gamification

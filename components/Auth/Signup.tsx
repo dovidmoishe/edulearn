@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { UserService } from "../../services/user.service";
 import { generateUUID } from '@/lib/utils';
+import OAuthButtons from "./OAuthButtons";
 
 
 interface FormData {
@@ -307,6 +308,14 @@ const Signup = () => {
               : "Lets get started, your Web3 AI tutor awaits"}
           </p>
         </div>
+      </div>
+
+      <OAuthButtons />
+      
+      <div className="flex items-center gap-4 my-6">
+        <div className="flex-1 h-px bg-[#EDF3FC] dark:bg-[#2E3033]"></div>
+        <span className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-medium">OR</span>
+        <div className="flex-1 h-px bg-[#EDF3FC] dark:bg-[#2E3033]"></div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
