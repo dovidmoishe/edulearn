@@ -15,9 +15,6 @@ const CTA = () => {
         </div>
 
         <div className="flex items-center justify-center flex-col md:flex-row gap-[24px]">
-        <button className="rounded-[8px] border border-[#00FF80] py-[10px] px-[16px] text-[#00FF80] w-[198px] flex items-center justify-center gap-[12px] cursor-pointer" onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}>
-                Download APK
-            </button>
 
             <a href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk" download="edulearn.apk" className="rounded-[8px] border border-[#00FF80] py-[10px] px-[16px] text-[#00FF80] w-[198px] flex items-center justify-center gap-[12px] cursor-pointer no-underline hover:bg-[#00FF80]/10 transition-colors">
                 <FaGooglePlay size={20} />
