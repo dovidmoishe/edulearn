@@ -310,7 +310,7 @@ const Signup = () => {
         </div>
       </div>
 
-      <OAuthButtons />
+      {/* <OAuthButtons /> */}
       
       <div className="flex items-center gap-4 my-6">
         <div className="flex-1 h-px bg-[#EDF3FC] dark:bg-[#2E3033]"></div>
