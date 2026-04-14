@@ -42,7 +42,7 @@ const Hero = () => {
 
         <div className="flex flex-col sm:flex-row gap-4 self-center md:self-end w-full sm:w-auto items-center sm:items-stretch mt-6 md:mt-0">
           <a
-            href="#cta"
+            href="auth"
             className="w-full sm:w-auto text-center bg-[#00FF80] rounded-[12px] py-2.5 sm:py-3 px-5 sm:px-6 text-black text-[14px] sm:text-[16px] font-[500] leading-normal tracking-[0.9px] cursor-pointer hover:bg-[#00FF80]/90 transition-colors duration-300 no-underline"
             style={{
               boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.40) inset",
