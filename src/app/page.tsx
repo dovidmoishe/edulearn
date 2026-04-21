@@ -1,6 +1,5 @@
 "use client";
 import { useEffect } from "react";
-import Image from "next/image";
 import NavBar from "../../components/Home/NavBar/NavBar";
 import Hero from "../../components/Home/Hero/Hero";
 import HowItWorks from "../../components/Home/HowItWorks/HowItWorks";
@@ -21,7 +20,7 @@ export default function Home() {
   
   return (
     <>
-      <div className="md:px-[86px] px-[16px]">
+      <div className="md:px-[86px] px-[16px] overflow-x-clip">
       <NavBar />
         <Hero />
         <HowItWorks />
