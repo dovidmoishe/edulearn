@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image, { StaticImageData } from "next/image";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import aiChat from "@/../public/assets/icons/ai-chat.png";
 import chart from "@/../public/assets/icons/chart.png";
 import mobile from "@/../public/assets/icons/mobile.png";
@@ -9,6 +9,19 @@ import medal1 from "@/../public/assets/icons/medal1.png";
 import medal2 from "@/../public/assets/icons/medal2.png";
 import brain from "@/../public/assets/icons/brain.png";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
+
+const featureCardHover: TargetAndTransition = {
+  y: -10,
+  boxShadow:
+    "0 0 0 1px rgba(0,255,128,0.35), 0 20px 50px -12px rgba(0,255,128,0.18)",
+  transition: { type: "spring", stiffness: 400, damping: 22 },
+};
+
+const featureIconHover: TargetAndTransition = {
+  scale: 1.08,
+  rotate: [0, -6, 6, 0],
+  transition: { duration: 0.45 },
+};
 
 const features = [
   {
@@ -58,18 +71,18 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => {
-  const { interactive, cardHover, cardTap, glowHover } = useHomeMotion();
+  const { interactive, cardTap } = useHomeMotion();
 
   return (
     <motion.article
       className="flex cursor-pointer flex-col gap-6 items-start rounded-2xl p-6 md:p-8 bg-[#0D0D0D] border border-[#2E3033] shadow-sm shadow-[#00FF80]/10"
-      whileHover={interactive ? { ...cardHover, ...glowHover } : undefined}
+      whileHover={interactive ? featureCardHover : undefined}
       whileTap={interactive ? cardTap : undefined}
       transition={{ type: "spring", stiffness: 400, damping: 24 }}
     >
       <motion.div
         className="flex items-center justify-center rounded-full gap-2 bg-[#0D0D0D] border border-[#2E3033] w-[48px] h-[48px] md:w-[72px] md:h-[72px]"
-        whileHover={interactive ? { scale: 1.08, rotate: [0, -6, 6, 0], transition: { duration: 0.45 } } : undefined}
+        whileHover={interactive ? featureIconHover : undefined}
       >
         <Image
           src={icon}

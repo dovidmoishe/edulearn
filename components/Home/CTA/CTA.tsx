@@ -1,12 +1,20 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import { FaGooglePlay, FaApple } from "react-icons/fa";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
 
+const ctaLinkHover: TargetAndTransition = {
+  y: -2,
+  scale: 1.03,
+  backgroundColor: "rgba(0,255,128,0.08)",
+  boxShadow:
+    "0 0 0 1px rgba(0,255,128,0.35), 0 20px 50px -12px rgba(0,255,128,0.18)",
+  transition: { type: "spring", stiffness: 500, damping: 28 },
+};
+
 const CTA = () => {
-  const { staggerContainer, staggerItem, interactive, buttonHover, buttonTap, glowHover } =
-    useHomeMotion();
+  const { staggerContainer, staggerItem, interactive, buttonTap } = useHomeMotion();
 
   return (
     <motion.div
@@ -31,7 +39,7 @@ const CTA = () => {
           href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
           download="edulearn.apk"
           className="rounded-full border border-[#00FF80] py-3 px-8 text-[#00FF80] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer no-underline bg-transparent"
-          whileHover={interactive ? { ...buttonHover, ...glowHover, backgroundColor: "rgba(0,255,128,0.08)" } : undefined}
+          whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
         >
           <FaGooglePlay size={20} />
@@ -42,7 +50,7 @@ const CTA = () => {
           type="button"
           className="rounded-full border border-[#00FF80] py-3 px-8 text-[#00FF80] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer bg-transparent"
           onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}
-          whileHover={interactive ? { ...buttonHover, ...glowHover, backgroundColor: "rgba(0,255,128,0.08)" } : undefined}
+          whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
         >
           <FaApple size={20} />

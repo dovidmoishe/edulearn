@@ -2,10 +2,18 @@
 import React, { useState } from "react";
 import { MdContentCopy } from "react-icons/md";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import HeroImage from "@/../public/image.webp";
 import HeroImageMobile from "@/../public/image-mobile.png";
 import { useHomeMotion } from "../motion-variants";
+
+const heroPrimaryHover: TargetAndTransition = {
+  y: -2,
+  scale: 1.03,
+  boxShadow:
+    "0 0 0 1px rgba(0,255,128,0.35), 0 20px 50px -12px rgba(0,255,128,0.18)",
+  transition: { type: "spring", stiffness: 500, damping: 28 },
+};
 
 const Hero = () => {
   const [copied, setCopied] = useState(false);
@@ -14,9 +22,7 @@ const Hero = () => {
     staggerItem,
     heroLine,
     interactive,
-    buttonHover,
     buttonTap,
-    glowHover,
     reduce,
   } = useHomeMotion();
   const contractAddress = "CFw2KxMpWuxivoowkF8vRCrnMuDeg5VMHRR7zjE7pBLV";
@@ -91,7 +97,7 @@ const Hero = () => {
             style={{
               boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.40) inset",
             }}
-            whileHover={interactive ? { ...buttonHover, ...glowHover } : undefined}
+            whileHover={interactive ? heroPrimaryHover : undefined}
             whileTap={interactive ? buttonTap : undefined}
           >
             Get Started For Free

@@ -1,9 +1,17 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition } from "framer-motion";
 import SafeImage from "../../SafeImage";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
+
+const testimonialCardHover: TargetAndTransition = {
+  y: -10,
+  borderColor: "rgba(0,255,128,0.25)",
+  boxShadow:
+    "0 0 0 1px rgba(0,255,128,0.35), 0 20px 50px -12px rgba(0,255,128,0.18)",
+  transition: { type: "spring", stiffness: 400, damping: 22 },
+};
 
 interface TestimonialCardProps {
   name: string;
@@ -13,12 +21,12 @@ interface TestimonialCardProps {
 }
 
 const TestimonialCard = ({ name, username, content, avatar }: TestimonialCardProps) => {
-  const { interactive, cardHover, cardTap, glowHover } = useHomeMotion();
+  const { interactive, cardTap } = useHomeMotion();
 
   return (
     <motion.article
       className="h-full min-h-0 rounded-2xl border border-[#2E3033] bg-[#131313] p-6 md:p-8 flex flex-col gap-4"
-      whileHover={interactive ? { ...cardHover, ...glowHover, borderColor: "rgba(0,255,128,0.25)" } : undefined}
+      whileHover={interactive ? testimonialCardHover : undefined}
       whileTap={interactive ? cardTap : undefined}
       transition={{ type: "spring", stiffness: 380, damping: 26 }}
     >
