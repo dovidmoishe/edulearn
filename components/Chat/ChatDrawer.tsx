@@ -224,8 +224,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
   return (
     <>
       <style jsx>{drawerScrollbarStyles}</style>
-      <div className="h-full flex flex-col bg-[#0A0A0A] drawer-content">
-        <div className="flex items-center justify-between p-4 border-b border-[#2E3033] md:hidden drawer-header">
+      <div className="drawer-content flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#0A0A0A]">
+        <div className="flex shrink-0 items-center justify-between border-b border-[#2E3033] p-4 md:hidden drawer-header">
           <h2 className="text-lg font-medium text-white">Chat History</h2>
           <button
             onClick={onClose}
@@ -237,7 +237,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="p-4 border-b border-[#2E3033] drawer-search">
+        <div className="drawer-search shrink-0 border-b border-[#2E3033] p-4">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleCreateNewChat}
@@ -269,7 +269,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ onClose }) => {
       </div>
 
       <div
-        className="flex-1 overflow-y-auto drawer-scrollbar"
+        className="drawer-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain"
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: '#E0E0E0 transparent'

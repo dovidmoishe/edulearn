@@ -137,7 +137,7 @@ export default function NFTsComponent({ className = "" }: NFTsComponentProps) {
   const handleShareToX = () => {
     if (!claimedReward || !user?.referralCode) return;
     
-    const message = `I just claimed ${claimedReward.title} on EduLearn! 🎉 Join me in learning and earning with my referral code: ${user.referralCode} 🚀 #EduLearn #Web3Learning #NFT`;
+    const message = `I just claimed ${claimedReward.title} on EduLearn! Join me in building real skills with my referral code: ${user.referralCode} #EduLearn #SkillBuilding #ProofOfWork`;
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent('https://edulearn.fun')}`;
     
     window.open(url, '_blank');

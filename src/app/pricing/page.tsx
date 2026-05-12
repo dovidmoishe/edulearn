@@ -108,8 +108,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
         <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-[#B3B3B3]' : 'text-[#61728C]'}`}>
           {isFree 
-            ? 'Get started with basic features and explore edulearn'
-            : 'Upgrade your edulearn Plan to get access to more features that aren\'t available on the free plan'
+            ? 'Get started with essential tools and explore EduLearn.'
+            : 'Upgrade your plan to unlock advanced AI guidance, higher limits, and more accountability tools.'
           }
         </p>
       </div>
@@ -339,7 +339,8 @@ export default function PricingPage() {
 
         <div className="mt-16 text-center">
           <p className={`text-sm ${theme === 'dark' ? 'text-[#B3B3B3]' : 'text-[#61728C]'}`}>
-            All payments are processed securely via USDC on Solana blockchain.
+            All payments are processed securely. On web, premium checkout
+            currently uses USDC.
             <br />
             Need help? Contact our support team at support@edulearn.com
           </p>

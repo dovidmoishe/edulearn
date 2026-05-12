@@ -20,6 +20,12 @@ const nextConfig: NextConfig = {
         hostname: 'pbs.twimg.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
       }
     ],
     dangerouslyAllowSVG: true,

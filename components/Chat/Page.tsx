@@ -15,6 +15,8 @@ import Image from "next/image";
 import { AIService, Message } from "../../services/ai.service";
 import { ChatService } from "../../services/chat.service";
 import useUserStore from "../../core/userState";
+import useAgentStore from "../../core/agentStore";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import ChatDrawer from "./ChatDrawer";
 import MessageItem from "./MessageItem";
 import QuizModal from "../Quiz/QuizModal";
@@ -72,6 +74,7 @@ const generateUUID = () => {
 
 const Chat = ({ title, initialMessages = [], chatId }: Props) => {
   const { user } = useUserStore();
+  const { agent, fetchUserAgent } = useAgentStore();
   const router = useRouter();
   const aiService = new AIService();
   const chatService = new ChatService();
@@ -324,9 +327,9 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setSuggestions([
-        "Teach me about DeFi",
-        "Learn about RWAs",
-        "Blockchain basics",
+        "Teach me React Native fundamentals",
+        "Create a two-week product design study plan",
+        "Give me beginner cybersecurity exercises",
       ]);
       } finally {
       setLoadingSuggestions(false);
@@ -339,11 +342,18 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
     }
   }, [user?.id, fetchSuggestions, messages.length]);
 
+  useEffect(() => {
+    if (user?.id) void fetchUserAgent(user.id);
+  }, [user?.id, fetchUserAgent]);
+
+  const chatHeaderTitle =
+    agent?.name?.trim() || title?.trim() || "AI Tutor Chat";
+
 
   if (isTransitioning) {
     return (
-      <div className="rounded-[24px] bg-[#131313] border border-[#2E3033] py-[12px] px-[24px] flex flex-col justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00FF80]"></div>
+      <div className="flex flex-1 flex-col items-center justify-center min-h-[40vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00FF80]" />
         <p className="text-[#E0E0E0] mt-4">Loading chat...</p>
       </div>
     );
@@ -352,7 +362,7 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
   return (
     <>
       <style jsx>{scrollbarStyles}</style>
-      <div className="flex h-screen relative">
+      <div className="relative grid min-h-0 w-full flex-1 overflow-hidden bg-[#0A0A0A] grid-cols-1 grid-rows-[minmax(0,1fr)] md:grid-cols-[256px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]">
         {drawerOpen && (
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden animate-[fadeIn_0.3s_ease-out]"
@@ -363,22 +373,26 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
           />
         )}
 
-        <div className={`
-          fixed md:relative z-50 h-full bg-[#0A0A0A] border-r border-[#2E3033] flex flex-col
+        <div
+          className={`
+          fixed inset-y-0 left-0 z-50 flex max-h-[100dvh] w-[256px] max-w-[85vw] shrink-0
+          flex-col overflow-hidden md:relative md:inset-auto md:h-full md:min-h-0 md:max-h-full md:w-[256px]
+          bg-[#0A0A0A] border-r border-[#2E3033]
           transform transition-all duration-300 ease-out
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-          ${drawerOpen ? 'block' : 'hidden md:block'}
+          ${drawerOpen ? 'flex' : 'hidden md:flex'}
         `}
-        style={{ width: '256px' }}
         >
           <ChatDrawer onClose={() => setDrawerOpen(false)} />
         </div>
 
-        
-        <div className="flex-1 rounded-[24px] bg-[#131313] border border-[#2E3033] py-[12px] px-[24px] flex flex-col relative min-h-0">
-        <div className="py-[16px] flex items-center justify-between border-b border-[#2E3033]">
-          <div className="flex items-center gap-[16px]">
+
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col px-2 py-2 md:px-4 md:py-3 overflow-hidden">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[#2E3033] pb-3 pt-1">
+          <div className="flex min-w-0 items-center gap-2 md:gap-3">
+            <SidebarTrigger className="hidden md:inline-flex shrink-0 border border-[#2E3033] rounded-[9px] p-2 hover:bg-[#1A1A1A]" />
             <button
+              type="button"
               className="p-[8px] border border-[#2E3033] rounded-[9px] hover:bg-[#1A1A1A] transition-colors md:hidden"
               onClick={() => setDrawerOpen(true)}
             >
@@ -386,8 +400,8 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-[#E0E0E0] text-lg font-medium truncate">
-              {title || "AI Tutor Chat"}
+            <h1 className="truncate text-lg font-medium text-[#E0E0E0]">
+              {chatHeaderTitle}
             </h1>
             </div>
             <div className="flex items-center gap-[16px]">

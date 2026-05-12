@@ -73,8 +73,8 @@ const HowItWorks = () => {
           </h2>
 
           <p className="text-[#B3B3B3] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] opacity-[0.7] font-normal md:max-w-[500px]">
-            From AI tutoring to gamified rewards — here&apos;s how to level up your
-            learning journey.
+            From personalized AI agents to accountability loops, here&apos;s how
+            to turn learning into consistent execution.
           </p>
         </motion.div>
 
@@ -92,9 +92,10 @@ const HowItWorks = () => {
             <StepBadge n="01" reduce={reduce} />
 
             <div className="max-w-lg">
-              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Chat to Learn</p>
+              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Create Your AI Agent</p>
               <p className="opacity-[0.7] text-[#B3B3B3] text-base md:text-lg lg:text-[20px] leading-[24px] md:leading-[30px] font-normal mt-2">
-                Ask questions, get explanations, or explore topics with your personal AI tutor.
+                Set your learning goal and get a personalized roadmap that
+                adapts as you progress.
               </p>
             </div>
           </motion.div>
@@ -106,7 +107,7 @@ const HowItWorks = () => {
           >
             <Image
               src={ChatImage}
-              alt="Chat to Learn"
+              alt="Create Your AI Agent"
               width={575}
               className="rounded-[16px] shadow-lg w-full sm:w-[90%] md:w-[95%] lg:w-full object-contain border-2 border-[#2E3033]"
               priority
@@ -129,9 +130,10 @@ const HowItWorks = () => {
             <StepBadge n="02" reduce={reduce} />
 
             <div className="max-w-lg">
-              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Take Interactive Quizzes</p>
+              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Practice With Active Recall</p>
               <p className="opacity-[0.7] text-[#B3B3B3] text-base md:text-lg lg:text-[20px] leading-[24px] md:leading-[30px] font-normal mt-2">
-                Reinforce your knowledge with short, fun quizzes tailored to your learning path.
+                Generate quizzes and flashcards automatically so each session
+                reinforces what matters most.
               </p>
             </div>
           </motion.div>
@@ -139,7 +141,7 @@ const HowItWorks = () => {
           <StepMedia reduce={reduce} fromRight={false} className="w-full lg:w-1/2 flex justify-center lg:justify-start">
             <Image
               src={QuizImage}
-              alt="Take Interactive Quizzes"
+              alt="Practice With Active Recall"
               width={600}
               height={400}
               className="rounded-[16px] shadow-lg w-full sm:w-[90%] md:w-[95%] lg:w-full object-contain border-2 border-[#2E3033]"
@@ -163,9 +165,10 @@ const HowItWorks = () => {
             <StepBadge n="03" reduce={reduce} />
 
             <div className="max-w-lg">
-              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Earn XP & Unlock Rewards</p>
+              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Stay Accountable</p>
               <p className="opacity-[0.7] text-[#B3B3B3] text-base md:text-lg lg:text-[20px] leading-[24px] md:leading-[30px] font-normal mt-2">
-                Get instant XP for correct answers. Unlock exclusive NFTs and claim $USDC
+                Track milestones, schedule revision sessions, and get reminders
+                that keep your momentum alive.
               </p>
             </div>
           </motion.div>
@@ -173,7 +176,7 @@ const HowItWorks = () => {
           <StepMedia reduce={reduce} fromRight className="w-full lg:w-1/2 flex justify-center lg:justify-end">
             <Image
               src={XPIMage}
-              alt="Earn XP & Unlock Rewards"
+              alt="Stay Accountable"
               width={600}
               height={400}
               className="rounded-[16px] shadow-lg w-full sm:w-[90%] md:w-[95%] lg:w-full object-contain border-2 border-[#2E3033]"
@@ -197,9 +200,10 @@ const HowItWorks = () => {
             <StepBadge n="04" reduce={reduce} />
 
             <div className="max-w-lg">
-              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Climb the Leaderboard</p>
+              <p className="text-[#E0E0E0] text-xl md:text-2xl lg:text-[32px] leading-[32px] md:leading-[44px] font-[500]">Build Proof-of-Work</p>
               <p className="opacity-[0.7] text-[#B3B3B3] text-base md:text-lg lg:text-[20px] leading-[24px] md:leading-[30px] font-normal mt-2">
-                See how you rank against other learners and stay motivated with friendly competition.
+                Share progress, climb the leaderboard, and turn completed work
+                into verifiable achievements.
               </p>
             </div>
           </motion.div>
@@ -207,7 +211,7 @@ const HowItWorks = () => {
           <StepMedia reduce={reduce} fromRight={false} className="w-full lg:w-1/2 flex justify-center lg:justify-start">
             <Image
               src={LeaderBoard}
-              alt="Climb the Leaderboard"
+              alt="Build Proof-of-Work"
               width={600}
               height={400}
               className="rounded-[16px] shadow-lg w-full sm:w-[90%] md:w-[95%] lg:w-full object-contain border-2 border-[#2E3033]"

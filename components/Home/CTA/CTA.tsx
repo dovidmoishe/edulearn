@@ -27,10 +27,11 @@ const CTA = () => {
     >
       <motion.div variants={staggerItem} className="flex items-center flex-col gap-[20px] mb-[40px]">
         <p className="text-[#E0E0E0] text-center text-[40px] sm:text-[48px] font-[600] leading-tight">
-          Ready to learn smarter?
+          Ready to build real-world skills?
         </p>
         <p className="text-[#B3B3B3] text-center leading-[28px] opacity-[0.7] font-[400] text-[18px] sm:text-[20px] max-w-lg">
-          Join EduLearn today and earn while you study.
+          Most AI tools answer questions. EduLearn helps you stay consistent
+          long enough to reach mastery.
         </p>
       </motion.div>
 

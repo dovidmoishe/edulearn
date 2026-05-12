@@ -34,7 +34,7 @@ const Footer = () => {
           <div className="flex flex-col gap-[32px] ">
             <Image src={logo} alt="logo" width={190} height={39} />
             <p className="text-[#B3B3B3] text-[16px] font-[400] leading-[24px]">
-              Incentivized Web3 AI study companion
+              AI-powered study companion for real-world skills
             </p>
             <div className="gap-[10px] flex items-center">
               <motion.a href="https://discord.com/invite/7ErYsnc5ty" target="_blank" rel="noopener noreferrer" aria-label="Discord" whileHover={interactive ? { y: -3, scale: 1.08 } : undefined} whileTap={interactive ? { scale: 0.95 } : undefined}>
@@ -71,13 +71,16 @@ const Footer = () => {
             <motion.a href="#faq" className="inline-block text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors" whileHover={interactive ? { x: 4, color: "#00FF80" } : undefined}>
               FAQ&apos;s
             </motion.a>
+            <motion.a href="/blog" className="inline-block text-[#B3B3B3] leading-[30px] font-[400] text-[20px] cursor-pointer hover:text-[#00FF80] transition-colors" whileHover={interactive ? { x: 4, color: "#00FF80" } : undefined}>
+              Blog
+            </motion.a>
           </div>
         </motion.div>
 
         <motion.div variants={staggerItem} className="hidden md:block ">
         <div className="flex flex-row justify-between mt-[90px] mb-[40px]">
           <p className="text-[#B3B3B3] text-[20px] font-medium leading-[30px]">
-            © 2025 EDULEARN. All rights reserved.
+            (c) 2025 EDULEARN. All rights reserved.
           </p>
 
           <div className="flex items-center gap-[24px]">

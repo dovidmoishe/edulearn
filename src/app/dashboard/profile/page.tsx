@@ -10,13 +10,14 @@ import copy from "@/../public/assets/icons/dark/copy.png";
 import nft from "@/../public/assets/icons/dark/nft.png";
 import brain from "@/../public/assets/icons/brain02.png";
 import fire from "@/../public/assets/icons/fire.png";
-import { WalletService } from "@/../services/wallet.service";
-import { UserService } from "@/../services/user.service";
-import { TwitterService } from "@/../services/twitter.service";
 import congrats from "@/../public/assets/icons/congrats.png";
 import walletIcon from "@/../public/assets/icons/wallet.png";
 import roadmapIcon from "@/../public/assets/icons/roadmap.png"
 import useActivityStore from "@/../core/activityState";
+import useWalletStore from "@/../core/walletStore";
+import useTwitterStore from "@/../core/twitterStore";
+import useRoadmapStore from "@/../core/roadmapStore";
+import useAgentStore from "@/../core/agentStore";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +28,6 @@ import {
 import userIcon from "@/../public/assets/icons/user.png";
 import warningIcon from "@/../public/assets/icons/warning.png";
 import { FaXTwitter } from "react-icons/fa6";
-import { RoadmapService } from "@/../services/roadmap.service";
 import { Roadmap, RoadmapStep, RoadmapWithSteps } from "@/../interfaces/Roadmap";
 import { useRouter } from "next/navigation";
 import { getHighQualityImageUrl } from "@/../utils/imageHelper";
@@ -38,9 +38,24 @@ const levels = ["novice", "beginner", "intermediate", "advanced", "expert"];
 
 export default function ProfilePage() {
   const user = useUserStore((s) => s.user);
-  const setUser = useUserStore((s) => s.setUser);
+  const editProfileFields = useUserStore((s) => s.editProfileFields);
+  const uploadProfilePicture = useUserStore((s) => s.uploadProfilePicture);
+  const deleteUserAccount = useUserStore((s) => s.deleteUserAccount);
   const walletBalance = useUserStore((state) => state.walletBalance);
   const fetchWalletBalance = useUserStore((state) => state.fetchWalletBalance);
+  const swapSolToEDLN = useWalletStore((s) => s.swapSolToEDLN);
+  const burnEDLN = useWalletStore((s) => s.burnEDLN);
+  const decryptPrivateKey = useWalletStore((s) => s.decryptPrivateKey);
+  const connectTwitter = useTwitterStore((s) => s.initiateAuth);
+  const fetchRoadmaps = useRoadmapStore((s) => s.fetchRoadmaps);
+  const fetchRoadmapById = useRoadmapStore((s) => s.fetchRoadmapById);
+  const startRoadmapStep = useRoadmapStore((s) => s.startRoadmapStep);
+  const roadmapStoreRoadmaps = useRoadmapStore((s) => s.roadmaps);
+  const createAgent = useAgentStore((s) => s.createAgent);
+  const fetchUserAgent = useAgentStore((s) => s.fetchUserAgent);
+  const agent = useAgentStore((s) => s.agent);
+  const userHasAgent = useAgentStore((s) => s.userHasAgent);
+  const uploadAgentProfilePicture = useAgentStore((s) => s.uploadAgentProfilePicture);
   const { activities, quizActivities, fetchActivities, fetchQuizActivities } = useActivityStore();
   const [isBuyModalVisible, setBuyModalVisible] = useState(false);
   const [buyAmount, setBuyAmount] = useState("");
@@ -61,6 +76,11 @@ export default function ProfilePage() {
     learning: user?.learning || ""
   });
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [profileImageBusy, setProfileImageBusy] = useState(false);
+  const [agentName, setAgentName] = useState("");
+  const [agentPurpose, setAgentPurpose] = useState("");
+  const [agentImageFile, setAgentImageFile] = useState<File | null>(null);
+  const [agentBusy, setAgentBusy] = useState(false);
 
   const [exportWalletModalVisible, setExportWalletModalVisible] = useState(false);
   const [confirmExportModalVisible, setConfirmExportModalVisible] = useState(false);
@@ -76,10 +96,6 @@ export default function ProfilePage() {
   const [isLoadingRoadmapDetails, setIsLoadingRoadmapDetails] = useState(false);
   const [isStartingStep, setIsStartingStep] = useState<string | null>(null);
 
-  const walletService = new WalletService();
-  const userService = new UserService();
-  const twitterService = new TwitterService();
-  const roadmapService = new RoadmapService();
   const router = useRouter();
 
   const buttonShouldBeDisabled = isBuying || buyError !== null;
@@ -114,32 +130,27 @@ export default function ProfilePage() {
       fetchWalletBalance();
       fetchActivities(user.id);
       fetchQuizActivities(user.id);
-      fetchRoadmaps();
+      fetchRoadmaps(user.id);
+      fetchUserAgent(user.id);
     }
-  }, [user?.id, fetchWalletBalance, fetchActivities, fetchQuizActivities]);
+  }, [user?.id, fetchWalletBalance, fetchActivities, fetchQuizActivities, fetchRoadmaps, fetchUserAgent]);
 
-  const fetchRoadmaps = async () => {
-    if (!user?.id) return;
-    
-    setIsLoadingRoadmaps(true);
-    try {
-      const userRoadmaps = await roadmapService.getUserRoadmaps(user.id);
-      setRoadmaps(userRoadmaps);
-    } catch (error) {
-      console.error("Failed to fetch roadmaps:", error);
-    } finally {
-      setIsLoadingRoadmaps(false);
-    }
-  };
+  useEffect(() => {
+    setRoadmaps(roadmapStoreRoadmaps);
+    setIsLoadingRoadmaps(false);
+  }, [roadmapStoreRoadmaps]);
 
   const handleViewRoadmap = async (roadmapId: string) => {
     setIsLoadingRoadmapDetails(true);
     setRoadmapModalVisible(true);
     setSelectedRoadmap(null);
     try {
-      const roadmapData = await roadmapService.getRoadmapById(roadmapId);
-      console.log('Fetched roadmap data:', roadmapData);
-      setSelectedRoadmap(roadmapData);
+      const roadmapData = await fetchRoadmapById(roadmapId);
+      if (roadmapData) {
+        setSelectedRoadmap(roadmapData);
+      } else {
+        throw new Error("No roadmap data");
+      }
     } catch (error) {
       console.error("Failed to fetch roadmap details:", error);
       alert("Failed to load roadmap details");
@@ -154,7 +165,7 @@ export default function ProfilePage() {
     
     setIsStartingStep(stepId);
     try {
-      await roadmapService.startRoadmapStep(stepId, { userId: user.id });
+      await startRoadmapStep(stepId, user.id);
       
       if (selectedRoadmap) {
         setSelectedRoadmap({
@@ -199,7 +210,7 @@ export default function ProfilePage() {
         return;
       }
 
-      const result = await walletService.swapSolToEDLN(user?.id || "", amount);
+      const result = await swapSolToEDLN(user?.id || "", amount);
       console.log(`Successfully bought EDLN with ${amount} SOL`);
       
       setTransactionLink(result.response || "");
@@ -221,7 +232,7 @@ export default function ProfilePage() {
       setIsBurning(true);
       setBurningAmount(burnAmount);
       try {
-          const response = await walletService.burnEDLN(user?.id || "", burnAmount);
+          const response = await burnEDLN(user?.id || "", burnAmount);
         if(response.signature) {
           setLastBurnedAmount(burnAmount);
           setBurnSuccessModalVisible(true);
@@ -270,21 +281,12 @@ export default function ProfilePage() {
     setIsUpdatingProfile(true);
 
     try {
-      const updatedUser = await userService.editUser({
+      await editProfileFields({
         name: editFormData.name,
         email: user?.email as string,
         username: editFormData.username,
         learning: editFormData.learning
       });
-      
-      if (user) {
-        setUser({
-          ...user,
-          name: updatedUser.name,
-          username: updatedUser.username,
-          learning: updatedUser.learning
-        });
-      }
 
       alert("Profile updated successfully!");
       setEditProfileModalVisible(false);
@@ -310,7 +312,7 @@ export default function ProfilePage() {
     setIsExportingWallet(true);
     
     try {
-      const response = await walletService.decryptPrivateKey(user.id);
+      const response = await decryptPrivateKey(user.id);
       if (response.success) {
         setPrivateKey(response.privateKey || null);
         setExportWalletModalVisible(true);
@@ -330,7 +332,7 @@ export default function ProfilePage() {
     
     try {
       setIsConnectingTwitter(true);
-      await twitterService.initiateAuth();
+      await connectTwitter();
     } catch (error) {
       console.error("Error connecting Twitter:", error);
       alert("Failed to connect to X. Please try again.");
@@ -341,11 +343,51 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     try {
       const supabase = createClient();
-      await userService.deleteUser(user?.id as unknown as string, (await supabase.auth.getUser()).data.user?.id as string);
+      await deleteUserAccount(
+        user?.id as unknown as string,
+        (await supabase.auth.getUser()).data.user?.id as string,
+      );
       router.push("/");
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("Failed to delete account. Please try again.");
+    }
+  };
+
+  const handleProfileImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      setProfileImageBusy(true);
+      await uploadProfilePicture(file, file.name);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to upload profile image");
+    } finally {
+      setProfileImageBusy(false);
+    }
+  };
+
+  const handleCreateAgent = async () => {
+    if (!user?.id || !agentName.trim() || !agentPurpose.trim()) return;
+    try {
+      setAgentBusy(true);
+      const created = await createAgent({
+        userId: user.id,
+        name: agentName.trim(),
+        purpose: agentPurpose.trim(),
+        profile_picture_url: "",
+      });
+      if (created && agentImageFile) {
+        await uploadAgentProfilePicture(created.id, agentImageFile, agentImageFile.name);
+      }
+      await fetchUserAgent(user.id);
+      setAgentName("");
+      setAgentPurpose("");
+      setAgentImageFile(null);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to create agent");
+    } finally {
+      setAgentBusy(false);
     }
   };
 
@@ -834,9 +876,72 @@ export default function ProfilePage() {
                   {isConnectingTwitter ? 'Connecting...' : user?.isVerified ? 'X Connected ✓' : 'Connect X Account'}
                 </p>
               </button>
+
+              <label className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-opacity-10 transition-colors cursor-pointer">
+                <Image src={userIcon} alt="upload avatar" width={20} height={20} />
+                <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">
+                  {profileImageBusy ? "Uploading photo..." : "Upload Profile Photo"}
+                </p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleProfileImageUpload}
+                  disabled={profileImageBusy}
+                />
+              </label>
             </div>
 
 
+      </div>
+
+      <div className="rounded-[24px] border border-[#2E3033] bg-[#131313] gap-[16px] p-[16px] items-start flex-col mt-[24px]">
+        <p className="text-[#E0E0E0] text-[20px] font-[500] leading-[30px]">My Agent</p>
+        {userHasAgent && agent ? (
+          <div className="w-full border border-[#2E3033] rounded-[12px] p-[12px] bg-[#1A1A1A] flex items-center gap-[12px]">
+            <Image
+              src={getHighQualityImageUrl(agent.profile_picture_url) || avatar}
+              alt="agent avatar"
+              width={52}
+              height={52}
+              className="rounded-full object-cover"
+            />
+            <div>
+              <p className="text-[#E0E0E0] text-[16px] font-[600]">{agent.name}</p>
+              <p className="text-[#B3B3B3] text-[14px]">{agent.purpose}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full grid md:grid-cols-3 gap-[10px]">
+            <input
+              type="text"
+              placeholder="Agent name"
+              value={agentName}
+              onChange={(e) => setAgentName(e.target.value)}
+              className="bg-[#0D0D0D] border border-[#2E3033] rounded-[10px] p-[10px] text-[#E0E0E0]"
+            />
+            <input
+              type="text"
+              placeholder="Agent purpose"
+              value={agentPurpose}
+              onChange={(e) => setAgentPurpose(e.target.value)}
+              className="bg-[#0D0D0D] border border-[#2E3033] rounded-[10px] p-[10px] text-[#E0E0E0]"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setAgentImageFile(e.target.files?.[0] || null)}
+              className="bg-[#0D0D0D] border border-[#2E3033] rounded-[10px] p-[8px] text-[#E0E0E0]"
+            />
+            <button
+              onClick={handleCreateAgent}
+              disabled={agentBusy || !agentName.trim() || !agentPurpose.trim()}
+              className="md:col-span-3 bg-[#00FF80] text-[#000] rounded-[10px] py-[10px] font-[600] disabled:opacity-50"
+            >
+              {agentBusy ? "Creating agent..." : "Create Agent"}
+            </button>
+          </div>
+        )}
       </div>
 
       <Dialog open={isBuyModalVisible} onOpenChange={setBuyModalVisible}>
@@ -976,7 +1081,7 @@ export default function ProfilePage() {
               <label className="text-[#61728C] dark:text-[#B3B3B3] text-[14px] font-[500]">What are you learning?</label>
               <input
                 type="text"
-                placeholder="blockchain basics, web3 design, smart contracts..."
+                placeholder="React Native, UI design, cybersecurity, product strategy..."
                 value={editFormData.learning}
                 onChange={(e) => setEditFormData({...editFormData, learning: e.target.value})}
                 disabled={isUpdatingProfile}

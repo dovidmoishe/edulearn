@@ -121,7 +121,7 @@ const LearningGoal = () => {
               </label>
             </div>
             <textarea 
-              placeholder="e.g., blockchain basics, web3 design, smart contracts, DeFi protocols..." 
+              placeholder="e.g., React Native, UI design, cybersecurity basics, product management..." 
               className="w-full min-h-[120px] px-4 py-3 rounded-[8px] border-[0.75px] border-[#EDF3FC] dark:border-[#2E3033] bg-[#fff] dark:bg-[#131313] text-[#2D3C52] dark:text-[#E0E0E0] placeholder:text-[#61728C] dark:placeholder:text-[#B3B3B3] focus:outline-none focus:border-[#00FF80] dark:focus:border-[#00FF80] transition-colors resize-none font-[Satoshi]"
               value={learningGoal}
               onChange={(e) => setLearningGoal(e.target.value)}
@@ -134,19 +134,19 @@ const LearningGoal = () => {
 
           <div className="bg-[#F9FBFC] dark:bg-[#131313] border border-[#EDF3FC] dark:border-[#2E3033] rounded-[8px] p-4">
             <p className="text-[#2D3C52] dark:text-[#E0E0E0] text-[14px] font-semibold mb-2">
-              💡 What happens next?
+              What happens next?
             </p>
             <ul className="space-y-2 text-[#61728C] dark:text-[#B3B3B3] text-[14px]">
               <li className="flex items-start gap-2">
-                <span className="text-[#00FF80] mt-1">✓</span>
+                <span className="text-[#00FF80] mt-1">-</span>
                 <span>We&apos;ll generate a personalized learning roadmap</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#00FF80] mt-1">✓</span>
+                <span className="text-[#00FF80] mt-1">-</span>
                 <span>Get AI-powered suggestions tailored to your goals</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-[#00FF80] mt-1">✓</span>
+                <span className="text-[#00FF80] mt-1">-</span>
                 <span>Track your progress and earn rewards</span>
               </li>
             </ul>

@@ -2,85 +2,66 @@
 
 ## Product Overview
 
-EduLearn is a Web3-powered educational platform that combines AI tutoring, gamification, and blockchain technology. It specializes in Web3 education (blockchain, Solana, DeFi) while supporting general education.
+EduLearn is an AI-powered study companion focused on real-world skill acquisition.
+It helps users move beyond passive content consumption through personalized agents, accountability systems, and proof-of-work progress tracking.
 
-Tagline: Learn Web3 Smarter. Earn as You Go
 Website: https://edulearn.fun
-Token Contract (EDLN on Solana): CFw2KxMpWuxivoowkF8vRCrnMuDeg5VMHRR7zjE7pBLV
 
-## Core Features
+## Core Experience
 
-### AI-Powered Learning
-- AI Tutor powered by Google Generative AI (Gemini 2.5 Flash for free, Gemini 2.5 Pro for premium)
-- Interactive chat with conversation history
-- Personalized learning roadmaps (AI-generated step-by-step paths)
-- Quiz generation; educational focus on Web3, blockchain, Solana, DeFi, smart contracts
+### Personalized AI Learning
+- AI tutor powered by Google Generative AI
+- Personalized learning roadmaps based on user goals
+- Chat-based guidance with follow-up explanations
 
-### Gamification
-- XP (experience points), 5 levels (Novice to Expert), streaks, leaderboards
-- NFT achievement badges/certificates on Solana
+### Active Skill Building
+- Auto-generated quizzes and flashcards
+- Practice loops designed for active recall
+- Milestones and progress checkpoints
 
-### Blockchain (Web App Only - edulearn.fun)
-- Auto-generated Solana wallets, encrypted private key storage
-- NFT badges (Metaplex), EDLN SPL utility token
-- Jupiter token swaps (SOL/EDLN), fiat on-ramp (PAJ Ramp), earnings dashboard, private key export
+### Accountability and Consistency
+- Streaks and gamified progression
+- Leaderboards and community motivation
+- Revision reminders and progress nudges
 
-### Community
-- Learning communities (public/private), group chat, join requests, progress sharing
+### Verifiable Proof-of-Work
+- Certificates and achievement tracking
+- Publicly shareable progress artifacts
+- Optional blockchain-backed verification features on web
 
-### Premium
-- Free: Gemini 2.5 Flash, 5 quiz attempts/day, 10 chat credits/day
-- Premium ($5/mo or $48/yr): Gemini 2.5 Pro, 15 quiz attempts/day, 20 chat credits/day, exclusive badges
-- Payment: RevenueCat (mobile), Solana (web)
+## Pricing
 
-## Technical Architecture
-
-- API: NestJS, PostgreSQL (Drizzle ORM), Solana Web3.js, Metaplex
-- Web: Next.js 15, React 19, Tailwind CSS 4, shadcn/ui (edulearn.fun)
-- Mobile: Expo React Native (iOS/Android) - core learning only, no blockchain
-- Admin: Next.js for rewards and IPFS (Pinata)
-- Auth: Supabase, JWT, OAuth (Google, Twitter/X, Discord)
-- AI: Google Generative AI (Gemini 2.5); real-time: Socket.io; push: Expo; email: Resend
+- Free: core AI learning features with daily limits
+- Premium: advanced AI model access, higher limits, and additional features
 
 ## Platform Availability
 
-- Web (edulearn.fun): Full features including wallet, NFTs, EDLN, swaps, earnings, communities, premium
-- Mobile (iOS/Android): AI tutor, gamification, quizzes, roadmaps, communities, premium; no wallet/NFTs/tokens
+- Web (edulearn.fun): full feature set including verification and wallet-connected rewards
+- Mobile (iOS/Android): core learning, quizzes, roadmaps, and communities
 
-## Educational Content & AI Tutor
+## Technical Stack
 
-Coverage: General Web3, wallets, transactions, token standards; Solana (runtime, accounts, Rust/Anchor, PDAs, CPIs, SPL, Metaplex, DApps); DeFi; Internet Capital Markets (ICM).
-Teaching: Socratic, hands-on challenges, metaphors, job readiness; certificates awarded for mastery (confidence 8+/10).
-Certificates: Blockchain Basics (web3Basics), DeFi Foundations (defiFoundations), Internet Capital Markets (icm), EduLearn Welcome Badge (eduLearnWelcome).
-
-## Monetization & Rewards
-
-- Users earn SOL and EDLN for quizzes/milestones; referral XP; EDLN burn for chat credits
-- Revenue: premium subscriptions, Streak Shield ($0.99), Quiz Refresh ($0.49/5 attempts), EDLN utility
-
-## API & Integrations
-
-- Marketplace AI stream: POST /ai/marketplace-stream (SSE, x-marketplace-key), free for integrations
-- Social: Twitter/X, Google, Discord OAuth; Twitter posting for achievements
-- Blockchain: Solana (Alchemy), Jupiter, Metaplex, PAJ Ramp
-
-## Design & UX
-
-- Dark theme, accent #00FF80; backgrounds #0a0a0a, #131313; borders #2E3033
-- Flows: sign up → wallet → profile → chat/quizzes/roadmaps → XP/rewards/communities
-
-## Security & Compliance
-
-- Encrypted wallet keys; key export; blockchain disclaimers; NFTs/tokens no guaranteed monetary value; Web3 features web-only
+- API: NestJS, PostgreSQL (Drizzle ORM)
+- Web: Next.js, React, Tailwind CSS
+- Mobile: Expo React Native
+- Auth: Supabase and OAuth providers
+- AI: Google Generative AI (Gemini)
 
 ## Target Audience
 
-Web3 learners, blockchain developers, Solana enthusiasts; general learners; novice to expert; web (full) and mobile (core learning)
+- Learners building practical career skills
+- Students and early-career professionals
+- Communities and organizations training users at scale
 
-## Use Cases
+## Example Skill Areas
 
-Web3 onboarding, Solana development learning, DeFi education, verifiable NFT skill badges, community learning, earn-while-learning with crypto rewards
+- Software engineering
+- Product design
+- AI literacy and applied workflows
+- Cybersecurity fundamentals
+- Content creation and marketing
+- Product management
 
 ## Keywords
 
-Web3 education, blockchain learning platform, Solana tutorial, AI tutor, gamified learning, NFT certificates, crypto rewards, DeFi education, smart contract learning, Solana development, learn to earn, educational NFTs, Web3 onboarding, blockchain courses, Solana Rust Anchor, personalized learning roadmaps, AI-powered education, crypto learning app, Web3 study companion, blockchain gamification
+AI study companion, skill acquisition, personalized learning roadmap, accountability learning app, active recall, quiz-based learning, verifiable achievements, proof-of-work learning, gamified education, outcome-driven learning

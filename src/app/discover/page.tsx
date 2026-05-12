@@ -103,7 +103,8 @@ const DiscoverPage = () => {
               Discover Opportunities
             </h1>
             <p className="text-[#B3B3B3] text-[16px] md:text-[18px] font-[400] leading-[24px] max-w-[600px] mx-auto">
-              Use your Proof-of-Work NFTs to unlock exclusive job opportunities
+              Use your verifiable proof-of-work achievements to unlock
+              exclusive opportunities
             </p>
           </div>
 
@@ -164,7 +165,8 @@ const DiscoverPage = () => {
                 No jobs available yet
               </p>
               <p className="text-[#B3B3B3] text-[14px] font-[400] text-center">
-                Keep learning and collecting NFTs. New opportunities are coming soon!
+                Keep learning and building proof-of-work. New opportunities are
+                coming soon!
               </p>
             </div>
           )}

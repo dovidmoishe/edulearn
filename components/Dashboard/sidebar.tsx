@@ -28,6 +28,7 @@ import useUserStore from "@/../core/userState";
 import HomeIcon from "@/../public/assets/icons/dark/home.png"
 import Chat from "@/../public/assets/icons/dark/aichat.png"
 import Quizzes from "@/../public/assets/icons/dark/brain.png"
+import Flashcards from "@/../public/assets/icons/dark/brain.png"
 import Rewards from "@/../public/assets/icons/dark/gift.png"
 import Leaderboard from "@/../public/assets/icons/dark/medal.png"
 import Profile from "@/../public/assets/icons/dark/user1.png"

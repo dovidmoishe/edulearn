@@ -20,7 +20,6 @@ httpClient.interceptors.request.use(
     );
 
     if (isUnauthenticatedEndpoint) {
-      console.log('⚠️ Skipping authentication for:', config.url);
       return config;
     }
 
@@ -34,41 +33,24 @@ httpClient.interceptors.request.use(
         } else {
         }
     } catch (error) {
-      console.error('❌ Error in request interceptor:', error);
+      //silent
     }
     
     return config;
   },
   (error) => {
-    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
 httpClient.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response:', response.config.method?.toUpperCase(), response.config.url, 'Status:', response.status);
     return response;
   },
   (error) => {
     if (error.response) {
-      console.error("❌ API Error Response:", {
-        url: error.config?.url,
-        method: error.config?.method,
-        status: error.response.status,
-        statusText: error.response.statusText,
-        data: error.response.data,
-        headers: error.response.headers,
-      });
     } else if (error.request) {
-      console.error("❌ API Error: No response received (server might be down)");
-      console.error("Request details:", {
-        url: error.config?.url,
-        method: error.config?.method,
-        baseURL: error.config?.baseURL,
-      });
     } else {
-      console.error("❌ API Error:", error.message);
     }
     return Promise.reject(error);
   }

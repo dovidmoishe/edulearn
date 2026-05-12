@@ -2,6 +2,8 @@ import React, { useEffect, useMemo } from "react";
 import Image from "next/image";
 import useUserStore from "@/../core/userState";
 import useActivityStore from "@/../core/activityState";
+import useFlashCardStore from "@/../core/flashcardStore";
+import Link from "next/link";
 
 const levels = ['novice', 'beginner', 'intermediate', 'advanced', 'expert'];
 import medal from "@/../public/assets/icons/dark/medal05.png";
@@ -14,6 +16,8 @@ const Cards = () => {
    const user = useUserStore((state) => state.user);
    const { activities, quizActivities, fetchActivities, fetchQuizActivities } =
      useActivityStore();
+   const flashcardDecks = useFlashCardStore((s) => s.flashcardDecks);
+   const fetchFlashcardDecks = useFlashCardStore((s) => s.fetchFlashcardDecks);
 
    const getActiveDays = (streak: number) => {
      const todayIndex = new Date().getDay();
@@ -31,8 +35,9 @@ const Cards = () => {
     if (user?.id) {
       fetchActivities(user.id);
       fetchQuizActivities(user.id);
+      fetchFlashcardDecks(user.id, { force: true });
     }
-  }, [user?.id, fetchActivities, fetchQuizActivities]);
+  }, [user?.id, fetchActivities, fetchQuizActivities, fetchFlashcardDecks]);
   const weeklyActivityXP = useMemo(() => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -57,7 +62,7 @@ const Cards = () => {
   }, [quizActivities]);
 
   return (
-    <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full max-w-full overflow-hidden">
+    <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-4 w-full max-w-full overflow-hidden">
         <div className="bg-[#1A1A1A] border border-[#2E2E2E] rounded-lg p-4 flex flex-col items-center justify-center h-[160px] min-w-0 overflow-hidden">
           <div className="flex flex-col items-center gap-2 mb-4">
             <div className="w-8 h-8 bg-[#2E2E2E] rounded-lg flex items-center justify-center">
@@ -143,6 +148,23 @@ const Cards = () => {
             </div>
           </div>
         </div>
+
+        <Link
+          href="/dashboard/flashcards"
+          className="bg-[#1A1A1A] border border-[#2E2E2E] rounded-lg p-4 flex flex-col items-center justify-center h-[160px] min-w-0 overflow-hidden hover:border-[#00FF80]/60 transition-colors"
+        >
+          <div className="flex flex-col items-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-[#2E2E2E] rounded-lg flex items-center justify-center">
+              <Image src={quiz} alt="Flashcards icon" width={20} height={20} />
+            </div>
+            <span className="text-[#B3B3B3] text-xs font-medium text-center">Flashcard Decks</span>
+          </div>
+
+          <div className="flex flex-col items-center text-center">
+            <div className="text-2xl font-bold text-white mb-1">{flashcardDecks.length}</div>
+            <div className="text-[#B3B3B3] text-xs">Ready to review</div>
+          </div>
+        </Link>
     </div>
   );
 };

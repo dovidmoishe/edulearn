@@ -1,12 +1,13 @@
 "use client";
 
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/../components/Dashboard/sidebar"
 import { DynamicNavbar } from "@/../components/Dashboard/DynamicNavbar"
 import useUserStore from "@/../core/userState";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "../../../utils/supabase/client";
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -20,6 +21,7 @@ export default function DashboardLayout({
   const [hasAuth, setHasAuth] = useState(false);
 
   const isTwitterCallback = pathname?.includes('/twitter-callback');
+  const isChatRoute = pathname?.startsWith('/dashboard/chat');
 
   useEffect(() => {
     if (isTwitterCallback) {
@@ -111,11 +113,27 @@ export default function DashboardLayout({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      className={cn(
+        isChatRoute &&
+          "h-dvh max-h-dvh min-h-0 overflow-hidden",
+      )}
+    >
       <AppSidebar />
-      <SidebarInset>
-        <DynamicNavbar />
-        <div className="flex flex-1 flex-col gap-4 p-2 md:p-4">
+      <SidebarInset
+        className={cn(
+          isChatRoute &&
+            "min-h-0 max-h-full overflow-hidden md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-none",
+        )}
+      >
+        {!isChatRoute && <DynamicNavbar />}
+        <div
+          className={
+            isChatRoute
+              ? 'flex h-0 min-h-0 flex-1 flex-col overflow-hidden'
+              : 'flex flex-1 flex-col gap-4 p-2 md:p-4'
+          }
+        >
           {children}
         </div>
       </SidebarInset>

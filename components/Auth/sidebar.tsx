@@ -15,14 +15,17 @@ const Sidebar = () => {
             </p>
 
             <p className='opacity-[0.7] text-[16px] font-[400] leading-[22px] text-[#E4DBDB]'>
-              From quick challenges to deep dives, EduLearn&apos;s community of learners is growing together — one badge at a time.
+              From quick challenges to deep dives, EduLearn&apos;s community is
+              growing together one milestone at a time.
             </p>
           </div>
         </div>
 
         <div className='rounded-[20px] bg-white/10 flex flex-col gap-[16px] p-[24px]'>
           <p className='text-[16px] leading-[24px] font-[400] text-[#F0E6E6]'>
-          As a Web3 gaming expert, I&apos;ve seen plenty of AI tools, but EduLearn actually stands out. The AI-powered quizzes pinpoint my weak spots and help me improve fast. It feels like training my brain with precision.
+          I&apos;ve tried a lot of learning apps, but EduLearn actually keeps me
+          consistent. The AI quizzes expose my weak spots and the roadmap makes
+          progress feel clear.
           </p>
 
           <div className='flex items-center gap-[12px]'>
@@ -36,7 +39,7 @@ const Sidebar = () => {
 
             <div className='flex flex-col gap-[4px]'>
               <p className='text-[14px] font-[600] leading-[20px] text-white'>Valour</p>
-              <p className='text-[12px] font-[400] leading-[16px] text-[#A29999]'>Web3 Gaming creator</p>
+              <p className='text-[12px] font-[400] leading-[16px] text-[#A29999]'>Product builder</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { MdContentCopy } from "react-icons/md";
+import React from "react";
 import Image from "next/image";
 import { motion, type TargetAndTransition } from "framer-motion";
 import HeroImage from "@/../public/image.webp";
@@ -16,7 +15,6 @@ const heroPrimaryHover: TargetAndTransition = {
 };
 
 const Hero = () => {
-  const [copied, setCopied] = useState(false);
   const {
     staggerContainer,
     staggerItem,
@@ -25,20 +23,6 @@ const Hero = () => {
     buttonTap,
     reduce,
   } = useHomeMotion();
-  const contractAddress = "CFw2KxMpWuxivoowkF8vRCrnMuDeg5VMHRR7zjE7pBLV";
-
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(contractAddress)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
-      });
-  };
-
   return (
     <div className="px-4 sm:px-6 md:px-8">
       <motion.div
@@ -57,7 +41,7 @@ const Hero = () => {
           variants={staggerItem}
           className="max-w-full sm:max-w-xl md:max-w-2xl mb-8 md:mb-0 text-left w-[731px] md:text-left"
         >
-          <h1 className="sr-only">Learn Web3 Smarter. Earn as You Go</h1>
+          <h1 className="sr-only">EduLearn - AI Study Companion for Real-World Skills</h1>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -69,20 +53,20 @@ const Hero = () => {
               variants={heroLine}
               className="block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#FFFFFF]"
             >
-              Learn Web3 Smarter.
+              Build Real Skills Faster.
             </motion.span>
             <motion.span
               variants={heroLine}
               className="mt-1 block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#00FF80]"
             >
-              Earn as You Go
+              Stay Consistent with AI.
             </motion.span>
             <motion.p
               variants={staggerItem}
               className="mt-4 text-base sm:text-lg md:text-[20px] leading-normal md:leading-[24px] text-white font-[500] opacity-[0.7]"
             >
-              Chat with an AI tutor, take quizzes, earn XP and NFTs, EduLearn
-              makes every study session rewarding.
+              Create a personalized AI learning agent, practice actively, and
+              build proof-of-work you can actually show.
             </motion.p>
           </motion.div>
         </motion.div>
@@ -102,24 +86,14 @@ const Hero = () => {
           >
             Get Started For Free
           </motion.a>
-          <motion.div
-            onClick={copyToClipboard}
-            className="w-full sm:w-auto flex justify-center bg-[#131313] rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-white items-center gap-2 cursor-pointer border border-[#2E3033] relative"
+          <motion.a
+            href="#howItWorks"
+            className="w-full sm:w-auto flex justify-center bg-[#131313] rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-white items-center gap-2 cursor-pointer border border-[#2E3033] relative no-underline"
             whileHover={interactive ? { scale: 1.02, borderColor: "rgba(0,255,128,0.35)" } : undefined}
             whileTap={interactive ? buttonTap : undefined}
           >
-            <span className="text-[14px] sm:text-[16px] whitespace-nowrap">Contract Address</span>
-            <MdContentCopy size={16} className="sm:size-[18px]" />
-            {copied && (
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 bg-white text-black px-2 py-1 rounded text-sm"
-              >
-                Copied!
-              </motion.div>
-            )}
-          </motion.div>
+            <span className="text-[14px] sm:text-[16px] whitespace-nowrap">See How It Works</span>
+          </motion.a>
         </motion.div>
       </motion.div>
 

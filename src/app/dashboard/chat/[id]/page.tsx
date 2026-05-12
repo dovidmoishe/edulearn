@@ -19,8 +19,6 @@ const ChatPage = () => {
 
   useEffect(() => {
     const loadChatData = async () => {
-      console.log('chatId', chatId)
-      console.log('user?.id', user?.id)
       if (!chatId || !user?.id) {
        router.push("/dashboard") 
       }
@@ -35,7 +33,6 @@ const ChatPage = () => {
         const currentChat = chats.find((chat) => chat.id === chatId)
         setChatTitle(currentChat?.title || 'New Chat')
       } catch (error) {
-        console.error('Error loading chat data:', error)
         setMessages([])
         setChatTitle('New Chat')
       } finally {

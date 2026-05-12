@@ -22,6 +22,29 @@ export interface User {
 }
 
 export class UserService {
+    private resolveClientTimeZone(): string {
+        try {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            return tz || "UTC";
+        } catch {
+            return "UTC";
+        }
+    }
+
+    async initUser(): Promise<User> {
+        try {
+            const response = await httpClient.post('/auth/init', {}, {
+                headers: {
+                    'x-timezone': this.resolveClientTimeZone(),
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error initializing user:", error);
+            throw error;
+        }
+    }
+
     async getUser(email: string): Promise<User> {
         try {
             const response = await httpClient.get(`/auth/email/${email}`);
@@ -59,6 +82,25 @@ export class UserService {
             return response.data;
         } catch (error) {
             console.error("Error editing user:", error);
+            throw error;
+        }
+    }
+
+    async uploadProfilePicture(
+        file: File | Blob,
+        filename: string = "photo.jpg"
+    ): Promise<{ profilePictureURL: string }> {
+        try {
+            const formData = new FormData();
+            formData.append("image", file, filename);
+            const response = await httpClient.post('/auth/profile-picture/upload', formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error uploading profile picture:", error);
             throw error;
         }
     }

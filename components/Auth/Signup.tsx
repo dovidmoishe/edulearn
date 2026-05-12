@@ -305,7 +305,7 @@ const Signup = () => {
           <p className="text-[#61728C] dark:text-[#B3B3B3] text-[18px] leading-[26px] text-center font-medium opacity-[0.7]">
             {isLogin
               ? "Login to continue your journey"
-              : "Lets get started, your Web3 AI tutor awaits"}
+              : "Lets get started, your AI skill coach awaits"}
           </p>
         </div>
       </div>

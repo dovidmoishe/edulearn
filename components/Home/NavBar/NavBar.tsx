@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoMdClose } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -89,6 +90,14 @@ const NavBar = () => {
               Discover
             </a>
           </li>
+          <li>
+            <Link
+              href="/blog"
+              className="rounded-full px-3 py-2 text-[#B3B3B3] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer transition-colors hover:bg-white/5 hover:text-[#00FF80] active:bg-white/10"
+            >
+              Blog
+            </Link>
+          </li>
         </ul>
       </div>
 
@@ -175,6 +184,15 @@ const NavBar = () => {
                 >
                   Discover
                 </a>
+              </li>
+              <li className="py-2">
+                <Link
+                  href="/blog"
+                  className="text-[#B3B3B3] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#00FF80] transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Blog
+                </Link>
               </li>
               <li className="py-2">
                 <a 

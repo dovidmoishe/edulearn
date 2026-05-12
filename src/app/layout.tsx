@@ -10,26 +10,26 @@ const satoshi = localFont({src: '../../public/assets/fonts/Satoshi-Regular.otf',
 
 export const metadata: Metadata = {
   title: {
-    default: "EduLearn - AI-Powered Web3 Learning Companion",
+    default: "EduLearn - AI Study Companion for Real-World Skills",
     template: "%s | EduLearn"
   },
-  description: "EduLearn is an incentivized AI study companion that makes web3 learning fun and rewarding. Learn blockchain, DeFi, NFTs, and crypto while earning rewards. Interactive quizzes, AI chat tutor, and gamified learning experience.",
+  description: "EduLearn is an AI-powered study companion for real-world skill acquisition. Build personalized learning agents, stay accountable, and turn progress into verifiable proof-of-work.",
   keywords: [
-    "web3 learning",
-    "blockchain education",
-    "crypto learning",
-    "DeFi education",
-    "NFT learning",
+    "AI learning platform",
+    "study companion",
+    "skill acquisition",
+    "personalized learning",
+    "accountability app",
+    "learning roadmap",
+    "active recall",
+    "quiz and flashcards",
+    "career skills",
+    "proof of work",
+    "verifiable achievements",
     "AI tutor",
     "gamified learning",
-    "crypto rewards",
-    "blockchain courses",
-    "web3 courses",
-    "cryptocurrency education",
-    "AI study companion",
-    "learn crypto",
-    "learn blockchain",
-    "web3 training"
+    "learning analytics",
+    "outcome driven learning"
   ],
   authors: [{ name: "EduLearn Team" }],
   creator: "EduLearn",
@@ -64,21 +64,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://edulearn.fun',
     siteName: 'EduLearn',
-    title: 'EduLearn - AI-Powered Web3 Learning Companion',
-    description: 'Incentivized AI study companion that makes web3 learning fun and rewarding. Learn blockchain, DeFi, NFTs, and crypto while earning rewards.',
+    title: 'EduLearn - AI Study Companion for Real-World Skills',
+    description: 'Build personalized AI learning agents, stay consistent with accountability systems, and showcase verifiable proof-of-work.',
     images: [
       {
         url: 'https://lmektyexzejjvisjpzxu.supabase.co/storage/v1/object/public/media/edulearn-preview.png',
         width: 1200,
         height: 630,
-        alt: 'EduLearn - AI-Powered Web3 Learning Platform',
+        alt: 'EduLearn - AI-powered skill acquisition platform',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EduLearn - AI-Powered Web3 Learning Companion',
-    description: 'Incentivized AI study companion that makes web3 learning fun and rewarding. Learn blockchain, DeFi, NFTs, and crypto while earning rewards.',
+    title: 'EduLearn - AI Study Companion for Real-World Skills',
+    description: 'Most AI tools answer questions. EduLearn helps users stay consistent long enough to become truly skilled.',
     images: ['https://lmektyexzejjvisjpzxu.supabase.co/storage/v1/object/public/media/edulearn-preview.png'],
     creator: '@edulearndotfun',
     site: '@edulearndotfun',
@@ -96,7 +96,7 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
   "name": "EduLearn",
-  "description": "Incentivized AI study companion that makes web3 learning fun and rewarding",
+  "description": "AI-powered study companion for personalized, outcome-driven, and verifiable skill acquisition",
   "url": "https://edulearn.fun",
   "logo": "https://lmektyexzejjvisjpzxu.supabase.co/storage/v1/object/public/media/edulearn-preview.png",
   "sameAs": [
@@ -109,22 +109,22 @@ const structuredData = {
   "educationalCredentialAwarded": "Certificate",
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
-    "name": "Web3 Learning Courses",
+    "name": "Real-World Skill Paths",
     "itemListElement": [
       {
         "@type": "Course",
-        "name": "Blockchain Fundamentals",
-        "description": "Learn the basics of blockchain technology"
+        "name": "Software Engineering",
+        "description": "Build practical coding skills with guided projects and active recall"
       },
       {
         "@type": "Course",
-        "name": "DeFi Education",
-        "description": "Master decentralized finance concepts"
+        "name": "Product Design",
+        "description": "Learn design fundamentals and portfolio-focused execution"
       },
       {
         "@type": "Course",
-        "name": "NFT Learning",
-        "description": "Understand NFTs and their applications"
+        "name": "AI and Data Skills",
+        "description": "Develop AI literacy and applied workflows for modern teams"
       }
     ]
   }

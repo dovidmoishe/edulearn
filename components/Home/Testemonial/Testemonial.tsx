@@ -78,19 +78,19 @@ const Testemonial = () => {
     {
       name: "itsdave.solana",
       username: "itsdavetech",
-      content: "EduLearn helps me brush up on my web3 knowledge and random fact checks.",
+      content: "EduLearn helps me stay consistent with daily practice instead of just watching tutorials.",
       avatar: "/assets/avatar.jpg"
     },
     {
       name: "Emma",
       username: "emma3bw",
-      content: "EduLearn turned Web3 from confusing to exciting for me. It feels like having a smart friend who explains everything simply while making learning fun with quizzes, XP, and NFTs that prove your progress.",
+      content: "I like how the AI agent adapts to my weak spots and keeps me accountable with clear milestones.",
       avatar: "https://pbs.twimg.com/profile_images/1927500943022571520/gAmxyvYR_400x400.jpg"
     },
     {
       name: "Valour",
       username: "0xvalour",
-      content: "I've been using EduLearn for a while and it's been amazing! I can create my own learning roadmaps, making Web3 learning easy and fun, and I even earn NFTs as proof of my progress!",
+      content: "The roadmap plus quizzes combo made my learning way more structured, and now I can prove what I have built.",
       avatar: "https://pbs.twimg.com/profile_images/1970446634363371520/AIpKFc44_400x400.jpg"
     }
   ];
