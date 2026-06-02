@@ -35,7 +35,7 @@ const Cards = () => {
     if (user?.id) {
       fetchActivities(user.id);
       fetchQuizActivities(user.id);
-      fetchFlashcardDecks(user.id, { force: true });
+      fetchFlashcardDecks(user.id);
     }
   }, [user?.id, fetchActivities, fetchQuizActivities, fetchFlashcardDecks]);
   const weeklyActivityXP = useMemo(() => {
