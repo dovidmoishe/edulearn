@@ -137,108 +137,186 @@ export class AIService {
         },
         onToken: (token: string, type?: string) => void,
         onComplete: (fullMessage: Message) => void,
-        onError: (error: Error) => void
+        onError: (error: Error) => void,
+        onStreamReady?: (cleanup: () => void) => void,
     ) {
         let abortController: AbortController | null = null;
-        
+        const clientStreamStartedAtMs = Date.now();
+        let firstSseChunkAtMs: number | null = null;
+        let firstTokenRenderedAtMs: number | null = null;
+
         try {
-            const initResponse = await httpClient.post('/ai/message-stream/init', dto);
+            const initResponse = await httpClient.post("/ai/message-stream/init", dto);
             const { streamId } = initResponse.data;
-            
+
             const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
             const supabase = createClient();
-            const { data: { session } } = await supabase.auth.getSession();
-            
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
             if (!session?.access_token) {
-                throw new Error('No access token found. Please log in again.');
+                throw new Error("No access token found. Please log in again.");
             }
-            
+
             abortController = new AbortController();
-            
-            const response = await fetch(`${API_URL}ai/message-stream/${streamId}`, {
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`,
-                    'Accept': 'text/event-stream',
-                },
-                signal: abortController.signal,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const reader = response.body?.getReader();
-            const decoder = new TextDecoder();
-            
-            if (!reader) {
-                throw new Error('No response body');
-            }
-
-            let fullResponse = '';
-            let buffer = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                
-                if (done) {
-                    break;
-                }
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const data = line.slice(6);
-                        
-                        if (data === '[DONE]') {
-                            continue;
-                        }
-
-                        try {
-                            const parsed = JSON.parse(data);
-                            
-                            if (parsed.token) {
-                                fullResponse += parsed.token;
-                                onToken(parsed.token, parsed.type);
-                            }
-                        } catch (e) {
-                            console.error('Failed to parse SSE data:', data, e);
-                        }
-                    }
-                }
-            }
-
-            onComplete({
-                id: generateUUID(),
-                role: 'assistant',
-                content: fullResponse,
-                createdAt: new Date(),
-                chatId: dto.chatId,
-            });
-
-            return () => {
+            const cleanup = () => {
                 abortController?.abort();
             };
-    
+            onStreamReady?.(cleanup);
+
+            void (async () => {
+                try {
+                    const response = await fetch(
+                        `${API_URL}ai/message-stream/${streamId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${session.access_token}`,
+                                Accept: "text/event-stream",
+                                "x-no-compression": "1",
+                            },
+                            signal: abortController?.signal,
+                        },
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const reader = response.body?.getReader();
+                    const decoder = new TextDecoder();
+
+                    if (!reader) {
+                        throw new Error("No response body");
+                    }
+
+                    let fullResponse = "";
+                    let buffer = "";
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+
+                        if (done) {
+                            break;
+                        }
+                        if (!firstSseChunkAtMs) {
+                            firstSseChunkAtMs = Date.now();
+                            console.log(
+                                JSON.stringify({
+                                    aiStreamClientLatency: true,
+                                    stage: "first_sse_chunk_received",
+                                    streamId,
+                                    sinceStartMs:
+                                        firstSseChunkAtMs -
+                                        clientStreamStartedAtMs,
+                                }),
+                            );
+                        }
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split("\n");
+                        buffer = lines.pop() || "";
+
+                        for (const line of lines) {
+                            if (line.startsWith("data: ")) {
+                                const data = line.slice(6);
+
+                                if (data === "[DONE]") {
+                                    continue;
+                                }
+
+                                try {
+                                    const parsed = JSON.parse(data);
+
+                                    if (parsed.token) {
+                                        if (!firstTokenRenderedAtMs) {
+                                            firstTokenRenderedAtMs = Date.now();
+                                            console.log(
+                                                JSON.stringify({
+                                                    aiStreamClientLatency: true,
+                                                    stage: "first_token_rendered",
+                                                    streamId,
+                                                    sinceStartMs:
+                                                        firstTokenRenderedAtMs -
+                                                        clientStreamStartedAtMs,
+                                                }),
+                                            );
+                                        }
+                                        fullResponse += parsed.token;
+                                        onToken(parsed.token, parsed.type);
+                                    }
+                                } catch (e) {
+                                    console.error(
+                                        "Failed to parse SSE data:",
+                                        data,
+                                        e,
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    onComplete({
+                        id: generateUUID(),
+                        role: "assistant",
+                        content: fullResponse,
+                        createdAt: new Date(),
+                        chatId: dto.chatId,
+                    });
+                    console.log(
+                        JSON.stringify({
+                            aiStreamClientLatency: true,
+                            stage: "stream_completed",
+                            streamId,
+                            totalMs: Date.now() - clientStreamStartedAtMs,
+                            firstSseChunkMs:
+                                firstSseChunkAtMs !== null
+                                    ? firstSseChunkAtMs -
+                                      clientStreamStartedAtMs
+                                    : null,
+                            firstTokenRenderedMs:
+                                firstTokenRenderedAtMs !== null
+                                    ? firstTokenRenderedAtMs -
+                                      clientStreamStartedAtMs
+                                    : null,
+                        }),
+                    );
+                } catch (error: any) {
+                    if (error?.name === "AbortError") {
+                        return;
+                    }
+
+                    console.error("Error in streaming messages:", error);
+
+                    let errorMessage = "Failed to generate response. Please try again.";
+
+                    if (error?.response?.data?.message) {
+                        errorMessage = error.response.data.message;
+                    } else if (error?.message) {
+                        errorMessage = error.message;
+                    }
+
+                    onError(new Error(errorMessage));
+                }
+            })();
+
+            return cleanup;
         } catch (error: any) {
-            if (error.name === 'AbortError') {
+            if (error?.name === "AbortError") {
                 return () => {};
             }
-            
+
             console.error("Error in streaming messages:", error);
-            
+
             let errorMessage = "Failed to generate response. Please try again.";
-            
-            if (error.response?.data?.message) {
+
+            if (error?.response?.data?.message) {
                 errorMessage = error.response.data.message;
-            } else if (error.message) {
+            } else if (error?.message) {
                 errorMessage = error.message;
             }
-            
+
             onError(new Error(errorMessage));
-            
             return () => {
                 abortController?.abort();
             };

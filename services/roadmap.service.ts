@@ -5,7 +5,10 @@ import {
     RoadmapWithSteps, 
     GenerateRoadmapDto,
     StartRoadmapStepDto,
-    StartRoadmapStepResponse
+    StartRoadmapStepResponse,
+    StartRoadmapVerificationResponse,
+    SubmitRoadmapVerificationDto,
+    SubmitRoadmapVerificationResponse
 } from "@/../interfaces/Roadmap";
 
 export class RoadmapService {
@@ -103,6 +106,32 @@ export class RoadmapService {
             
             const processedError = new Error(errorMessage);
             processedError.name = 'RoadmapStepStartError';
+            throw processedError;
+        }
+    }
+
+    async startSubStepVerification(subStepId: string, userId: string): Promise<StartRoadmapVerificationResponse> {
+        try {
+            const response = await httpClient.post(`/roadmap/sub-step/${subStepId}/verification/start`, { userId });
+            return response.data;
+        } catch (error: any) {
+            console.error("Error starting roadmap verification:", error);
+            const errorMessage = error.response?.data?.message || "Failed to start checkpoint verification. Please try again later.";
+            const processedError = new Error(errorMessage);
+            processedError.name = "RoadmapVerificationStartError";
+            throw processedError;
+        }
+    }
+
+    async submitSubStepVerification(quizId: string, dto: SubmitRoadmapVerificationDto): Promise<SubmitRoadmapVerificationResponse> {
+        try {
+            const response = await httpClient.post(`/roadmap/verification/${quizId}/attempt`, dto);
+            return response.data;
+        } catch (error: any) {
+            console.error("Error submitting roadmap verification:", error);
+            const errorMessage = error.response?.data?.message || "Failed to submit checkpoint verification. Please try again later.";
+            const processedError = new Error(errorMessage);
+            processedError.name = "RoadmapVerificationSubmitError";
             throw processedError;
         }
     }

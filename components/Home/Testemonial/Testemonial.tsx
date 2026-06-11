@@ -25,7 +25,7 @@ const TestimonialCard = ({ name, username, content, avatar }: TestimonialCardPro
 
   return (
     <motion.article
-      className="h-full min-h-0 rounded-2xl border border-[#2E3033] bg-[#131313] p-6 md:p-8 flex flex-col gap-4"
+      className="h-full min-h-0 rounded-2xl border border-[#D7E7D7] bg-white p-6 md:p-8 flex flex-col gap-4 shadow-sm shadow-emerald-950/5 dark:border-[#2E3033] dark:bg-[#131313]"
       whileHover={interactive ? testimonialCardHover : undefined}
       whileTap={interactive ? cardTap : undefined}
       transition={{ type: "spring", stiffness: 380, damping: 26 }}
@@ -33,7 +33,7 @@ const TestimonialCard = ({ name, username, content, avatar }: TestimonialCardPro
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <motion.div
-            className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#2E3033]"
+            className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#D7E7D7] dark:ring-[#2E3033]"
             whileHover={interactive ? { scale: 1.08 } : undefined}
           >
             <SafeImage
@@ -44,15 +44,15 @@ const TestimonialCard = ({ name, username, content, avatar }: TestimonialCardPro
             />
           </motion.div>
           <div>
-            <p className="text-[#E0E0E0] font-medium">{name}</p>
-            <p className="text-gray-400 text-sm">@{username}</p>
+            <p className="text-[#101511] font-medium dark:text-[#E0E0E0]">{name}</p>
+            <p className="text-[#6B7770] text-sm dark:text-gray-400">@{username}</p>
           </div>
         </div>
         <Link
           href={`https://x.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-gray-400 transition-colors hover:text-[#00FF80]"
+          className="text-[#6B7770] transition-colors hover:text-[#008A4E] dark:text-gray-400 dark:hover:text-[#00FF80]"
         >
           <motion.span className="inline-block" whileHover={interactive ? { y: -2, rotate: 8 } : undefined}>
             <svg
@@ -67,7 +67,7 @@ const TestimonialCard = ({ name, username, content, avatar }: TestimonialCardPro
           </motion.span>
         </Link>
       </div>
-      <p className="flex-1 text-[#E0E0E0] text-base md:text-lg leading-relaxed">{content}</p>
+      <p className="flex-1 text-[#253329] text-base md:text-lg leading-relaxed dark:text-[#E0E0E0]">{content}</p>
     </motion.article>
   );
 };
@@ -106,13 +106,13 @@ const Testemonial = () => {
       >
         <motion.div
           variants={staggerItem}
-          className="rounded-[16px] border-2 border-[#2E3033] bg-[#131313] text-[#00FF80] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base"
+          className="rounded-[16px] border-2 border-[#BFD8BF] bg-white text-[#008A4E] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base dark:border-[#2E3033] dark:bg-[#131313] dark:text-[#00FF80]"
         >
           Testimonial
         </motion.div>
         <motion.h2
           variants={staggerItem}
-          className="text-[#E0E0E0] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px]"
+          className="text-[#101511] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px] dark:text-[#E0E0E0]"
         >
           Hear what other users say
         </motion.h2>

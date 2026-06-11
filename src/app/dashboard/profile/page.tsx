@@ -165,15 +165,11 @@ export default function ProfilePage() {
     
     setIsStartingStep(stepId);
     try {
-      await startRoadmapStep(stepId, user.id);
+      const response = await startRoadmapStep(stepId, user.id);
       
-      if (selectedRoadmap) {
-        setSelectedRoadmap({
-          ...selectedRoadmap,
-          steps: selectedRoadmap.steps.map(step => 
-            step.id === stepId ? { ...step, done: true } : step
-          )
-        });
+      if ("status" in response) {
+        alert(response.message);
+        return;
       }
       
       router.push(`/dashboard/chat/${chatId}`);
@@ -1266,7 +1262,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex items-center gap-[6px]">
                     <Image src={badge} alt="XP" width={18} height={18} />
-                    <span>{selectedRoadmap.steps.filter(s => s.done).length} / {selectedRoadmap.steps.length} completed</span>
+                    <span>{selectedRoadmap.progress?.completedSubSteps ?? selectedRoadmap.steps.filter(s => s.done).length} / {selectedRoadmap.progress?.totalSubSteps ?? selectedRoadmap.steps.length} checkpoints</span>
                   </div>
                 </div>
               </DialogHeader>
@@ -1335,7 +1331,7 @@ export default function ProfilePage() {
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 3L19 12L5 21V3Z" fill="currentColor"/>
                                   </svg>
-                                  <span>Start Step</span>
+                                  <span>Start Lesson</span>
                                 </>
                               )}
                             </button>

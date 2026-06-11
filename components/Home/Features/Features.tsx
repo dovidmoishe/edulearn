@@ -75,13 +75,13 @@ const FeatureCard = ({
 
   return (
     <motion.article
-      className="flex cursor-pointer flex-col gap-6 items-start rounded-2xl p-6 md:p-8 bg-[#0D0D0D] border border-[#2E3033] shadow-sm shadow-[#00FF80]/10"
+      className="flex cursor-pointer flex-col gap-6 items-start rounded-2xl p-6 md:p-8 bg-white border border-[#D7E7D7] shadow-sm shadow-emerald-950/5 dark:bg-[#0D0D0D] dark:border-[#2E3033] dark:shadow-[#00FF80]/10"
       whileHover={interactive ? featureCardHover : undefined}
       whileTap={interactive ? cardTap : undefined}
       transition={{ type: "spring", stiffness: 400, damping: 24 }}
     >
       <motion.div
-        className="flex items-center justify-center rounded-full gap-2 bg-[#0D0D0D] border border-[#2E3033] w-[48px] h-[48px] md:w-[72px] md:h-[72px]"
+        className="flex items-center justify-center rounded-full gap-2 bg-[#F2F7F2] border border-[#D7E7D7] w-[48px] h-[48px] md:w-[72px] md:h-[72px] dark:bg-[#0D0D0D] dark:border-[#2E3033]"
         whileHover={interactive ? featureIconHover : undefined}
       >
         <Image
@@ -94,10 +94,10 @@ const FeatureCard = ({
       </motion.div>
 
       <div className="flex flex-col">
-        <p className="text-[#E0E0E0] text-[20px] font-bold leading-[30px] mb-2">
+        <p className="text-[#101511] text-[20px] font-bold leading-[30px] mb-2 dark:text-[#E0E0E0]">
           {title}
         </p>
-        <p className="text-[#B3B3B3] text-[16px] leading-[24px] opacity-80">
+        <p className="text-[#50605A] text-[16px] leading-[24px] dark:text-[#B3B3B3] dark:opacity-80">
           {description}
         </p>
       </div>
@@ -119,7 +119,7 @@ const Features = () => {
       >
         <motion.div
           variants={staggerItem}
-          className="rounded-[16px] border-2 border-[#2E3033] bg-[#131313] text-[#00FF80] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base"
+          className="rounded-[16px] border-2 border-[#BFD8BF] bg-white text-[#008A4E] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base dark:border-[#2E3033] dark:bg-[#131313] dark:text-[#00FF80]"
         >
           Why EduLearn
         </motion.div>
@@ -127,11 +127,11 @@ const Features = () => {
           variants={staggerItem}
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8"
         >
-          <h2 className="text-[#E0E0E0] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px]">
+          <h2 className="text-[#101511] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px] dark:text-[#E0E0E0]">
             Why EduLearn Stands Out
           </h2>
 
-          <p className="text-[#B3B3B3] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] opacity-[0.7] font-normal md:max-w-[500px]">
+          <p className="text-[#50605A] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] font-normal md:max-w-[500px] dark:text-[#B3B3B3] dark:opacity-[0.7]">
             EduLearn combines AI guidance, accountability, and verifiable
             progress so learning turns into real skill.
           </p>

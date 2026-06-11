@@ -14,7 +14,11 @@ const httpClient = axios.create({
 httpClient.interceptors.request.use(
   async (config) => {
     
-    const unauthenticatedEndpoints = ['/auth/signup'];
+    const unauthenticatedEndpoints = [
+      '/auth/signup',
+      '/resend/unsubscribe',
+      '/feedback',
+    ];
     const isUnauthenticatedEndpoint = unauthenticatedEndpoints.some(endpoint => 
       config.url?.includes(endpoint)
     );

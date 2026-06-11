@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { motion, type TargetAndTransition } from "framer-motion";
 import HeroImage from "@/../public/image.webp";
+import HeroImageLight from "@/../public/dashboard_light.png";
 import HeroImageMobile from "@/../public/image-mobile.png";
 import { useHomeMotion } from "../motion-variants";
 
@@ -24,17 +25,18 @@ const Hero = () => {
     reduce,
   } = useHomeMotion();
   return (
-    <div className="px-4 sm:px-6 md:px-8">
+    <div className="relative isolate px-4 sm:px-6 md:px-8">
       <motion.div
         className="my-12 sm:my-16 md:my-30 flex flex-col md:flex-row items-end md:items-end justify-between"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
       >
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-black via-black/50 to-transparent md:hidden"></div>
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[600px] h-[600px] bg-[#00FF80] opacity-30 blur-[160px] rounded-full"></div>
-          <div className="absolute bottom-0 right-0 w-full max-w-[400px] h-[400px] bg-[#00FFA3] opacity-20 blur-[180px] rounded-full"></div>
+        <div className="pointer-events-none absolute inset-x-[-24px] top-[-140px] bottom-[-80px] -z-10 overflow-hidden sm:inset-x-[-48px] md:inset-x-[-86px]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_22%,rgba(0,255,128,0.30),transparent_30%),radial-gradient(circle_at_24%_18%,rgba(0,255,163,0.18),transparent_28%),linear-gradient(180deg,#F7FAF7_0%,#F4FFF7_42%,rgba(247,250,247,0)_100%)] dark:bg-[radial-gradient(circle_at_50%_12%,rgba(0,255,128,0.34),transparent_28%),radial-gradient(circle_at_84%_55%,rgba(0,255,163,0.22),transparent_26%),linear-gradient(180deg,#000_0%,rgba(0,0,0,0.78)_34%,rgba(0,0,0,0)_100%)]" />
+          <div className="absolute left-1/2 top-[70px] h-[540px] w-[760px] -translate-x-1/2 rounded-full bg-[#00FF80]/20 blur-[150px] dark:bg-[#00FF80]/30 dark:blur-[160px]" />
+          <div className="absolute right-[-110px] top-[330px] h-[430px] w-[430px] rounded-full bg-[#00FFA3]/18 blur-[150px] dark:bg-[#00FFA3]/24 dark:blur-[180px]" />
+          <div className="absolute left-[-180px] top-[210px] h-[360px] w-[360px] rounded-full bg-white/80 blur-[120px] dark:hidden" />
         </div>
 
         <motion.div
@@ -51,19 +53,19 @@ const Hero = () => {
           >
             <motion.span
               variants={heroLine}
-              className="block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#FFFFFF]"
+              className="block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#101511] dark:text-[#FFFFFF]"
             >
               Build Real Skills Faster.
             </motion.span>
             <motion.span
               variants={heroLine}
-              className="mt-1 block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#00FF80]"
+              className="mt-1 block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#008A4E] dark:text-[#00FF80]"
             >
               Stay Consistent with AI.
             </motion.span>
             <motion.p
               variants={staggerItem}
-              className="mt-4 text-base sm:text-lg md:text-[20px] leading-normal md:leading-[24px] text-white font-[500] opacity-[0.7]"
+              className="mt-4 text-base sm:text-lg md:text-[20px] leading-normal md:leading-[24px] text-[#435249] font-[500] dark:text-white dark:opacity-[0.7]"
             >
               Create a personalized AI learning agent, practice actively, and
               build proof-of-work you can actually show.
@@ -88,7 +90,7 @@ const Hero = () => {
           </motion.a>
           <motion.a
             href="#howItWorks"
-            className="w-full sm:w-auto flex justify-center bg-[#131313] rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-white items-center gap-2 cursor-pointer border border-[#2E3033] relative no-underline"
+            className="w-full sm:w-auto flex justify-center bg-white rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-[#101511] items-center gap-2 cursor-pointer border border-[#BFD8BF] relative no-underline shadow-sm dark:bg-[#131313] dark:text-white dark:border-[#2E3033]"
             whileHover={interactive ? { scale: 1.02, borderColor: "rgba(0,255,128,0.35)" } : undefined}
             whileTap={interactive ? buttonTap : undefined}
           >
@@ -116,9 +118,16 @@ const Hero = () => {
           }
         >
           <Image
+            src={HeroImageLight}
+            alt="EduLearn dashboard preview"
+            className="w-full drop-shadow-[0_20px_60px_rgba(0,255,128,0.12)] dark:hidden"
+            priority
+            style={{ maxWidth: "100%" }}
+          />
+          <Image
             src={HeroImage}
-            alt="Hero Image"
-            className="w-full drop-shadow-[0_20px_60px_rgba(0,255,128,0.12)]"
+            alt="EduLearn dashboard preview"
+            className="hidden w-full drop-shadow-[0_20px_60px_rgba(0,255,128,0.12)] dark:block"
             priority
             style={{ maxWidth: "100%" }}
           />

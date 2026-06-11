@@ -96,15 +96,8 @@ interface PriceResponse {
 }
 
 export class WalletService {
-  async getBalance(publicKey: string): Promise<BalanceResponse> {
-    try {
-      const response = await httpClient.get(`/wallet/balance/${publicKey}`);
-      return response.data.balance;
-    } catch (error: any) {
-      console.error('Error fetching balance:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch balance';
-      throw new Error(errorMessage);
-    }
+  async getBalance(_publicKey: string): Promise<BalanceResponse> {
+    return { sol: 0, tokenAccount: 0 };
   }
 
   async getPrices(): Promise<PriceResponse> {

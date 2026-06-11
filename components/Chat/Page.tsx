@@ -6,12 +6,12 @@ import pencil from "@/../public/assets/icons/dark/pencil.png";
 import EduLearn from "@/../public/assets/images/logo.png";
 import EduLearnLogo from "@/../public/assets/images/edulearn.png";
 import attachment from "@/../public/assets/icons/dark/attachement.png";
-import send from "@/../public/assets/icons/dark/send.png";
 import brain03 from "@/../public/assets/icons/brain03.png"
 import deleteIcon from "@/../public/assets/icons/delete.png"
 import brain01 from "@/../public/assets/icons/brain.png"
 import deleteIcon01 from "@/../public/assets/icons/dark/delete.png"
 import Image from "next/image";
+import { ArrowUp, Square } from "lucide-react";
 import { AIService, Message } from "../../services/ai.service";
 import { ChatService } from "../../services/chat.service";
 import useUserStore from "../../core/userState";
@@ -195,6 +195,7 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
         },
         (fullMessage: Message) => {
           messageContentRef.current.delete(assistantMessageId);
+          setWaitingForStream(false);
           setIsGenerating(false);
           setStreamingMessageId(null);
           scrollToBottom();
@@ -216,6 +217,9 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
           setIsGenerating(false);
           setWaitingForStream(false);
           setStreamingMessageId(null);
+        },
+        (cleanupFn: () => void) => {
+          streamCleanupRef.current = cleanupFn;
         }
       );
 
@@ -238,6 +242,14 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
       }
     }
   };
+
+  const handleStopGeneration = useCallback(() => {
+    streamCleanupRef.current?.();
+    streamCleanupRef.current = null;
+    setIsGenerating(false);
+    setWaitingForStream(false);
+    setStreamingMessageId(null);
+  }, []);
 
   const handleCreateNewChat = useCallback(() => {
     const newChatId = generateUUID();
@@ -569,18 +581,28 @@ const Chat = ({ title, initialMessages = [], chatId }: Props) => {
                 target.style.height = target.scrollHeight + "px";
               }}
                 />
-                <button 
-              className={`absolute right-[16px] top-1/2 transform -translate-y-1/2 flex items-center justify-center w-[32px] h-[32px] transition-opacity ${
-                inputText.trim() === "" || isGenerating || isTransitioning
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:opacity-80 cursor-pointer"
-              }`}
-              onClick={() => handleSendMessage()}
-              disabled={
-                inputText.trim() === "" || isGenerating || isTransitioning
-              }
-            >
-              <Image src={send} alt="send" width={24} height={24} />
+                <button
+                  type="button"
+                  className={`absolute right-[16px] top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-200 ${
+                    isGenerating
+                      ? "w-[34px] h-[34px] rounded-[10px] bg-[#00FF80] text-[#0A0A0A] shadow-[0_8px_20px_rgba(0,255,128,0.22)] hover:bg-[#00E070] cursor-pointer"
+                      : "w-[32px] h-[32px] rounded-full bg-white text-[#0A0A0A] border border-[#DDE7F7] shadow-[0_6px_16px_rgba(21,45,76,0.10)] hover:scale-[1.02] hover:shadow-[0_8px_20px_rgba(21,45,76,0.14)]"
+                  } ${
+                    !isGenerating && inputText.trim() === ""
+                      ? "opacity-45 cursor-not-allowed hover:scale-100"
+                      : "cursor-pointer"
+                  } ${isTransitioning ? "opacity-45 cursor-not-allowed" : ""}`}
+                  onClick={isGenerating ? handleStopGeneration : () => handleSendMessage()}
+                  disabled={
+                    (!isGenerating && inputText.trim() === "") || isTransitioning
+                  }
+                  aria-label={isGenerating ? "Stop generating" : "Send message"}
+                >
+                  {isGenerating ? (
+                    <Square className="h-3.5 w-3.5 fill-current stroke-0" />
+                  ) : (
+                    <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+                  )}
                 </button>
             </div>
         </div>

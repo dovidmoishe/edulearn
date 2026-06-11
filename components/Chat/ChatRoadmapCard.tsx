@@ -52,8 +52,8 @@ export default function ChatRoadmapCard({ roadmapId }: Props) {
   }
 
   const { roadmap, steps } = roadmapData;
-  const completed = steps.filter((s) => s.done).length;
-  const total = steps.length;
+  const completed = roadmapData.progress?.completedSubSteps ?? steps.filter((s) => s.done).length;
+  const total = roadmapData.progress?.totalSubSteps ?? steps.length;
 
   return (
     <div className="my-3 rounded-xl border border-[#2E3033] bg-gradient-to-br from-[#1A2420] to-[#131313] p-4">
@@ -68,7 +68,7 @@ export default function ChatRoadmapCard({ roadmapId }: Props) {
           <h3 className="mt-1 text-base font-semibold text-[#E0E0E0]">{roadmap.title}</h3>
           <p className="mt-1 line-clamp-3 text-sm text-[#B3B3B3]">{roadmap.description}</p>
           <p className="mt-2 text-xs text-[#888]">
-            {completed}/{total} steps completed
+            {completed}/{total} checkpoints completed
           </p>
           <Link
             href={`/dashboard/roadmaps/${roadmapId}`}

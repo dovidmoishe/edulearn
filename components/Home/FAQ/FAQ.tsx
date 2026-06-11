@@ -53,7 +53,7 @@ const FAQ = () => {
       >
         <motion.div
           variants={staggerItem}
-          className="rounded-[16px] border-2 border-[#2E3033] bg-[#131313] text-[#00FF80] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base"
+          className="rounded-[16px] border-2 border-[#BFD8BF] bg-white text-[#008A4E] leading-[28px] md:leading-[36px] flex items-center justify-center w-fit px-4 md:px-[24px] py-2 md:py-[15.5px] text-sm md:text-base dark:border-[#2E3033] dark:bg-[#131313] dark:text-[#00FF80]"
         >
           FAQ
         </motion.div>
@@ -61,11 +61,11 @@ const FAQ = () => {
           variants={staggerItem}
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8"
         >
-          <h2 className="text-[#E0E0E0] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px]">
+          <h2 className="text-[#101511] leading-[32px] sm:leading-[40px] md:leading-[56px] font-[600] text-2xl md:text-3xl lg:text-[40px] dark:text-[#E0E0E0]">
             Got Questions? We&apos;ve Got Answers.
           </h2>
 
-          <p className="text-[#B3B3B3] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] opacity-[0.7] font-normal md:max-w-[500px]">
+          <p className="text-[#50605A] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] font-normal md:max-w-[500px] dark:text-[#B3B3B3] dark:opacity-[0.7]">
             Find answers to common questions about EduLearn&apos;s features and
             learning experience.
           </p>
@@ -82,8 +82,8 @@ const FAQ = () => {
         {FAQData.map((item, index) => (
           <motion.div
             layout
-            className={`flex w-full flex-col rounded-xl border border-[#2E3033] overflow-hidden transition-colors duration-300 ${
-              openIndex === index ? "bg-[#00FF80]" : "bg-[#0a0a0a]/40"
+            className={`flex w-full flex-col rounded-xl border border-[#D7E7D7] overflow-hidden transition-colors duration-300 dark:border-[#2E3033] ${
+              openIndex === index ? "bg-[#00FF80]" : "bg-white/75 dark:bg-[#0a0a0a]/40"
             }`}
             key={index}
             variants={staggerItem}
@@ -94,7 +94,7 @@ const FAQ = () => {
               layout
               onClick={() => toggleFAQ(index)}
               className={`flex w-full items-center gap-3 py-[16px] px-[24px] min-h-[80px] cursor-pointer text-left ${
-                openIndex === index ? "text-black" : "text-[#E0E0E0]"
+                openIndex === index ? "text-black" : "text-[#101511] dark:text-[#E0E0E0]"
               }`}
               whileTap={interactive ? { scale: 0.995 } : undefined}
             >
@@ -139,10 +139,10 @@ const FAQ = () => {
         viewport={defaultViewport}
       >
         <div className="mt-[64px] flex flex-wrap items-center justify-center gap-3">
-          <p className="leading-[30px] font-[400] opacity-[0.7] text-[20px]">Still have any questions?</p>
+          <p className="leading-[30px] font-[400] text-[#50605A] text-[20px] dark:text-white dark:opacity-[0.7]">Still have any questions?</p>
           <motion.button
             type="button"
-            className="text-[#00FF80] opacity-[0.9] leading-[30px] text-[20px] cursor-pointer underline-offset-4 hover:underline"
+            className="text-[#008A4E] opacity-[0.9] leading-[30px] text-[20px] cursor-pointer underline-offset-4 hover:underline dark:text-[#00FF80]"
             onClick={() => window.open("https://support.edulearn.fun", "_blank")}
             whileHover={interactive ? { scale: 1.03, y: -1 } : undefined}
             whileTap={interactive ? { scale: 0.98 } : undefined}
@@ -153,7 +153,7 @@ const FAQ = () => {
       </motion.div>
 
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] pointer-events-none">
-        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(0,255,128,0.2),transparent_70%)]" />
+        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(0,255,128,0.12),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(0,255,128,0.2),transparent_70%)]" />
       </div>
     </div>
   );

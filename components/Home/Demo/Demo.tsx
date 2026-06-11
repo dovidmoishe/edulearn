@@ -29,7 +29,7 @@ const Demo = () => {
 
       <motion.div
         variants={staggerItem}
-        className="relative w-full max-w-[1200px] h-auto aspect-video rounded-2xl overflow-hidden mx-4 shadow-[0_24px_80px_-20px_rgba(0,255,128,0.15)] ring-1 ring-[#2E3033]/80"
+        className="relative w-full max-w-[1200px] h-auto aspect-video rounded-2xl overflow-hidden mx-4 shadow-[0_24px_80px_-20px_rgba(0,80,40,0.16)] ring-1 ring-[#BFD8BF] dark:shadow-[0_24px_80px_-20px_rgba(0,255,128,0.15)] dark:ring-[#2E3033]/80"
         whileHover={interactive ? { scale: 1.015, transition: { type: "spring", stiffness: 320, damping: 24 } } : undefined}
       >
         <video
@@ -41,7 +41,7 @@ const Demo = () => {
         />
 
         {!playing && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.78)] backdrop-blur-[2px]">
+          <div className="absolute inset-0 flex items-center justify-center bg-[rgba(255,255,255,0.58)] backdrop-blur-[2px] dark:bg-[rgba(0,0,0,0.78)]">
             <motion.button
               type="button"
               onClick={() => setPlaying(true)}

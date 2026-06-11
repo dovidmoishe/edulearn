@@ -26,10 +26,10 @@ const CTA = () => {
       viewport={defaultViewport}
     >
       <motion.div variants={staggerItem} className="flex items-center flex-col gap-[20px] mb-[40px]">
-        <p className="text-[#E0E0E0] text-center text-[40px] sm:text-[48px] font-[600] leading-tight">
+        <p className="text-[#101511] text-center text-[40px] sm:text-[48px] font-[600] leading-tight dark:text-[#E0E0E0]">
           Ready to build real-world skills?
         </p>
-        <p className="text-[#B3B3B3] text-center leading-[28px] opacity-[0.7] font-[400] text-[18px] sm:text-[20px] max-w-lg">
+        <p className="text-[#50605A] text-center leading-[28px] font-[400] text-[18px] sm:text-[20px] max-w-lg dark:text-[#B3B3B3] dark:opacity-[0.7]">
           Most AI tools answer questions. EduLearn helps you stay consistent
           long enough to reach mastery.
         </p>
@@ -39,7 +39,7 @@ const CTA = () => {
         <motion.a
           href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
           download="edulearn.apk"
-          className="rounded-full border border-[#00FF80] py-3 px-8 text-[#00FF80] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer no-underline bg-transparent"
+          className="rounded-full border border-[#00B866] py-3 px-8 text-[#008A4E] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer no-underline bg-white/50 dark:bg-transparent dark:border-[#00FF80] dark:text-[#00FF80]"
           whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
         >
@@ -49,7 +49,7 @@ const CTA = () => {
 
         <motion.button
           type="button"
-          className="rounded-full border border-[#00FF80] py-3 px-8 text-[#00FF80] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer bg-transparent"
+          className="rounded-full border border-[#00B866] py-3 px-8 text-[#008A4E] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer bg-white/50 dark:bg-transparent dark:border-[#00FF80] dark:text-[#00FF80]"
           onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}
           whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}

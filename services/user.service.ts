@@ -201,14 +201,8 @@ export class UserService {
         }
     }
 
-    async getUserWalletBalance(pubKey: string): Promise<{ balance: {sol: number, tokenAccount: number} }> {
-        try {
-            const response = await httpClient.get(`/wallet/balance/${pubKey}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching user wallet balance:", error);
-            throw error;
-        }
+    async getUserWalletBalance(_pubKey: string): Promise<{ balance: {sol: number, tokenAccount: number} }> {
+        return { balance: { sol: 0, tokenAccount: 0 } };
     }
 
     async upgradeToPremium(userId: string): Promise<{ message: string, result: any }> {

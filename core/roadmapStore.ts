@@ -1,5 +1,12 @@
 import { RoadmapService } from "../services/roadmap.service";
-import type { Roadmap, RoadmapWithSteps } from "../interfaces/Roadmap";
+import type {
+  Roadmap,
+  RoadmapSubStep,
+  RoadmapWithSteps,
+  StartRoadmapVerificationResponse,
+  StartRoadmapStepResponse,
+  SubmitRoadmapVerificationResponse,
+} from "../interfaces/Roadmap";
 import { create } from "zustand";
 
 interface RoadmapState {
@@ -11,7 +18,19 @@ interface RoadmapState {
 
   fetchRoadmaps: (userId: string) => Promise<void>;
   fetchRoadmapById: (roadmapId: string) => Promise<RoadmapWithSteps | undefined>;
-  startRoadmapStep: (stepId: string, userId: string) => Promise<void>;
+  startRoadmapStep: (
+    stepId: string,
+    userId: string,
+  ) => Promise<StartRoadmapStepResponse>;
+  startSubStepVerification: (
+    subStepId: string,
+    userId: string,
+  ) => Promise<StartRoadmapVerificationResponse>;
+  submitSubStepVerification: (
+    quizId: string,
+    userId: string,
+    answers: Array<{ questionIndex: number; selectedAnswer: string }>,
+  ) => Promise<SubmitRoadmapVerificationResponse>;
   resetState: () => void;
 }
 
@@ -60,24 +79,100 @@ const useRoadmapStore = create<RoadmapState>((set, get) => ({
   },
   startRoadmapStep: async (stepId: string, userId: string) => {
     try {
-      await roadmapService.startRoadmapStep(stepId, { userId });
-      set((state) => {
-        const updated = { ...state.roadmapWithStepsById };
-        for (const key of Object.keys(updated)) {
-          const roadmap = updated[key];
-          updated[key] = {
-            ...roadmap,
-            steps: roadmap.steps.map((step) =>
-              step.id === stepId ? { ...step, done: true } : step,
-            ),
-          };
-        }
-        return { roadmapWithStepsById: updated };
+      const response = await roadmapService.startRoadmapStep(stepId, {
+        userId,
+        mode: "background",
       });
+      return response;
     } catch (error) {
       set({
         error:
           error instanceof Error ? error.message : "Failed to start roadmap step",
+      });
+      throw error;
+    }
+  },
+  startSubStepVerification: async (subStepId: string, userId: string) => {
+    try {
+      set({ error: null });
+      return await roadmapService.startSubStepVerification(subStepId, userId);
+    } catch (error) {
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to start checkpoint verification",
+      });
+      throw error;
+    }
+  },
+  submitSubStepVerification: async (quizId, userId, answers) => {
+    try {
+      set({ error: null });
+      const response = await roadmapService.submitSubStepVerification(quizId, {
+        userId,
+        answers,
+      });
+      if (response.passed && response.subStep) {
+        set((state) => {
+          const updated = { ...state.roadmapWithStepsById };
+          for (const key of Object.keys(updated)) {
+            const roadmap = updated[key];
+            const nextSteps = roadmap.steps.map((step) => {
+              if (step.id !== response.subStep?.stepId) return step;
+              const subSteps = step.subSteps.map((subStep: RoadmapSubStep) =>
+                subStep.id === response.subStep?.id
+                  ? { ...subStep, ...response.subStep, done: true }
+                  : subStep,
+              );
+              const completedSubSteps = subSteps.filter((item) => item.done).length;
+              const totalSubSteps = subSteps.length;
+              return {
+                ...step,
+                done: totalSubSteps > 0 && completedSubSteps === totalSubSteps,
+                subSteps,
+                progress: {
+                  completedSubSteps,
+                  totalSubSteps,
+                  percentage: totalSubSteps
+                    ? Math.round((completedSubSteps / totalSubSteps) * 100)
+                    : 0,
+                },
+              };
+            });
+            const totalSubSteps = nextSteps.reduce(
+              (sum, step) => sum + step.subSteps.length,
+              0,
+            );
+            const completedSubSteps = nextSteps.reduce(
+              (sum, step) =>
+                sum + step.subSteps.filter((subStep) => subStep.done).length,
+              0,
+            );
+            updated[key] = {
+              ...roadmap,
+              steps: nextSteps,
+              progress: {
+                completedSubSteps,
+                totalSubSteps,
+                completedSteps: nextSteps.filter((step) => step.done).length,
+                totalSteps: nextSteps.length,
+                percentage: totalSubSteps
+                  ? Math.round((completedSubSteps / totalSubSteps) * 100)
+                  : 0,
+              },
+            };
+          }
+          return { roadmapWithStepsById: updated };
+        });
+      }
+      return response;
+    } catch (error) {
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit checkpoint verification",
       });
       throw error;
     }

@@ -94,7 +94,6 @@ const useUserStore = create<UserState>((set, get) => ({
         isLoading: false,
       });
       
-      await get().fetchWalletBalance();
     } catch (error) {
       console.error("Failed to fetch user data:", error);
       set({ isLoading: false });
@@ -148,19 +147,7 @@ const useUserStore = create<UserState>((set, get) => ({
   },
   
   fetchWalletBalance: async () => {
-    const currentUser = get().user;
-    if (!currentUser || !currentUser.id) return;
-    
-    try {
-      set({ walletBalanceLoading: true });
-      const userService = new UserService();
-      const { balance } = await userService.getUserWalletBalance(currentUser.address as string);
-      set({ walletBalance: {sol: balance.sol, tokenAccount: balance.tokenAccount} });
-    } catch (error) {
-      console.error("Failed to fetch wallet balance:", error);
-    } finally {
-      set({ walletBalanceLoading: false });
-    }
+    set({ walletBalanceLoading: false });
   },
   
   logout: async () => {
@@ -183,16 +170,17 @@ const useUserStore = create<UserState>((set, get) => ({
   setTheme: (theme: 'light' | 'dark') => {
     if (typeof window !== "undefined") {
       localStorage.setItem('theme', theme);
+      document.documentElement.classList.toggle('dark', theme === 'dark');
     }
     set({ theme });
   },
 
   loadTheme: () => {
     if (typeof window !== "undefined") {
-      const theme = localStorage.getItem('theme');
-      if (theme) {
-        set({ theme: theme as 'light' | 'dark' });
-      }
+      const storedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+      const theme = storedTheme ?? 'dark';
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      set({ theme });
     }
   },
   editProfileFields: async (data) => {

@@ -20,6 +20,9 @@ export type PublicQuizQuestion = {
 export type PublishPublicQuizRequest = {
   title: string;
   description?: string;
+  summary?: string;
+  coveredConcepts?: string[];
+  challengeProfile?: string;
   questions: PublicQuizQuestion[];
   sourceChatId?: UuidString;
 };
@@ -28,6 +31,9 @@ export type PublishPublicQuizResponse = {
   id: UuidString;
   title: string;
   description: string | null;
+  summary: string | null;
+  coveredConcepts: string[];
+  challengeProfile: string | null;
   createdBy: UuidString;
   createdAt: IsoDateString;
   viewCount: number;
@@ -40,6 +46,9 @@ export type PublicQuizListItem = {
   id: UuidString;
   title: string;
   description: string | null;
+  summary: string | null;
+  coveredConcepts: string[];
+  challengeProfile: string | null;
   createdBy: UuidString;
   viewCount: number;
   attemptCount: number;
@@ -55,6 +64,9 @@ export type PublicQuizDetail = {
   id: UuidString;
   title: string;
   description: string | null;
+  summary: string | null;
+  coveredConcepts: string[];
+  challengeProfile: string | null;
   questions: PublicQuizQuestion[];
   createdBy: UuidString;
   sourceChatId: UuidString | null;
