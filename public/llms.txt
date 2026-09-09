@@ -2,42 +2,44 @@
 
 ## Product Overview
 
-EduLearn is an AI-powered study companion focused on real-world skill acquisition.
-It helps users move beyond passive content consumption through personalized agents, accountability systems, and proof-of-work progress tracking.
+EduLearn is a Web3-powered educational platform that combines AI tutoring, gamification, and blockchain-backed rewards.
+It specializes in Web3 education while still supporting broader learning goals through AI roadmaps, quizzes, XP, and verifiable achievement tracking.
 
+Tagline: Learn Web3 Smarter. Earn as You Go
 Website: https://edulearn.fun
 
-## Core Experience
+## Core Features
 
-### Personalized AI Learning
+### AI-Powered Learning
 - AI tutor powered by Google Generative AI
-- Personalized learning roadmaps based on user goals
-- Chat-based guidance with follow-up explanations
+- Interactive chat with conversation history
+- Personalized learning roadmaps
+- Quiz and flashcard generation for Web3 and broader skill development
 
-### Active Skill Building
-- Auto-generated quizzes and flashcards
-- Practice loops designed for active recall
-- Milestones and progress checkpoints
+### Gamification
+- XP, streaks, leaderboards, and progress levels
+- NFT achievement badges and certificates
+- Reward loops designed to make consistent studying more motivating
 
-### Accountability and Consistency
-- Streaks and gamified progression
-- Leaderboards and community motivation
-- Revision reminders and progress nudges
+### Web3 Rewards
+- Wallet-connected rewards on web
+- NFT badges as proof of work and proof of knowledge
+- Solana-aligned learning and achievement verification
 
-### Verifiable Proof-of-Work
-- Certificates and achievement tracking
-- Publicly shareable progress artifacts
-- Optional blockchain-backed verification features on web
+### Community
+- Progress sharing and social motivation
+- Leaderboards for friendly competition
+- Learning paths that help users stay accountable
 
 ## Pricing
 
 - Free: core AI learning features with daily limits
-- Premium: advanced AI model access, higher limits, and additional features
+- Premium: advanced AI model access, higher limits, and additional learning tools
 
 ## Platform Availability
 
-- Web (edulearn.fun): full feature set including verification and wallet-connected rewards
-- Mobile (iOS/Android): core learning, quizzes, roadmaps, and communities
+- Web (edulearn.fun): full feature set including wallet-connected rewards, NFTs, and verification
+- Mobile (iOS/Android): core learning, quizzes, roadmaps, communities, and premium features
 
 ## Technical Stack
 
@@ -49,19 +51,15 @@ Website: https://edulearn.fun
 
 ## Target Audience
 
-- Learners building practical career skills
-- Students and early-career professionals
-- Communities and organizations training users at scale
+- Web3 learners
+- Blockchain developers
+- Solana enthusiasts
+- Students and general learners who want AI-guided study with gamified rewards
 
-## Example Skill Areas
+## Use Cases
 
-- Software engineering
-- Product design
-- AI literacy and applied workflows
-- Cybersecurity fundamentals
-- Content creation and marketing
-- Product management
+Web3 onboarding, Solana learning, AI tutoring, quiz-based learning, verifiable skill badges, community learning, earn-while-learning study loops, proof-of-work education.
 
 ## Keywords
 
-AI study companion, skill acquisition, personalized learning roadmap, accountability learning app, active recall, quiz-based learning, verifiable achievements, proof-of-work learning, gamified education, outcome-driven learning
+Web3 education, blockchain learning platform, Solana learning app, AI tutor, gamified learning, NFT certificates, crypto rewards, personalized learning roadmaps, AI-powered education, learn to earn, Web3 study companion, proof-of-work learning

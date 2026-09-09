@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoMdClose } from "react-icons/io";
 import { Moon, Sun } from "lucide-react";
@@ -102,14 +101,6 @@ const NavBar = () => {
               Features
             </a>
           </li>
-          <li>
-            <Link
-              href="/blog"
-              className="rounded-full px-3 py-2 text-[#50605A] leading-normal text-[15px] lg:text-[16px] font-[500] cursor-pointer transition-colors hover:bg-[#00FF80]/10 hover:text-[#008A4E] active:bg-[#00FF80]/15 dark:text-[#B3B3B3] dark:hover:bg-white/5 dark:hover:text-[#00FF80] dark:active:bg-white/10"
-            >
-              Blog
-            </Link>
-          </li>
         </ul>
       </div>
 
@@ -199,15 +190,6 @@ const NavBar = () => {
                 <a href="#features" className="text-[#50605A] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#008A4E] transition-colors dark:text-[#B3B3B3] dark:hover:text-[#00FF80]">
                   Features
                 </a>
-              </li>
-              <li className="py-2">
-                <Link
-                  href="/blog"
-                  className="text-[#50605A] leading-normal text-[16px] font-[500] cursor-pointer hover:text-[#008A4E] transition-colors dark:text-[#B3B3B3] dark:hover:text-[#00FF80]"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Blog
-                </Link>
               </li>
               <li className="py-2">
                 <a 

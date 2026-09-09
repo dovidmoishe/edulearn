@@ -34,7 +34,7 @@ const Footer = () => {
           <div className="flex flex-col gap-[32px] ">
             <Image src={logo} alt="logo" width={190} height={39} />
             <p className="text-[#50605A] text-[16px] font-[400] leading-[24px] dark:text-[#B3B3B3]">
-              AI-powered study companion for real-world skills
+              Incentivized Web3 AI study companion
             </p>
             <div className="gap-[10px] flex items-center">
               <motion.a href="https://discord.com/invite/7ErYsnc5ty" target="_blank" rel="noopener noreferrer" aria-label="Discord" whileHover={interactive ? { y: -3, scale: 1.08 } : undefined} whileTap={interactive ? { scale: 0.95 } : undefined}>

@@ -2,6 +2,8 @@
 import React from "react";
 import Image from "next/image";
 import { motion, type TargetAndTransition } from "framer-motion";
+import { FaApple } from "react-icons/fa";
+import { SiSolana } from "react-icons/si";
 import HeroImage from "@/../public/image.webp";
 import HeroImageLight from "@/../public/dashboard_light.png";
 import HeroImageMobile from "@/../public/image-mobile.png";
@@ -12,6 +14,14 @@ const heroPrimaryHover: TargetAndTransition = {
   scale: 1.03,
   boxShadow:
     "0 0 0 1px rgba(0,255,128,0.35), 0 20px 50px -12px rgba(0,255,128,0.18)",
+  transition: { type: "spring", stiffness: 500, damping: 28 },
+};
+
+const heroSecondaryHover: TargetAndTransition = {
+  y: -2,
+  scale: 1.02,
+  borderColor: "rgba(0,255,128,0.35)",
+  boxShadow: "0 18px 42px -18px rgba(0,255,128,0.24)",
   transition: { type: "spring", stiffness: 500, damping: 28 },
 };
 
@@ -27,7 +37,7 @@ const Hero = () => {
   return (
     <div className="relative isolate px-4 sm:px-6 md:px-8">
       <motion.div
-        className="my-12 sm:my-16 md:my-30 flex flex-col md:flex-row items-end md:items-end justify-between"
+        className="my-12 sm:my-16 md:my-30 flex flex-col items-start"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
@@ -41,9 +51,9 @@ const Hero = () => {
 
         <motion.div
           variants={staggerItem}
-          className="max-w-full sm:max-w-xl md:max-w-2xl mb-8 md:mb-0 text-left w-[731px] md:text-left"
+          className="max-w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl text-left"
         >
-          <h1 className="sr-only">EduLearn - AI Study Companion for Real-World Skills</h1>
+          <h1 className="sr-only">Learn Web3 Smarter. Earn as You Go</h1>
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -55,47 +65,52 @@ const Hero = () => {
               variants={heroLine}
               className="block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#101511] dark:text-[#FFFFFF]"
             >
-              Build Real Skills Faster.
+              Learn Web3 Smarter.
             </motion.span>
             <motion.span
               variants={heroLine}
               className="mt-1 block text-3xl sm:text-4xl md:text-5xl lg:text-[64px] leading-tight md:leading-normal font-bold text-[#008A4E] dark:text-[#00FF80]"
             >
-              Stay Consistent with AI.
+              Earn as You Go
             </motion.span>
             <motion.p
               variants={staggerItem}
-              className="mt-4 text-base sm:text-lg md:text-[20px] leading-normal md:leading-[24px] text-[#435249] font-[500] dark:text-white dark:opacity-[0.7]"
+              className="mt-4 max-w-3xl text-base sm:text-lg md:text-[20px] leading-normal md:leading-[28px] text-[#435249] font-[500] dark:text-white dark:opacity-[0.7]"
             >
-              Create a personalized AI learning agent, practice actively, and
-              build proof-of-work you can actually show.
+              Chat with an AI tutor, take quizzes, earn XP and NFTs, EduLearn
+              makes every study session rewarding.
             </motion.p>
           </motion.div>
-        </motion.div>
 
-        <motion.div
-          variants={staggerItem}
-          className="flex flex-col sm:flex-row gap-4 self-center md:self-end w-full sm:w-auto items-center sm:items-stretch mt-6 md:mt-0"
-        >
-          <motion.a
-            href="auth"
-            className="w-full sm:w-auto text-center bg-[#00FF80] rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-black text-[14px] sm:text-[16px] font-[500] leading-normal tracking-[0.9px] cursor-pointer no-underline"
-            style={{
-              boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.40) inset",
-            }}
-            whileHover={interactive ? heroPrimaryHover : undefined}
-            whileTap={interactive ? buttonTap : undefined}
+          <motion.div
+            variants={staggerItem}
+            className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap"
           >
-            Get Started For Free
-          </motion.a>
-          <motion.a
-            href="#howItWorks"
-            className="w-full sm:w-auto flex justify-center bg-white rounded-[14px] py-2.5 sm:py-3 px-5 sm:px-6 text-[#101511] items-center gap-2 cursor-pointer border border-[#BFD8BF] relative no-underline shadow-sm dark:bg-[#131313] dark:text-white dark:border-[#2E3033]"
-            whileHover={interactive ? { scale: 1.02, borderColor: "rgba(0,255,128,0.35)" } : undefined}
-            whileTap={interactive ? buttonTap : undefined}
-          >
-            <span className="text-[14px] sm:text-[16px] whitespace-nowrap">See How It Works</span>
-          </motion.a>
+            <motion.a
+              href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
+              download="edulearn.apk"
+              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-[#00FF80] px-7 py-3 text-[15px] font-[700] text-black no-underline sm:w-auto sm:min-w-[190px] sm:text-[16px]"
+              style={{
+                boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.28) inset",
+              }}
+              whileHover={interactive ? heroPrimaryHover : undefined}
+              whileTap={interactive ? buttonTap : undefined}
+            >
+              <SiSolana size={21} />
+              Seeker Store
+            </motion.a>
+            <motion.a
+              href="https://apps.apple.com/us/app/edulearn-fun/id6752799770"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-white/60 px-7 py-3 text-[15px] font-[700] text-[#008A4E] no-underline backdrop-blur dark:border-[#00FF80] dark:bg-black/20 dark:text-[#00FF80] sm:w-auto sm:min-w-[176px] sm:text-[16px]"
+              whileHover={interactive ? heroSecondaryHover : undefined}
+              whileTap={interactive ? buttonTap : undefined}
+            >
+              <FaApple size={20} />
+              App Store
+            </motion.a>
+          </motion.div>
         </motion.div>
       </motion.div>
 

@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import { motion, type TargetAndTransition } from "framer-motion";
-import { FaGooglePlay, FaApple } from "react-icons/fa";
+import { FaApple } from "react-icons/fa";
+import { SiSolana } from "react-icons/si";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
 
 const ctaLinkHover: TargetAndTransition = {
@@ -27,11 +28,10 @@ const CTA = () => {
     >
       <motion.div variants={staggerItem} className="flex items-center flex-col gap-[20px] mb-[40px]">
         <p className="text-[#101511] text-center text-[40px] sm:text-[48px] font-[600] leading-tight dark:text-[#E0E0E0]">
-          Ready to build real-world skills?
+          Ready to learn smarter?
         </p>
         <p className="text-[#50605A] text-center leading-[28px] font-[400] text-[18px] sm:text-[20px] max-w-lg dark:text-[#B3B3B3] dark:opacity-[0.7]">
-          Most AI tools answer questions. EduLearn helps you stay consistent
-          long enough to reach mastery.
+          Join EduLearn today and earn while you study.
         </p>
       </motion.div>
 
@@ -43,8 +43,8 @@ const CTA = () => {
           whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
         >
-          <FaGooglePlay size={20} />
-          Download APK
+          <SiSolana size={20} />
+          Seeker Store
         </motion.a>
 
         <motion.button

@@ -26,39 +26,39 @@ const featureIconHover: TargetAndTransition = {
 const features = [
   {
     icon: aiChat,
-    title: "Personalized AI Agent",
+    title: "AI-Powered Tutor",
     description:
-      "Create a learning companion tailored to your goal, current level, and pace.",
+      "Built-in chat assistant gives instant, personalized help. Just ask and learn.",
   },
   {
     icon: brain,
-    title: "Adaptive Practice",
+    title: "Interactive Quizzes",
     description:
-      "Generate quizzes and flashcards that evolve with your strengths and weak spots.",
+      "Test your understanding with bite-sized quizzes tailored to your level.",
   },
   {
     icon: medal1,
-    title: "Accountability System",
+    title: "Gamified Learning",
     description:
-      "Use reminders, revision sessions, and milestones to stay consistent every week.",
+      "Earn XP, badges, and NFTs as you progress because learning should be rewarding.",
   },
   {
     icon: medal2,
-    title: "Community Motivation",
+    title: "Leaderboard Motivation",
     description:
-      "Climb the ranks, share progress, and stay driven through social learning loops.",
+      "Climb the ranks, compete with peers, and stay driven to learn more.",
   },
   {
     icon: chart,
-    title: "Proof-of-Work Tracking",
+    title: "Trackable Progress",
     description:
-      "Track projects and milestones so your learning becomes visible and outcome-driven.",
+      "See your learning journey at a glance and stay on track toward your goals.",
   },
   {
     icon: mobile,
-    title: "Verifiable Achievements",
+    title: "Learn Anytime, Anywhere",
     description:
-      "Earn certificates and achievements you can share publicly as proof of progress.",
+      "Quiz on your phone, track progress on your laptop, and keep learning in your flow.",
   },
 ];
 
@@ -132,8 +132,8 @@ const Features = () => {
           </h2>
 
           <p className="text-[#50605A] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] font-normal md:max-w-[500px] dark:text-[#B3B3B3] dark:opacity-[0.7]">
-            EduLearn combines AI guidance, accountability, and verifiable
-            progress so learning turns into real skill.
+            From AI-powered tutoring to on-chain rewards, EduLearn makes
+            studying smarter, more fun, and genuinely motivating.
           </p>
         </motion.div>
 

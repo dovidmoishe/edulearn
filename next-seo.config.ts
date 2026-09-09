@@ -1,12 +1,12 @@
 export default {
     title: "EduLearn - Make Learning Fun",
-    description: "EduLearn is an AI-powered Web3 study companion.",
+    description: "EduLearn is an incentivized Web3 AI study companion.",
     openGraph: {
       type: "website",
       locale: "en_US",
       url: "https://edulearn.fun",
       title: "EduLearn - Make Learning Fun",
-      description: "EduLearn is an AI-powered Web3 study companion.",
+      description: "EduLearn is an incentivized Web3 AI study companion.",
       images: [
         {
           url: "https://lmektyexzejjvisjpzxu.supabase.co/storage/v1/object/public/media/edulearn-preview.png",
@@ -22,4 +22,3 @@ export default {
       cardType: "summary_large_image",
     },
   };
-  

@@ -10,27 +10,27 @@ const FAQData = [
   {
     question: "What is EduLearn?",
     answer:
-      "EduLearn is an AI-powered study companion built to help you gain real-world skills. You can create personalized learning agents, practice actively, and stay consistent with accountability systems.",
+      "EduLearn is an incentivized Web3 AI study companion that makes studying more fun and rewarding. You can chat with an intelligent tutor, take quizzes, earn XP, and unlock rewards like NFTs while tracking your progress.",
   },
   {
     question: "Is EduLearn free to use?",
     answer:
-      "Yes. EduLearn has a free plan and a premium plan. The free plan covers core learning features, while premium unlocks advanced AI models, higher usage limits, and additional learning tools.",
+      "EduLearn has a free plan and a premium plan. The free plan covers core learning features, while premium unlocks advanced AI models, higher usage limits, and more learning credits.",
   },
   {
-    question: "What skills can I learn with EduLearn?",
+    question: "How do the NFTs and XP work?",
     answer:
-      "You can use EduLearn for software engineering, design, AI, cybersecurity, content creation, marketing, product management, and many other practical skills.",
+      "As you study and complete quizzes, you earn XP that contributes to your progress. You can also earn NFT badges for milestones and achievements as proof of work and proof of knowledge.",
   },
   {
-    question: "How does EduLearn track my progress?",
+    question: "Can I use EduLearn without being tech-savvy?",
     answer:
-      "EduLearn tracks your learning through quizzes, milestones, roadmap progress, streaks, and project completion so you can clearly see consistency and improvement over time.",
+      "Absolutely. EduLearn is built to be simple and accessible, whether you are new to Web3 or already building. The AI tutor, quizzes, and roadmaps help you learn step by step.",
   },
   {
-    question: "Are achievements verifiable?",
+    question: "How is my progress tracked?",
     answer:
-      "Yes. EduLearn supports verifiable proof-of-work achievements. For eligible milestones, certificates and accomplishments can be shared publicly to showcase your progress.",
+      "Your progress is tracked through XP, streaks, quiz history, roadmaps, and earned NFTs. Your profile shows how far you have come and what rewards you have unlocked.",
   },
 ];
 
@@ -66,8 +66,8 @@ const FAQ = () => {
           </h2>
 
           <p className="text-[#50605A] leading-[24px] md:leading-[28px] text-base md:text-lg lg:text-[20px] font-normal md:max-w-[500px] dark:text-[#B3B3B3] dark:opacity-[0.7]">
-            Find answers to common questions about EduLearn&apos;s features and
-            learning experience.
+            Find answers to frequently asked questions about EduLearn&apos;s
+            service and offerings.
           </p>
         </motion.div>
       </motion.div>
