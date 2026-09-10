@@ -3,11 +3,11 @@ import React from "react";
 import Image from "next/image";
 import { motion, type TargetAndTransition } from "framer-motion";
 import { FaApple } from "react-icons/fa";
-import { SiSolana } from "react-icons/si";
 import HeroImage from "@/../public/image.webp";
 import HeroImageLight from "@/../public/dashboard_light.png";
 import HeroImageMobile from "@/../public/image-mobile.png";
 import { useHomeMotion } from "../motion-variants";
+import SeekerStoreButton from "../SeekerStoreButton";
 
 const heroPrimaryHover: TargetAndTransition = {
   y: -2,
@@ -86,19 +86,15 @@ const Hero = () => {
             variants={staggerItem}
             className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap"
           >
-            <motion.a
-              href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
-              download="edulearn.apk"
+            <SeekerStoreButton
               className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-[#00FF80] px-7 py-3 text-[15px] font-[700] text-black no-underline sm:w-auto sm:min-w-[210px] sm:text-[16px]"
               style={{
                 boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.28) inset",
               }}
+              iconSize={21}
               whileHover={interactive ? heroPrimaryHover : undefined}
               whileTap={interactive ? buttonTap : undefined}
-            >
-              <SiSolana size={21} />
-              <span className="whitespace-nowrap">Seeker Store</span>
-            </motion.a>
+            />
             <motion.a
               href="https://apps.apple.com/us/app/edulearn-fun/id6752799770"
               target="_blank"

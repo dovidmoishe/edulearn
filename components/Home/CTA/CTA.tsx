@@ -2,8 +2,8 @@
 import React from "react";
 import { motion, type TargetAndTransition } from "framer-motion";
 import { FaApple } from "react-icons/fa";
-import { SiSolana } from "react-icons/si";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
+import SeekerStoreButton from "../SeekerStoreButton";
 
 const ctaLinkHover: TargetAndTransition = {
   y: -2,
@@ -36,16 +36,11 @@ const CTA = () => {
       </motion.div>
 
       <motion.div variants={staggerItem} className="flex items-center justify-center flex-col md:flex-row gap-[24px]">
-        <motion.a
-          href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
-          download="edulearn.apk"
+        <SeekerStoreButton
           className="rounded-full border border-[#00B866] py-3 px-8 text-[#008A4E] w-[min(100%,260px)] flex items-center justify-center gap-[12px] cursor-pointer no-underline bg-white/50 dark:bg-transparent dark:border-[#00FF80] dark:text-[#00FF80]"
           whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
-        >
-          <SiSolana size={20} />
-          <span className="whitespace-nowrap">Seeker Store</span>
-        </motion.a>
+        />
 
         <motion.button
           type="button"
