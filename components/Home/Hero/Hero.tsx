@@ -99,12 +99,12 @@ const Hero = () => {
               href="https://apps.apple.com/us/app/edulearn-fun/id6752799770"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-white/60 px-7 py-3 text-[15px] font-[700] text-[#008A4E] no-underline backdrop-blur dark:border-[#00FF80] dark:bg-black/20 dark:text-[#00FF80] sm:w-auto sm:min-w-[176px] sm:text-[16px]"
+              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-white/60 px-7 py-3 text-[15px] font-[700] text-[#008A4E] no-underline backdrop-blur dark:border-[#00FF80] dark:bg-black/20 dark:text-[#00FF80] sm:w-auto sm:min-w-[210px] sm:text-[16px]"
               whileHover={interactive ? heroSecondaryHover : undefined}
               whileTap={interactive ? buttonTap : undefined}
             >
               <FaApple size={20} />
-              App Store
+              <span className="whitespace-nowrap">App Store</span>
             </motion.a>
           </motion.div>
         </motion.div>

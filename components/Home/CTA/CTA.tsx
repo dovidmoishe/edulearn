@@ -44,13 +44,13 @@ const CTA = () => {
 
         <motion.button
           type="button"
-          className="rounded-full border border-[#00B866] py-3 px-8 text-[#008A4E] w-[min(100%,220px)] flex items-center justify-center gap-[12px] cursor-pointer bg-white/50 dark:bg-transparent dark:border-[#00FF80] dark:text-[#00FF80]"
+          className="rounded-full border border-[#00B866] py-3 px-8 text-[#008A4E] w-[min(100%,260px)] flex items-center justify-center gap-[12px] cursor-pointer bg-white/50 dark:bg-transparent dark:border-[#00FF80] dark:text-[#00FF80]"
           onClick={() => window.open("https://apps.apple.com/us/app/edulearn-fun/id6752799770", "_blank")}
           whileHover={interactive ? ctaLinkHover : undefined}
           whileTap={interactive ? buttonTap : undefined}
         >
           <FaApple size={20} />
-          App Store
+          <span className="whitespace-nowrap">App Store</span>
         </motion.button>
       </motion.div>
     </motion.div>
