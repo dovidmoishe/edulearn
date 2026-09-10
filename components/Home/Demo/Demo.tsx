@@ -1,14 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import logo from "@/../public/assets/images/edulearn.png";
 import playIcon from "@/../public/assets/icons/play.png";
 import { defaultViewport, useHomeMotion } from "../motion-variants";
 
+const DEMO_PREVIEW_TIME_SECONDS = 2.4;
+const DEMO_VIDEO_URL =
+  "https://syvlfqtwjnnhohajuhhg.supabase.co/storage/v1/object/public/project%20media/EduLearn-2%20(1).mp4";
+
 const Demo = () => {
   const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { staggerContainer, staggerItem, interactive, reduce } = useHomeMotion();
+
+  const seekToPreviewFrame = () => {
+    const video = videoRef.current;
+    if (!video || playing) return;
+
+    try {
+      const maxPreviewTime = Number.isFinite(video.duration)
+        ? Math.max(video.duration - 0.1, 0)
+        : DEMO_PREVIEW_TIME_SECONDS;
+
+      video.currentTime = Math.min(DEMO_PREVIEW_TIME_SECONDS, maxPreviewTime);
+    } catch {
+      // Some browsers block early seeks until enough metadata is available.
+    }
+  };
 
   return (
     <motion.div
@@ -33,15 +53,21 @@ const Demo = () => {
         whileHover={interactive ? { scale: 1.015, transition: { type: "spring", stiffness: 320, damping: 24 } } : undefined}
       >
         <video
+          ref={videoRef}
           className="w-full h-full object-cover"
-          src="https://syvlfqtwjnnhohajuhhg.supabase.co/storage/v1/object/public/project%20media/EduLearn-2%20(1).mp4"
+          src={DEMO_VIDEO_URL}
+          poster="/dashboard_light.png"
           autoPlay={playing}
           controls={playing}
           muted={!playing}
+          preload="metadata"
+          playsInline
+          onLoadedMetadata={seekToPreviewFrame}
+          onCanPlay={seekToPreviewFrame}
         />
 
         {!playing && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[rgba(255,255,255,0.58)] backdrop-blur-[2px] dark:bg-[rgba(0,0,0,0.78)]">
+          <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(247,250,247,0.38))] dark:bg-[linear-gradient(180deg,rgba(0,0,0,0.08),rgba(0,0,0,0.42))]">
             <motion.button
               type="button"
               onClick={() => setPlaying(true)}

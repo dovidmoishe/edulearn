@@ -89,7 +89,7 @@ const Hero = () => {
             <motion.a
               href="https://expo.dev/artifacts/eas/i7zpsBDws1PodVbmZEUZVB.apk"
               download="edulearn.apk"
-              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-[#00FF80] px-7 py-3 text-[15px] font-[700] text-black no-underline sm:w-auto sm:min-w-[190px] sm:text-[16px]"
+              className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full border border-[#00B866] bg-[#00FF80] px-7 py-3 text-[15px] font-[700] text-black no-underline sm:w-auto sm:min-w-[210px] sm:text-[16px]"
               style={{
                 boxShadow: "0 -7px 11.2px 1px rgba(0, 66, 33, 0.28) inset",
               }}
@@ -97,7 +97,7 @@ const Hero = () => {
               whileTap={interactive ? buttonTap : undefined}
             >
               <SiSolana size={21} />
-              Seeker Store
+              <span className="whitespace-nowrap">Seeker Store</span>
             </motion.a>
             <motion.a
               href="https://apps.apple.com/us/app/edulearn-fun/id6752799770"
