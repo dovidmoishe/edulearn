@@ -1,0 +1,136 @@
+import "dotenv/config";
+export default {
+  expo: {
+    name: "EduLearn",
+    displayName: "EduLearn",
+    slug: "edulearn",
+    version: "2.5.0",
+    owner: "edulearn",
+    scheme: "edulearnv2",
+    newArchEnabled: true,
+    userInterfaceStyle: "automatic",
+    icon: "./assets/images/mainlogo.png",
+    android: {
+      package: "com.edulearnv2.app",
+      versionCode: 23,
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/mainlogo.png",
+        backgroundColor: "#000",
+      },
+      intentFilters: [
+        {
+          action: "VIEW",
+          autoVerify: true,
+          data: [
+            {
+              scheme: "https",
+              host: "mobile.edulearn.fun",
+              pathPrefix: "/ref",
+            },
+            {
+              scheme: "https",
+              host: "mobile.edulearn.fun",
+              pathPrefix: "/quizzes",
+            },
+            {
+              scheme: "https",
+              host: "mobile.edulearn.fun",
+              pathPrefix: "/community",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+      ],
+      permissions: [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+      ],
+    },
+    ios: {
+      icon: "./assets/images/mainlogo.png",
+      bundleIdentifier: "com.edulearnv2.app",
+      supportsTablet: true,
+      usesAppleSignIn: true,
+      associatedDomains: ["applinks:mobile.edulearn.fun"],
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+        NSUserNotificationsUsageDescription:
+          "Allow EduLearn to send you notifications about quizzes, achievements, and learning reminders.",
+        NSPhotoLibraryUsageDescription:
+          "EduLearn needs access to your photo library so you can upload profile images and learning-related content.",
+        NSPhotoLibraryAddUsageDescription:
+          "EduLearn saves selected images to your photo library when you choose to download or share content.",
+        NSCameraUsageDescription:
+          "EduLearn uses the camera so you can take photos for your profile and learning activities.",
+      },
+    },
+    extra: {
+      supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
+      supabaseAnon: process.env.EXPO_PUBLIC_SUPABASE_ANON,
+      apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
+      twitterClientId: process.env.EXPO_PUBLIC_TWITTER_CLIENT_ID,
+      eas: {
+        projectId: "139b580b-67d2-4458-b709-7c9575f0d7a1",
+      },
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/logo.png",
+    },
+    experiments: {
+      typedRoutes: true,
+    },
+    plugins: [
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/mainlogo.png",
+          resizeMode: "contain",
+          backgroundColor: "#000",
+        },
+      ],
+      "expo-image",
+      "expo-sharing",
+      "expo-asset",
+      "expo-build-properties",
+      "expo-font",
+      "expo-router",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          icon: "./assets/images/mainlogo.png",
+          color: "#ffffff",
+          sounds: ["./assets/notification.mp3"],
+          iosDisplayInForeground: true,
+        },
+      ],
+      "expo-quick-actions",
+      [
+        "expo-widgets",
+        {
+          bundleIdentifier: "com.edulearnv2.app.ExpoWidgetsTarget",
+          groupIdentifier: "group.com.edulearnv2.app",
+          widgets: [
+            {
+              name: "EddyXpWidget",
+              displayName: "EduLearn XP",
+              description: "Your XP, streak, and level progress at a glance.",
+              supportedFamilies: ["systemSmall", "systemMedium"],
+            },
+          ],
+        },
+      ],
+      [
+        "expo-audio",
+        {
+          microphonePermission:
+            "EduLearn uses the microphone to capture your voice for AI transcription. For example, you can speak your questions instead of typing, and the AI will convert your speech to text.",
+        },
+      ],
+    ],
+  },
+};

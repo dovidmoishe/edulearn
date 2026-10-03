@@ -1,0 +1,257 @@
+import { Injectable } from '@nestjs/common';
+import { asc, desc, eq, and, lt, count } from 'drizzle-orm';
+import { v4 as uuidv4 } from 'uuid';
+import db from '../../drizzle';
+import {
+  chat,
+  message,
+  roadmap,
+  roadMapStep,
+  type Chat,
+  type Message,
+} from '../../lib/db/schema';
+import { sanitizeAssistantMessageContent } from 'src/ai/ai.helpers';
+
+@Injectable()
+export class ChatService {
+  async createChat({
+    title,
+    userId,
+    chatId,
+  }: {
+    title: string;
+    userId: string;
+    chatId?: string;
+  }): Promise<Chat> {
+    const newChatId = chatId || uuidv4();
+    const result = await db
+      .insert(chat)
+      .values({
+        id: newChatId,
+        createdAt: new Date(),
+        title,
+        userId,
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async getChatHistory(userId: string) {
+    return await db
+      .select({
+        id: chat.id,
+        title: chat.title,
+        createdAt: chat.createdAt,
+        tested: chat.tested,
+        testLimit: chat.testLimit,
+      })
+      .from(chat)
+      .where(eq(chat.userId, userId))
+      .orderBy(desc(chat.createdAt))
+      .limit(10);
+  }
+
+  async getAllChatsForUser(userId: string) {
+    return await db
+      .select()
+      .from(chat)
+      .where(and(eq(chat.userId, userId), eq(chat.tested, false)))
+      .orderBy(desc(chat.createdAt))
+      .limit(10);
+  }
+
+  async markChatAsTested(chatId: string): Promise<Chat | null> {
+    const result = await db
+      .update(chat)
+      .set({ tested: true })
+      .where(eq(chat.id, chatId))
+      .returning();
+
+    return result.length ? result[0] : null;
+  }
+
+  async decrementTestLimit(chatId: string): Promise<Chat | null> {
+    const currentChat = await this.getChatById(chatId);
+    if (!currentChat) {
+      return null;
+    }
+
+    const newTestLimit = (currentChat.testLimit || 0) - 1;
+
+    const result = await db
+      .update(chat)
+      .set({ testLimit: newTestLimit })
+      .where(eq(chat.id, chatId))
+      .returning();
+
+    return result.length ? result[0] : null;
+  }
+
+  async getChatById(chatId: string): Promise<Chat | null> {
+    const result = await db.select().from(chat).where(eq(chat.id, chatId));
+    return result.length ? result[0] : null;
+  }
+
+  async deleteChat(chatId: string) {
+    try {
+      console.log(`Starting deletion process for chat: ${chatId}`);
+
+      const chatRoadmaps = await db
+        .select()
+        .from(roadmap)
+        .where(eq(roadmap.chatId, chatId));
+      console.log(
+        `Found ${chatRoadmaps.length} roadmaps linked to chat ${chatId}`,
+      );
+
+      for (const chatRoadmap of chatRoadmaps) {
+        const deletedSteps = await db
+          .delete(roadMapStep)
+          .where(eq(roadMapStep.roadmapId, chatRoadmap.id));
+        console.log(`Deleted roadmap steps for roadmap ${chatRoadmap.id}`);
+      }
+
+      if (chatRoadmaps.length > 0) {
+        await db.delete(roadmap).where(eq(roadmap.chatId, chatId));
+        console.log(
+          `Deleted ${chatRoadmaps.length} roadmaps for chat ${chatId}`,
+        );
+      }
+
+      await db.delete(message).where(eq(message.chatId, chatId));
+      console.log(`Deleted all messages for chat ${chatId}`);
+
+      await db.delete(chat).where(eq(chat.id, chatId));
+      console.log(`Deleted chat ${chatId}`);
+
+      return {
+        message: 'Chat and all associated data deleted successfully',
+        deleted: {
+          roadmaps: chatRoadmaps.length,
+          chat: true,
+          messages: true,
+        },
+      };
+    } catch (error) {
+      console.error(`Error deleting chat ${chatId}:`, error);
+      throw error;
+    }
+  }
+
+  async saveMessages({ messages }: { messages: Array<Message> }) {
+    if (!messages || !messages.length) {
+      throw new Error('No messages to save');
+    }
+    const sanitizedMessages = messages.map((msg) =>
+      msg.role === 'assistant'
+        ? {
+            ...msg,
+            content: sanitizeAssistantMessageContent(msg.content),
+          }
+        : msg,
+    );
+    return await db.insert(message).values(sanitizedMessages);
+  }
+
+  async countMessagesInChat(chatId: string): Promise<number> {
+    const [row] = await db
+      .select({ n: count() })
+      .from(message)
+      .where(eq(message.chatId, chatId));
+    return Number(row?.n ?? 0);
+  }
+
+  async getMessagesInChat(
+    chatId: string,
+    options?: { offset?: number; limit?: number; beforeMessageId?: string },
+  ) {
+    const hasPagination =
+      typeof options?.offset === 'number' ||
+      typeof options?.limit === 'number' ||
+      typeof options?.beforeMessageId === 'string';
+
+    if (hasPagination) {
+      const offset = Math.max(0, options?.offset ?? 0);
+      const limit = Math.max(1, options?.limit ?? 5);
+      const beforeMessageId = options?.beforeMessageId?.trim();
+
+      if (beforeMessageId) {
+        const [cursorMessage] = await db
+          .select({ createdAt: message.createdAt })
+          .from(message)
+          .where(
+            and(eq(message.id, beforeMessageId), eq(message.chatId, chatId)),
+          )
+          .limit(1);
+
+        if (!cursorMessage) {
+          return [];
+        }
+
+        const paginatedMessages = await db
+          .select()
+          .from(message)
+          .where(
+            and(
+              eq(message.chatId, chatId),
+              lt(message.createdAt, cursorMessage.createdAt),
+            ),
+          )
+          .orderBy(desc(message.createdAt))
+          .offset(offset)
+          .limit(limit);
+
+        return paginatedMessages.reverse();
+      }
+
+      const paginatedMessages = await db
+        .select()
+        .from(message)
+        .where(eq(message.chatId, chatId))
+        .orderBy(desc(message.createdAt))
+        .offset(offset)
+        .limit(limit);
+
+      return paginatedMessages.reverse();
+    }
+
+    return await db
+      .select()
+      .from(message)
+      .where(eq(message.chatId, chatId))
+      .orderBy(asc(message.createdAt));
+  }
+
+  async getLearningContextSnippetForUser(
+    userId: string,
+    maxChars: number = 4000,
+  ): Promise<string> {
+    const [latest] = await db
+      .select()
+      .from(chat)
+      .where(eq(chat.userId, userId))
+      .orderBy(desc(chat.createdAt))
+      .limit(1);
+    if (!latest) {
+      return '';
+    }
+    const messages = await this.getMessagesInChat(latest.id);
+    const recent = messages.slice(-30);
+    const lines = recent.map((m) => {
+      const text =
+        typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+      return `${m.role}: ${text}`;
+    });
+    let text = lines.join('\n\n');
+    if (text.length > maxChars) {
+      text = text.slice(text.length - maxChars);
+    }
+    return text;
+  }
+
+  async deleteMessagesInChat(chatId: string) {
+    await db.delete(message).where(eq(message.chatId, chatId));
+    return { message: 'All messages in chat deleted' };
+  }
+}

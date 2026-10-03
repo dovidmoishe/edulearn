@@ -1,0 +1,916 @@
+import BackButton from "@/components/common/backButton";
+import useRewardsStore from "@/core/rewardsState";
+import useUserStore from "@/core/userState";
+import { RewardsService } from "@/services/rewards.service";
+import { format } from "date-fns";
+import { BlurView } from "expo-blur";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Modal from "react-native-modal";
+import Purchases from "react-native-purchases";
+
+type Props = Record<string, never>;
+interface UserRewardWithDetails {
+  id: string;
+  type: "certificate" | "points";
+  title: string;
+  description: string;
+  imageUrl?: string;
+  earnedAt: string;
+}
+
+const NFT = (props: Props) => {
+  const [activeTab, setActiveTab] = useState<
+    "claimed" | "unclaimed" | "locked"
+  >("claimed");
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedReward, setSelectedReward] =
+    useState<UserRewardWithDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user, theme } = useUserStore();
+  const {
+    allRewards,
+    userRewardsByUserId,
+    isLoading,
+    fetchAllRewards,
+    fetchUserRewards,
+    fetchClaimStatus,
+  } = useRewardsStore();
+
+  const userRewards = user?.id ? (userRewardsByUserId[user.id] ?? []) : [];
+  const hasAllRewardsInStore = allRewards.length > 0;
+  const hasUserRewardsInStore = user?.id
+    ? userRewardsByUserId[user.id] !== undefined
+    : false;
+  const claimedRewards = userRewards.filter((r) => r.signature);
+  const unclaimedRewards = userRewards.filter((r) => !r.signature);
+  const userRewardIds = new Set(userRewards.map((r) => r.id));
+  const lockedRewards = allRewards.filter((r) => !userRewardIds.has(r.id));
+
+  const toggleModal = (reward?: UserRewardWithDetails) => {
+    if (reward) {
+      setSelectedReward(reward);
+      setModalVisible(true);
+    } else {
+      setModalVisible(!isModalVisible);
+      if (isModalVisible) {
+        setSelectedReward(null);
+      }
+    }
+  };
+
+  const loadAllRewards = useCallback(async () => {
+    if (!user?.id) return;
+    await Promise.all([
+      fetchAllRewards(),
+      fetchUserRewards(user.id as unknown as string),
+    ]);
+  }, [user?.id, fetchAllRewards, fetchUserRewards]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    if (hasAllRewardsInStore && hasUserRewardsInStore) return;
+    loadAllRewards();
+  }, [
+    user?.id,
+    hasAllRewardsInStore,
+    hasUserRewardsInStore,
+    loadAllRewards,
+  ]);
+
+  const handleClaimReward = async (rewardId: string) => {
+    if (!user?.id) return;
+
+    try {
+      setClaimingId(rewardId);
+      setError(null);
+
+      if (Platform.OS === "android") {
+        const rewardsService = new RewardsService();
+        const result = await rewardsService.claimReward(
+          user.id as unknown as string,
+          rewardId,
+        );
+        await loadAllRewards();
+        setActiveTab("claimed");
+        if (selectedReward && result?.signature) {
+          router.push({
+            pathname: "/nftClaimed",
+            params: { rewardId: selectedReward.id },
+          });
+        }
+        return;
+      }
+
+      await Purchases.logIn(user.id as unknown as string);
+      const productIdentifier = "rc_badge_claim1";
+      const products = await Purchases.getProducts([productIdentifier]);
+
+      if (products.length === 0) {
+        throw new Error(
+          "Badge claim product not found. Please contact support.",
+        );
+      }
+
+      const product = products[0];
+      try {
+        await Purchases.purchaseStoreProduct(product);
+      } catch (purchaseError: any) {
+        if (purchaseError.userCancelled) {
+          throw new Error("Purchase cancelled");
+        }
+        throw new Error(
+          purchaseError.message || "Purchase failed. Please try again.",
+        );
+      }
+
+      let attempts = 0;
+      const maxAttempts = 20;
+      let claimed = false;
+
+      while (attempts < maxAttempts && !claimed) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          const status = await fetchClaimStatus(
+            user.id as unknown as string,
+            rewardId,
+          );
+          if (status.claimed && status.signature) {
+            claimed = true;
+            break;
+          }
+        } catch (statusError) {}
+        attempts++;
+      }
+
+      await loadAllRewards();
+
+      if (!claimed) {
+        setActiveTab("claimed");
+        toggleModal();
+        return;
+      }
+
+      setActiveTab("claimed");
+      if (selectedReward) {
+        router.push({
+          pathname: "/nftClaimed",
+          params: { rewardId: selectedReward.id },
+        });
+      }
+    } catch (_error: any) {
+      let errorMessage = "Failed to claim badge. Please try again.";
+
+      setError(errorMessage);
+      toggleModal();
+
+      setTimeout(() => {
+        setSelectedReward(null);
+        setModalVisible(true);
+      }, 300);
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  const getImageSource = (imageUrl: string): any => {
+    if (imageUrl) {
+      return { uri: imageUrl };
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, "MMM d, yyyy");
+    } catch (_error) {
+      return "Date unavailable";
+    }
+  };
+
+  const handleTabChange = (tab: "claimed" | "unclaimed" | "locked") => {
+    setActiveTab(tab);
+  };
+
+  return (
+    <View style={[styles.container, theme === "dark" && styles.darkContainer]}>
+      <View style={styles.headerNav}>
+        <BackButton />
+        <Text
+          style={[
+            styles.headerTitle,
+            theme === "dark" && styles.darkHeaderTitle,
+          ]}
+        >
+          Badges
+        </Text>
+      </View>
+
+      <View style={styles.tabsContainer}>
+        <View style={styles.tabs}>
+          <TouchableOpacity onPress={() => handleTabChange("claimed")}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "claimed" && styles.activeTab,
+                theme === "dark" && styles.darkTabText,
+                activeTab === "claimed" &&
+                  theme === "dark" &&
+                  styles.darkActiveTab,
+              ]}
+            >
+              Claimed
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleTabChange("unclaimed")}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "unclaimed" && styles.activeTab,
+                theme === "dark" && styles.darkTabText,
+                activeTab === "unclaimed" &&
+                  theme === "dark" &&
+                  styles.darkActiveTab,
+              ]}
+            >
+              Unclaimed
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleTabChange("locked")}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "locked" && styles.activeTab,
+                theme === "dark" && styles.darkTabText,
+                activeTab === "locked" &&
+                  theme === "dark" &&
+                  styles.darkActiveTab,
+              ]}
+            >
+              Locked
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {isLoading && !claimingId ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#00FF80" />
+        </View>
+      ) : activeTab === "claimed" ? (
+        claimedRewards.length > 0 ? (
+          <FlatList
+            data={claimedRewards}
+            numColumns={2}
+            renderItem={({ item }: { item: UserRewardWithDetails }) => (
+              <TouchableOpacity
+                style={[
+                  styles.rewardCard,
+                  theme === "dark" && styles.darkRewardCard,
+                ]}
+                onPress={() =>
+                  router.push({
+                    pathname: "/nft/[id]",
+                    params: { id: item.id },
+                  })
+                }
+              >
+                <View style={styles.rewardImageCard}>
+                  <Image
+                    style={styles.rewardImage}
+                    source={getImageSource(item.imageUrl as unknown as string)}
+                  />
+                </View>
+                <View style={styles.dateContainer}>
+                  <Image
+                    source={require("@/assets/images/icons/dark/calendar.png")}
+                    style={styles.calendarIcon}
+                  />
+                  <Text
+                    style={[
+                      styles.rewardText,
+                      theme === "dark" && styles.darkRewardText,
+                    ]}
+                  >
+                    {formatDate(item.earnedAt)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item: UserRewardWithDetails) => item.id}
+            contentContainerStyle={styles.rewardsList}
+          />
+        ) : (
+          <View style={styles.emptyState}>
+            <Image
+              source={require("@/assets/images/eddie/eddy.gif")}
+              style={{ width: 150, height: 150, marginBottom: 20 }}
+            />
+            <Text
+              style={[
+                styles.emptyStateText,
+                theme === "dark" && styles.darkEmptyStateText,
+              ]}
+            >
+              You havent claimed any badges yet. Earn badges by completing
+              courses and quizzes 🫠
+            </Text>
+          </View>
+        )
+      ) : activeTab === "unclaimed" ? (
+        unclaimedRewards.length > 0 ? (
+          <FlatList
+            data={unclaimedRewards}
+            numColumns={2}
+            renderItem={({ item }: { item: UserRewardWithDetails }) => (
+              <View
+                style={[
+                  styles.rewardCard,
+                  theme === "dark" && styles.darkRewardCard,
+                ]}
+              >
+                <View style={styles.rewardImageCard}>
+                  <Image
+                    style={styles.rewardImage}
+                    source={getImageSource(item.imageUrl as unknown as string)}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.claimButton,
+                    theme === "dark" && { backgroundColor: "#00FF80" },
+                  ]}
+                  onPress={() => toggleModal(item)}
+                  disabled={isLoading && claimingId === item.id}
+                >
+                  {isLoading && claimingId === item.id ? (
+                    <ActivityIndicator size="small" color="#FFF" />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.claimButtonText,
+                        theme === "dark" && { color: "#000" },
+                      ]}
+                    >
+                      Claim
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+            keyExtractor={(item: UserRewardWithDetails) => item.id}
+            contentContainerStyle={styles.rewardsList}
+          />
+        ) : (
+          <View style={styles.emptyState}>
+            <Text
+              style={[
+                styles.emptyStateText,
+                theme === "dark" && styles.darkEmptyStateText,
+              ]}
+            >
+              No unclaimed badges found.
+            </Text>
+          </View>
+        )
+      ) : lockedRewards.length > 0 ? (
+        <FlatList
+          data={lockedRewards}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.rewardCard,
+                theme === "dark" && styles.darkRewardCard,
+              ]}
+            >
+              <View style={styles.lockedOverlay}>
+                <Image
+                  style={styles.lockedImage}
+                  source={getImageSource(item.imageUrl ?? "")}
+                />
+                <BlurView intensity={20} tint="dark" style={styles.blurOverlay}>
+                  <Text style={styles.lockedText}>{item.title}</Text>
+                </BlurView>
+              </View>
+            </View>
+          )}
+          keyExtractor={(item: any) => item.id}
+          contentContainerStyle={styles.rewardsList}
+        />
+      ) : (
+        <View style={styles.emptyState}>
+          <Text
+            style={[
+              styles.emptyStateText,
+              theme === "dark" && styles.darkEmptyStateText,
+            ]}
+          >
+            No locked rewards found.
+          </Text>
+        </View>
+      )}
+
+      <Modal
+        isVisible={isModalVisible}
+        style={styles.rewardModal}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        animationInTiming={400}
+        animationOutTiming={300}
+        backdropTransitionInTiming={400}
+        backdropTransitionOutTiming={300}
+        backdropOpacity={0.6}
+        useNativeDriver={true}
+        useNativeDriverForBackdrop={true}
+        hideModalContentWhileAnimating={true}
+        onBackdropPress={() => toggleModal()}
+      >
+        <View
+          style={[
+            styles.modalContent,
+            theme === "dark" && styles.darkModalContent,
+          ]}
+        >
+          {error ? (
+            <>
+              <Text
+                style={[
+                  styles.errorTitle,
+                  theme === "dark" && styles.darkErrorTitle,
+                ]}
+              >
+                Error Claiming Badge
+              </Text>
+              <Image
+                source={require("@/assets/images/icons/error.png")}
+                style={styles.errorIcon}
+                defaultSource={require("@/assets/images/icons/SealCheck.png")}
+              />
+              <Text
+                style={[
+                  styles.errorText,
+                  theme === "dark" && styles.darkErrorText,
+                ]}
+              >
+                {error}
+              </Text>
+              <TouchableOpacity
+                style={[styles.claimModalButton, styles.fullWidthButton]}
+                onPress={() => {
+                  setError(null);
+                  toggleModal();
+                }}
+              >
+                <Text style={styles.claimModalButtonText}>Try Again</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {selectedReward && (
+                <Image
+                  style={styles.modalImage}
+                  source={getImageSource(
+                    selectedReward.imageUrl as unknown as string,
+                  )}
+                />
+              )}
+              <Text
+                style={[
+                  styles.claimModalTitle,
+                  theme === "dark" && { color: "#E0E0E0" },
+                ]}
+              >
+                Ready to Claim?🎉
+              </Text>
+              <Text
+                style={[
+                  styles.modalText,
+                  theme === "dark" && styles.darkModalText,
+                ]}
+              >
+                You&apos;re about to claim{" "}
+                <Text
+                  style={[
+                    styles.nftNameText,
+                    theme === "dark" && styles.darkNftNameText,
+                  ]}
+                >
+                  {selectedReward?.title}
+                </Text>
+                , collectible badge for your achievement!
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.cancelButton,
+                    theme === "dark" && styles.darkCancelButton,
+                  ]}
+                  onPress={() => toggleModal()}
+                >
+                  <Text
+                    style={[
+                      styles.cancelButtonText,
+                      theme === "dark" && { color: "#00FF80" },
+                    ]}
+                  >
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.claimModalButton,
+                    theme === "dark" && styles.darkClaimModalButton,
+                  ]}
+                  onPress={() => {
+                    if (selectedReward) {
+                      handleClaimReward(selectedReward.id);
+                      toggleModal();
+                    }
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.claimModalButtonText,
+                      theme === "dark" && { color: "#000" },
+                    ]}
+                  >
+                    Claim Now
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+export default NFT;
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    flex: 1,
+  },
+  darkContainer: {
+    backgroundColor: "#121212",
+  },
+  headerNav: {
+    marginTop: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 20,
+  },
+  headerTitle: {
+    color: "#2D3C52",
+    fontSize: 20,
+    lineHeight: 24,
+    fontFamily: "Satoshi-Regular",
+  },
+  darkHeaderTitle: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  tabsContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  tabs: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    paddingVertical: 24,
+  },
+  activeTab: {
+    color: "#000",
+    fontWeight: "700",
+    borderBottomWidth: 2,
+    borderBottomColor: "#000",
+    fontFamily: "Satoshi-Regular",
+  },
+  darkActiveTab: {
+    color: "#FFFFFF",
+    borderBottomColor: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  tabText: {
+    textAlign: "center",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    fontWeight: "500",
+    lineHeight: 24,
+    color: "#61728C",
+    paddingBottom: 8,
+  },
+  darkTabText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  rewardImage: {
+    width: 159,
+    height: 192,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  rewardsList: {
+    gap: 16,
+    paddingBottom: 20,
+  },
+  rewardImageCard: {},
+  rewardCard: {
+    borderRadius: 12,
+
+    backgroundColor: "#FFFFFF",
+    display: "flex",
+    padding: 4,
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 4,
+    flex: 1,
+    alignSelf: "stretch",
+    margin: 8,
+    maxWidth: "45%",
+  },
+  darkRewardCard: {
+    borderColor: "#2E3033",
+    backgroundColor: "#131313",
+  },
+  rewardTitle: {
+    color: "#2D3C52",
+    fontWeight: "600",
+    lineHeight: 20,
+    fontSize: 16,
+    fontFamily: "Satoshi-Regular",
+    marginBottom: 4,
+  },
+  darkRewardTitle: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  rewardText: {
+    color: "#2D3C52",
+    fontWeight: "400",
+    lineHeight: 16,
+    fontSize: 12,
+    fontFamily: "Satoshi-Regular",
+  },
+  darkRewardText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  dateContainer: {
+    flexDirection: "row",
+    gap: 4,
+    alignItems: "center",
+  },
+  calendarIcon: {
+    width: 14,
+    height: 14,
+  },
+  lockedOverlay: {
+    position: "relative",
+    width: 159,
+    height: 192,
+    borderRadius: 8,
+    marginBottom: 8,
+    overflow: "hidden",
+  },
+  lockedImage: {
+    width: 159,
+    height: 192,
+    borderRadius: 8,
+  },
+  blurOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 12,
+  },
+  lockedText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  rewardDescription: {
+    color: "#61728C",
+    fontWeight: "400",
+    lineHeight: 16,
+    fontSize: 12,
+    fontFamily: "Satoshi-Regular",
+  },
+  darkRewardDescription: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -120,
+  },
+  emptyStateText: {
+    color: "#61728C",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  darkEmptyStateText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  claimButton: {
+    backgroundColor: "#000",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    width: "100%",
+  },
+  claimButtonText: {
+    color: "#00FF80",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 24,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  rewardModal: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
+    padding: 24,
+    alignItems: "center",
+    width: "90%",
+  },
+  darkModalContent: {
+    backgroundColor: "#0D0D0D",
+  },
+  modalImage: {
+    width: 160,
+    height: 160,
+    borderRadius: 8,
+    marginVertical: 12,
+  },
+  modalText: {
+    color: "#61728C",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 16,
+  },
+  darkModalText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    gap: 16,
+    marginTop: 16,
+    width: "100%",
+  },
+  cancelButton: {
+    backgroundColor: "#B4FFD9",
+    borderRadius: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    flex: 1,
+  },
+  claimModalButton: {
+    backgroundColor: "#000000",
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    flex: 1,
+  },
+  claimModalButtonText: {
+    color: "#00FF80",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  cancelButtonText: {
+    color: "#028D48",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  claimTitle: {
+    color: "#2D3C52",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 8,
+    lineHeight: 36,
+  },
+  errorTitle: {
+    color: "#FF3B30",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  darkErrorTitle: {
+    color: "#FF3B30",
+    fontFamily: "Satoshi-Regular",
+  },
+  errorText: {
+    color: "#2D3C52",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  darkErrorText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  errorIcon: {
+    width: 40,
+    height: 40,
+    marginBottom: 16,
+  },
+  fullWidthButton: {
+    width: "100%",
+    flex: 0,
+  },
+  nftNameText: {
+    color: "#E0E0E0",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    fontWeight: "700",
+    lineHeight: 24,
+  },
+  darkNftNameText: {
+    color: "#E0E0E0",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 16,
+    fontWeight: "700",
+    lineHeight: 24,
+  },
+  darkCancelButton: {
+    backgroundColor: "#000",
+    borderColor: "#00FF80",
+  },
+  darkCancelButtonText: {
+    color: "#FFFFFF",
+    fontFamily: "Satoshi-Regular",
+  },
+  darkClaimModalButton: {
+    backgroundColor: "#00FF80",
+  },
+  claimModalTitle: {
+    color: "#2D3C52",
+    fontFamily: "Satoshi-Regular",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 8,
+    lineHeight: 36,
+  },
+});

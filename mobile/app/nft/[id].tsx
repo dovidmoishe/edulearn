@@ -1,0 +1,297 @@
+import BackButton from "@/components/common/backButton";
+import useRewardsStore from "@/core/rewardsState";
+import useUserStore from "@/core/userState";
+import { format } from "date-fns";
+import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+type Props = Record<string, never>;
+
+const NftPage = (_props: Props) => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [reward, setReward] = useState<any>(null);
+  const [userReward, setUserReward] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { user, theme } = useUserStore();
+  const { fetchRewardById, fetchUserRewards } = useRewardsStore();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const rewardData = await fetchRewardById(id as string);
+        setReward(rewardData ?? null);
+
+        if (user?.id && id) {
+          await fetchUserRewards(user.id);
+          const state = useRewardsStore.getState();
+          const userRewards = state.userRewardsByUserId[user.id] ?? [];
+          const userSpecificReward = userRewards.find((r) => r.id === id);
+          setUserReward(userSpecificReward ?? null);
+        } else {
+          setUserReward(null);
+        }
+      } catch (_error) {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, user?.id]);
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "Date unavailable";
+    try {
+      const date = new Date(dateString);
+      return format(date, "MMM d, yyyy");
+    } catch (_error) {
+      return dateString;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          styles.loadingContainer,
+          theme === "dark" && { backgroundColor: "#0D0D0D" },
+        ]}
+      >
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#00FF80" : "#000"}
+        />
+        <Text
+          style={[styles.loadingText, theme === "dark" && { color: "#E0E0E0" }]}
+        >
+          Loading NFT details...
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.container,
+        theme === "dark" && { backgroundColor: "#0D0D0D" },
+      ]}
+    >
+      <View style={styles.topNav}>
+        <BackButton />
+      </View>
+
+      <View style={styles.contentContainer}>
+        <View style={styles.rewardContainer}>
+          <Image
+            source={{ uri: reward?.imageUrl }}
+            style={styles.image}
+            resizeMode="contain"
+          />
+          <Text
+            style={[
+              styles.rewardTitle,
+              theme === "dark" && { color: "#E0E0E0" },
+            ]}
+          >
+            {reward?.title}
+          </Text>
+          <Text
+            style={[
+              styles.rewardSubtitle,
+              theme === "dark" && { color: "#B3B3B3" },
+            ]}
+          >
+            {reward?.description}
+          </Text>
+          {userReward?.earnedAt && (
+            <View style={styles.claimedAt}>
+              <Image
+                source={
+                  theme === "dark"
+                    ? require("@/assets/images/icons/dark/calendar.png")
+                    : require("@/assets/images/icons/calendar.png")
+                }
+                style={{ width: 16, height: 16, marginRight: 8 }}
+              />
+              <Text
+                style={[
+                  styles.claimedAtText,
+                  theme === "dark" && { color: "#B3B3B3" },
+                ]}
+              >
+                Claimed at:{" "}
+                <Text style={{ color: "#E0E0E0", fontWeight: "700" }}>
+                  {formatDate(userReward.earnedAt)}
+                </Text>
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.bottomButtonContainer}>
+        {userReward?.signature ? (
+          <TouchableOpacity
+            onPress={() => {
+              const explorerUrl = `https://solscan.io/tx/${userReward.signature}`;
+              Linking.openURL(explorerUrl);
+            }}
+            style={[
+              styles.viewOnExplorerButton,
+              theme === "dark" && { backgroundColor: "#00FF80" },
+            ]}
+          >
+            <Text
+              style={[
+                styles.viewOnExplorerText,
+                theme === "dark" && { color: "#000" },
+              ]}
+            >
+              View on Explorer
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              if (reward?.signature) {
+                const explorerUrl = `https://solscan.io/tx/${reward.signature}`;
+                Linking.openURL(explorerUrl);
+              }
+            }}
+            style={[
+              styles.viewOnExplorerButton,
+              theme === "dark" && { backgroundColor: "#00FF80" },
+            ]}
+            disabled={!reward?.signature}
+          >
+            <Text
+              style={[
+                styles.viewOnExplorerText,
+                theme === "dark" && { color: "#000" },
+              ]}
+            >
+              View this user&apos;s badge on chain
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+};
+
+export default NftPage;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#F9FBFC",
+  },
+  topNav: {
+    marginTop: 50,
+    marginBottom: 20,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    borderRadius: 8,
+    width: 250,
+    height: 250,
+    marginBottom: 10,
+  },
+  rewardTitle: {
+    color: "#2D3C52",
+    fontSize: 24,
+    lineHeight: 36,
+    fontWeight: "700",
+    fontFamily: "Satoshi",
+    textAlign: "center",
+  },
+  rewardSubtitle: {
+    color: "#61728C",
+    lineHeight: 24,
+    fontSize: 16,
+    textAlign: "center",
+    fontWeight: "500",
+    fontFamily: "Satoshi",
+    paddingHorizontal: 20,
+  },
+  rewardContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+  },
+  claimedAt: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  claimedAtText: {
+    color: "#61728C",
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "500",
+    fontFamily: "Satoshi",
+  },
+  viewOnExplorerButton: {
+    borderRadius: 16,
+    gap: 12,
+    display: "flex",
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 16,
+    backgroundColor: "#000",
+    width: "100%",
+  },
+  viewOnExplorerText: {
+    color: "#00FF80",
+    fontSize: 14,
+    fontWeight: "700",
+    lineHeight: 24,
+    fontFamily: "Satoshi",
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#61728C",
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "500",
+    fontFamily: "Satoshi",
+  },
+  bottomButtonContainer: {
+    marginTop: 20,
+    marginBottom: 20,
+    alignItems: "center",
+    width: "100%",
+  },
+  notClaimedContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  notClaimedText: {
+    color: "#61728C",
+    fontSize: 14,
+    fontWeight: "500",
+    fontFamily: "Satoshi",
+  },
+});
