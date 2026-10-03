@@ -4,10 +4,11 @@ EduLearn Mobile is the React Native app for EduLearn, built with Expo and Expo R
 It includes AI tutor chat, quizzes, flashcards, roadmaps, rewards, community, referrals,
 and user progression features.
 
-## EduLearn Repositories
+## EduLearn Workspace
 
-- API: [officialedulearn/edulearnapi](https://github.com/officialedulearn/edulearnapi)
-- Web: [officialedulearn/web](https://github.com/officialedulearn/web)
+- API: [../edulearnapi](../edulearnapi)
+- Web: [../web](../web)
+- Workspace setup and commands: [../README.md](../README.md)
 
 ## Tech Stack
 
@@ -33,19 +34,19 @@ and user progression features.
 
 ## Prerequisites
 
-- Node.js 18+
-- npm
-- Expo CLI via `npx expo`
+- Node.js 24
+- pnpm 11.22.0
+- Expo CLI via `pnpm exec expo` inside `mobile/`
 
 ## Getting Started
 
-1. Install dependencies:
+1. Install dependencies from the repository root:
 
    ```bash
-   npm install
+   pnpm install --frozen-lockfile
    ```
 
-2. Create your local environment file:
+2. From `mobile/`, create your local environment file:
 
    ```bash
    cp .env.example .env
@@ -67,18 +68,23 @@ and user progression features.
 4. Start the app:
 
    ```bash
-   npm run start
+   pnpm start
    ```
 
 5. Run on a target platform from the Expo prompt (or use scripts below).
 
 ## Scripts
 
-- `npm run start` - start Expo dev server
-- `npm run android` - run Android build
-- `npm run ios` - run iOS build
-- `npm run web` - run web target
-- `npm run lint` - run lint checks
+- `pnpm start` - start Expo dev server
+- `pnpm android` - run Android build
+- `pnpm ios` - run iOS build
+- `pnpm web` - run web target
+- `pnpm lint` - run lint checks
+- `pnpm typecheck` - check TypeScript
+
+These commands run inside `mobile/`. From the root, use `pnpm dev:mobile` or
+`pnpm --filter mobile <script>`. Clear Metro once after migration with
+`pnpm dev:mobile --clear`.
 
 ## Project Structure
 

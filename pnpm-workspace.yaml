@@ -1,0 +1,75 @@
+packages:
+  - web
+  - admin
+  - edulearnapi
+  - mobile
+
+# Keep each application's React and framework dependencies isolated.
+nodeLinker: isolated
+resolvePeersFromWorkspaceRoot: false
+
+# Preserve web's existing Remotion public hoisting requirement.
+publicHoistPattern:
+  - '*@remotion*'
+
+# This override previously lived in mobile's npm-only configuration.
+overrides:
+  react-native-worklets: 0.8.0-bundle-mode-preview-2
+
+# Bind React type declarations to the consuming app rather than a hoisted copy.
+# These libraries use React types but do not declare the type peer themselves.
+packageExtensions:
+  'next@15.0.5': &reactTypes
+    peerDependencies:
+      '@types/react': '*'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+  'next@16.0.10': *reactTypes
+  react: *reactTypes
+  '@react-email/body': *reactTypes
+  '@react-email/button': *reactTypes
+  '@react-email/code-block': *reactTypes
+  '@react-email/code-inline': *reactTypes
+  '@react-email/column': *reactTypes
+  '@react-email/components': *reactTypes
+  '@react-email/container': *reactTypes
+  '@react-email/font': *reactTypes
+  '@react-email/head': *reactTypes
+  '@react-email/heading': *reactTypes
+  '@react-email/hr': *reactTypes
+  '@react-email/html': *reactTypes
+  '@react-email/img': *reactTypes
+  '@react-email/link': *reactTypes
+  '@react-email/markdown': *reactTypes
+  '@react-email/preview': *reactTypes
+  '@react-email/render': *reactTypes
+  '@react-email/row': *reactTypes
+  '@react-email/section': *reactTypes
+  '@react-email/tailwind': *reactTypes
+  '@react-email/text': *reactTypes
+
+# pnpm 11 requires explicit decisions for dependency install scripts.
+# Preserve web's decision to skip these two build scripts.
+allowBuilds:
+  '@tailwindcss/oxide': false
+  esbuild: false
+  '@nestjs/core': true
+  '@swc/core': true
+  sharp: true
+  protobufjs: true
+  unrs-resolver: true
+  bufferutil: true
+  utf-8-validate: true
+  bigint-buffer: true
+  keccak: true
+  secp256k1: true
+  core-js: false
+  core-js-pure: false
+  '@scarf/scarf': false
+  '@shopify/react-native-skia': true
+  better-sqlite3: true
+  msgpackr-extract: true
+
+# Use ordinary install semantics rather than installing during run/exec.
+verifyDepsBeforeRun: false

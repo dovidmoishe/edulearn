@@ -27,13 +27,16 @@
 
 ## Project setup
 
+This API is part of the [EduLearn workspace](../README.md). Install dependencies
+from the repository root using Node.js 24 and pnpm 11.22.0:
+
 ```bash
-$ pnpm install
+$ pnpm install --frozen-lockfile
 ```
 
 ## Environment Variables
 
-Create a `.env` file in the root of the `api` directory with the following variables:
+Create a `.env` file in `edulearnapi/` with the following variables:
 
 ### Twitter/X Integration (for posting tweets)
 

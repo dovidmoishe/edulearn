@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "generate-icons": "node scripts/generate-icons.js",
     "remotion:dev": "remotion studio",
     "remotion:render": "remotion render CommunityIntro out/community-intro.mp4"
@@ -74,6 +75,7 @@
     "typescript": "^5",
     "url": "^0.11.4",
     "util": "^0.12.5",
-    "vm-browserify": "^1.1.2"
+    "vm-browserify": "^1.1.2",
+    "webpack": "5.105.0"
   }
 }

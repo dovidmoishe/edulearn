@@ -1,0 +1,28 @@
+# Workspace dependencies, generated output, and local migration backups
+node_modules/
+.pnpm-store/
+.turbo/
+.repo-backups/
+.deploy/
+.next/
+.expo/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local configuration and credentials
+.env*
+!.env.example
+!.env.*.example
+.vercel/
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.mobileprovision
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+*.log

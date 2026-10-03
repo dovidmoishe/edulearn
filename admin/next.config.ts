@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const nextConfig: NextConfig = {
+  output: process.env.NEXT_STANDALONE === "1" ? "standalone" : undefined,
+  outputFileTracingRoot: path.join(__dirname, ".."),
   reactCompiler: true,
   compress: true,
   poweredByHeader: false,

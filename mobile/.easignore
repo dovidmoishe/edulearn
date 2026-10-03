@@ -38,3 +38,11 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Workspace-level local artifacts must never be uploaded by EAS.
+.pnpm-store/
+.repo-backups/
+.deploy/
+.turbo/
+.next/
+.git/

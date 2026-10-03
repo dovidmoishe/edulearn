@@ -15,23 +15,26 @@ A minimal and modern admin panel for managing EduLearn rewards, certificates, an
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm installed
+- Node.js 24 and pnpm 11.22.0 installed
 - EduLearn API running (default: http://localhost:3001)
 - Pinata account with API credentials
 
 ### Installation
 
-1. Install dependencies:
+1. Install dependencies from the repository root (see [workspace setup](../README.md)):
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
-2. Set up environment variables:
+2. From `admin/`, set up environment variables:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 3. Update `.env.local` with your credentials:
+   - `SESSION_SECRET`: A unique random string of at least 32 characters; required during builds and at runtime
+   - `ADMIN_PASSWORD_HASH` and `UPLOADER_PASSWORD_HASH`: Existing bcrypt authentication hashes
+   - `ADMIN_API_KEY` and `MARKETPLACE_API_KEY`: Server-side API access keys
    - `NEXT_PUBLIC_API_URL`: Your EduLearn API URL
    - `NEXT_PUBLIC_PINATA_JWT`: Your Pinata JWT token
    - `NEXT_PUBLIC_PINATA_GATEWAY`: Your Pinata gateway domain
@@ -58,7 +61,10 @@ pnpm build
 pnpm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Run these application scripts from `admin/`, or use `pnpm dev:admin` and
+`pnpm build:admin` from the repository root.
+
+Open [http://localhost:3002](http://localhost:3002) in your browser during development.
 
 ## Usage
 

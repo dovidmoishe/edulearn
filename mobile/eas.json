@@ -4,12 +4,18 @@
     "appVersionSource": "local"
   },
   "build": {
+    "base": {
+      "node": "24.19.0",
+      "pnpm": "11.22.0"
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development"
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
       "ios": {
         "simulator": true
@@ -17,6 +23,7 @@
       "channel": "preview"
     },
     "production": {
+      "extends": "base",
       "autoIncrement": true,
       "channel": "production"
     }

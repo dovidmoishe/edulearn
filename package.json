@@ -1,0 +1,33 @@
+{
+  "name": "edulearn",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=22.13.0 <25",
+    "pnpm": ">=11.22.0 <12"
+  },
+  "scripts": {
+    "dev": "turbo run dev --env-mode=loose",
+    "dev:web": "pnpm --filter web dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "dev:api": "pnpm --filter edulearn-api dev",
+    "dev:mobile": "pnpm --filter mobile dev",
+    "build": "turbo run build --env-mode=loose",
+    "build:web": "pnpm --filter web build",
+    "build:admin": "pnpm --filter admin build",
+    "build:api": "pnpm --filter edulearn-api build",
+    "export:mobile": "pnpm --filter mobile export",
+    "start:web": "pnpm --filter web start",
+    "start:admin": "pnpm --filter admin start",
+    "start:api": "pnpm --filter edulearn-api start:prod",
+    "android": "pnpm --filter mobile android",
+    "ios": "pnpm --filter mobile ios",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test --env-mode=loose"
+  },
+  "devDependencies": {
+    "turbo": "2.11.7"
+  }
+}
