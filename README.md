@@ -114,10 +114,13 @@ git log refs/archive/web/heads/feature/web3-hero-store-ctas
 git for-each-ref refs/archive/
 ```
 
-Complete original Git directories and pre-migration lockfiles are also preserved
+Sanitized original Git repositories and pre-migration lockfiles are also preserved
 in the ignored local `.repo-backups/` folder. That folder is not uploaded in a
 normal clone or push. The imported current histories are reachable from `main`;
 archived refs require explicit publication if they are needed on another machine.
 
-The new root repository intentionally has no remote yet. Choose a new monorepo
-remote instead of pushing this combined tree into an existing app repository.
+The monorepo remote is `https://github.com/dovidmoishe/edulearn`.
+Historical `google-credentials.json` files were removed from all local repository
+refs and Git backups before publication. Affected commit IDs have changed; the
+backup repositories are now bare repositories. Service account credentials belong
+in local environment configuration and must never be committed.
