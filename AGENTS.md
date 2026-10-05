@@ -32,7 +32,7 @@ Admin requires `SESSION_SECRET` (32+ characters) during builds and at runtime.
 ## Deployment
 
 Deploy each project independently from this single repository.
-Use the root lockfile during installation; see `docs/deployment.md`.
+Use the root lockfile during installation.
 Next.js apps emit standalone server artifacts when `NEXT_STANDALONE=1` is set
 at build time. Normal local builds use standard Next.js output.
 Run EAS commands from `mobile/`.

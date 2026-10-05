@@ -99,8 +99,7 @@ workspace configuration; do not broadly enable every dependency's build scripts.
 
 ## Deployment and repository history
 
-See [deployment guidance](docs/deployment.md) for filtered installation, standalone
-Next.js output, API packaging, and EAS builds. Set `NEXT_STANDALONE=1` when
+Set `NEXT_STANDALONE=1` when
 building a Next.js app for a standalone deployment artifact; normal local builds
 use Next.js's standard output.
 
