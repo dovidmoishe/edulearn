@@ -31,9 +31,9 @@ Shows the chat interface where users generate roadmaps:
 - Input container at bottom with "Ask Eddie anything..." placeholder
 
 **Styling References**:
-- `mobile/components/Chat.tsx` lines 556-625 (Top Nav)
-- `mobile/components/Chat.tsx` lines 881-914 (Input Container)
-- `mobile/components/MessageItem.tsx` (Message bubbles)
+- `apps/mobile/components/Chat.tsx` lines 556-625 (Top Nav)
+- `apps/mobile/components/Chat.tsx` lines 881-914 (Input Container)
+- `apps/mobile/components/MessageItem.tsx` (Message bubbles)
 
 **Animations**:
 - Slide up entrance with spring physics
@@ -56,9 +56,9 @@ Displays AI generating the roadmap with shimmer effect:
 - "Generating your personalized learning path..." label
 
 **Styling References**:
-- `mobile/app/roadmaps/[id].tsx` lines 296-305 (Roadmap Info Card)
-- `mobile/app/roadmaps/[id].tsx` lines 326-341 (Details Row)
-- `mobile/app/roadmaps/[id].tsx` lines 348-387 (Step Component)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 296-305 (Roadmap Info Card)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 326-341 (Details Row)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 348-387 (Step Component)
 
 **Animations**:
 - Card scale and fade entrance
@@ -80,8 +80,8 @@ Shows the roadmap card in the user's profile:
 - Tap indicator showing interaction
 
 **Styling References**:
-- `mobile/app/(tabs)/profile.tsx` lines 437-439 (Section Title)
-- `mobile/app/(tabs)/profile.tsx` lines 445-501 (Roadmap Card)
+- `apps/mobile/app/(tabs)/profile.tsx` lines 437-439 (Section Title)
+- `apps/mobile/app/(tabs)/profile.tsx` lines 445-501 (Roadmap Card)
 - Exact colors: Background #F9FBFC, Card #FFFFFF, Border #EDF3FC
 
 **Animations**:
@@ -106,10 +106,10 @@ Full roadmap detail screen with all steps:
 - Each step shows title, description, time, and Start/Done button
 
 **Styling References**:
-- `mobile/app/roadmaps/[id].tsx` lines 116-121 (Top Nav)
-- `mobile/app/roadmaps/[id].tsx` lines 129-208 (Info Card)
-- `mobile/app/roadmaps/[id].tsx` lines 212-264 (Step List)
-- `mobile/app/roadmaps/[id].tsx` lines 348-387 (Step Component)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 116-121 (Top Nav)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 129-208 (Info Card)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 212-264 (Step List)
+- `apps/mobile/app/roadmaps/[id].tsx` lines 348-387 (Step Component)
 
 **Animations**:
 - Slide in from right
@@ -293,10 +293,10 @@ style={{
 ## Mobile App References
 
 This video replicates styling from:
-- `mobile/components/Chat.tsx` - Chat interface
-- `mobile/app/(tabs)/profile.tsx` - Profile view
-- `mobile/app/roadmaps/[id].tsx` - Roadmap detail
-- `mobile/interface/Roadmap.ts` - Type definitions
+- `apps/mobile/components/Chat.tsx` - Chat interface
+- `apps/mobile/app/(tabs)/profile.tsx` - Profile view
+- `apps/mobile/app/roadmaps/[id].tsx` - Roadmap detail
+- `apps/mobile/interface/Roadmap.ts` - Type definitions
 
 All measurements, colors, typography, and layouts match exactly.
 

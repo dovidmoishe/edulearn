@@ -18,9 +18,17 @@ config.resolver.blockList = [
     : defaultBlockList
       ? [defaultBlockList]
       : []),
-  ...["web", "admin", "edulearnapi", ".repo-backups", ".pnpm-store", ".deploy", ".turbo"].map(
+  ...["web", "admin", "api"].map(
     (directory) =>
-      new RegExp(`^${escapePath(path.resolve(__dirname, "..", directory))}([\\\\/].*)?$`),
+      new RegExp(
+        `^${escapePath(path.resolve(__dirname, "..", directory))}([\\\\/].*)?$`,
+      ),
+  ),
+  ...[".repo-backups", ".pnpm-store", ".deploy", ".turbo"].map(
+    (directory) =>
+      new RegExp(
+        `^${escapePath(path.resolve(__dirname, "../..", directory))}([\\\\/].*)?$`,
+      ),
   ),
 ];
 config.resolver.unstable_enablePackageExports = false;

@@ -11,7 +11,7 @@ if (!password) {
 const hash = bcrypt.hashSync(password, 10);
 
 console.log('\n✅ Password hash generated!\n');
-console.log('Add this to your admin/.env file:\n');
+console.log('Add this to your apps/admin/.env file:\n');
 console.log(`ADMIN_PASSWORD_HASH='${hash}'\n`);
 console.log('Your password:', password);
 console.log('Your hash:', hash);
@@ -25,7 +25,7 @@ console.log('   2. Restart the dev server after updating\n');
 
 console.log('\n✅ Password hash generated!\n');
 
-console.log('Add this to your admin/.env file:\n');
+console.log('Add this to your apps/admin/.env file:\n');
 
 console.log(`ADMIN_PASSWORD_HASH=${hash}\n`);
 
@@ -44,7 +44,7 @@ console.log('\n⚠️  Make sure to restart the admin server after updating .env
 
 console.log('\n✅ Password hash generated!\n');
 
-console.log('Add this to your admin/.env file:\n');
+console.log('Add this to your apps/admin/.env file:\n');
 
 console.log(`ADMIN_PASSWORD_HASH=${hash}\n`);
 

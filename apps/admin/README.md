@@ -21,12 +21,12 @@ A minimal and modern admin panel for managing EduLearn rewards, certificates, an
 
 ### Installation
 
-1. Install dependencies from the repository root (see [workspace setup](../README.md)):
+1. Install dependencies from the repository root (see [workspace setup](../../README.md)):
 ```bash
 pnpm install --frozen-lockfile
 ```
 
-2. From `admin/`, set up environment variables:
+2. From `apps/admin/`, set up environment variables:
 ```bash
 cp .env.example .env.local
 ```
@@ -61,7 +61,7 @@ pnpm build
 pnpm start
 ```
 
-Run these application scripts from `admin/`, or use `pnpm dev:admin` and
+Run these application scripts from `apps/admin/`, or use `pnpm dev:admin` and
 `pnpm build:admin` from the repository root.
 
 Open [http://localhost:3002](http://localhost:3002) in your browser during development.

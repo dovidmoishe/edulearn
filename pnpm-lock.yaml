@@ -17,7 +17,7 @@ importers:
         specifier: 2.11.7
         version: 2.11.7
 
-  admin:
+  apps/admin:
     dependencies:
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
@@ -126,7 +126,7 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  edulearnapi:
+  apps/api:
     dependencies:
       '@fastify/compress':
         specifier: ^8.3.1
@@ -424,7 +424,7 @@ importers:
         specifier: ^8.20.0
         version: 8.39.1(eslint@9.33.0(jiti@2.6.1)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.2)
 
-  mobile:
+  apps/mobile:
     dependencies:
       '@expo/metro-runtime':
         specifier: ~55.0.6
@@ -770,7 +770,7 @@ importers:
         specifier: ~5.9.2
         version: 5.9.3
 
-  web:
+  apps/web:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.2.1

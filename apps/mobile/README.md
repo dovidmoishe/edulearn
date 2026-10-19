@@ -6,9 +6,9 @@ and user progression features.
 
 ## EduLearn Workspace
 
-- API: [../edulearnapi](../edulearnapi)
+- API: [../api](../api)
 - Web: [../web](../web)
-- Workspace setup and commands: [../README.md](../README.md)
+- Workspace setup and commands: [../../README.md](../../README.md)
 
 ## Tech Stack
 
@@ -36,7 +36,7 @@ and user progression features.
 
 - Node.js 24
 - pnpm 11.22.0
-- Expo CLI via `pnpm exec expo` inside `mobile/`
+- Expo CLI via `pnpm exec expo` inside `apps/mobile/`
 
 ## Getting Started
 
@@ -46,7 +46,7 @@ and user progression features.
    pnpm install --frozen-lockfile
    ```
 
-2. From `mobile/`, create your local environment file:
+2. From `apps/mobile/`, create your local environment file:
 
    ```bash
    cp .env.example .env
@@ -82,7 +82,7 @@ and user progression features.
 - `pnpm lint` - run lint checks
 - `pnpm typecheck` - check TypeScript
 
-These commands run inside `mobile/`. From the root, use `pnpm dev:mobile` or
+These commands run inside `apps/mobile/`. From the root, use `pnpm dev:mobile` or
 `pnpm --filter mobile <script>`. Clear Metro once after migration with
 `pnpm dev:mobile --clear`.
 
