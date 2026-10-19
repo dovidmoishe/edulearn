@@ -1,8 +1,8 @@
 packages:
-  - web
-  - admin
-  - edulearnapi
-  - mobile
+  - apps/web
+  - apps/admin
+  - apps/api
+  - apps/mobile
 
 # Keep each application's React and framework dependencies isolated.
 nodeLinker: isolated

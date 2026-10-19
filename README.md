@@ -4,10 +4,10 @@ One repository and pnpm workspace, with four independently deployed projects:
 
 ```text
 edulearnv2/
-  web/           Student web app (Next.js)
-  admin/         Admin dashboard (Next.js)
-  edulearnapi/   Backend (NestJS / Fastify)
-  mobile/        Mobile app (Expo / React Native)
+  apps/web/      Student web app (Next.js)
+  apps/admin/    Admin dashboard (Next.js)
+  apps/api/      Backend (NestJS / Fastify)
+  apps/mobile/   Mobile app (Expo / React Native)
 ```
 
 Each project owns its dependencies, components, types, environment files, and
@@ -25,7 +25,7 @@ Configure environment variables inside each project. API, admin, and mobile incl
 `.env.example` files; web has its existing project setup instructions.
 Local `.env` files remain ignored.
 Admin requires a unique `SESSION_SECRET` of at least 32 characters during builds
-and at runtime; copy `admin/.env.example` to `admin/.env.local` and configure it.
+and at runtime; copy `apps/admin/.env.example` to `apps/admin/.env.local` and configure it.
 
 ## Development
 
@@ -62,7 +62,7 @@ Run project checks directly when working on just one project:
 
 ```sh
 pnpm --filter mobile typecheck
-pnpm --filter edulearn-api test -- --runInBand
+pnpm --filter api test -- --runInBand
 ```
 
 Build caching is disabled while build-time environment variables and remote
@@ -89,7 +89,7 @@ preset is declared directly rather than relying on npm hoisting.
 ```sh
 pnpm --filter web add <dependency>
 pnpm --filter admin add <dependency>
-pnpm --filter edulearn-api add <dependency>
+pnpm --filter api add <dependency>
 pnpm --filter mobile exec expo install <dependency> --pnpm
 ```
 

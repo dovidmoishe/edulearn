@@ -31,6 +31,7 @@ type VariantResult = {
 const resolveEnvPath = (): string | null => {
   const candidates = [
     path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), 'apps/api/.env'),
     path.resolve(process.cwd(), 'api/.env'),
     path.resolve(__dirname, '../.env'),
   ];

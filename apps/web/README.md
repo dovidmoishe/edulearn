@@ -3,9 +3,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 Install dependencies from the repository root with `pnpm install --frozen-lockfile`.
-See the [workspace README](../README.md) for setup and independent deployment.
+See the [workspace README](../../README.md) for setup and independent deployment.
 
-Then run the development server from `web/`:
+Then run the development server from `apps/web/`:
 
 ```bash
 pnpm dev

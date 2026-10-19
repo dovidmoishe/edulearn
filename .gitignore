@@ -4,6 +4,7 @@ node_modules/
 .turbo/
 .repo-backups/
 .deploy/
+.buildboards/
 .next/
 .expo/
 dist/
