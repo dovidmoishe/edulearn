@@ -1,125 +1,64 @@
 # EduLearn
 
-One repository and pnpm workspace, with four independently deployed projects:
+**Learn Web3 smarter. Earn as you go.**
 
-```text
-edulearnv2/
-  apps/web/      Student web app (Next.js)
-  apps/admin/    Admin dashboard (Next.js)
-  apps/api/      Backend (NestJS / Fastify)
-  apps/mobile/   Mobile app (Expo / React Native)
-```
+EduLearn is an incentivized Web3 AI study companion. Chat with an AI tutor, take quizzes, earn XP and NFTs, and track your progress — on the web or on your phone.
 
-Each project owns its dependencies, components, types, environment files, and
-framework configuration. There are no shared UI or contracts packages.
+[edulearn.fun](https://www.edulearn.fun)
 
-## Setup
+## How it works
 
-Use Node.js 24 and pnpm 11.22.0. Install once from the repository root:
+1. **Chat to learn** — Ask questions, get explanations, or explore a topic with your AI tutor.
+2. **Take quizzes** — Short, fun quizzes that match your learning path.
+3. **Earn as you go** — XP for correct answers, plus NFTs as proof of progress.
+4. **Climb the leaderboard** — Friendly competition to keep you coming back.
+
+You can also build your own learning roadmaps and see streaks, quiz history, and rewards on your profile.
+
+## What you get
+
+- AI tutor that explains things simply
+- Interactive quizzes
+- XP, badges, and NFT rewards
+- Leaderboards
+- Progress tracking
+- Web and mobile, so you can learn anywhere
+
+EduLearn has a free plan for core learning, and a premium plan for higher usage and more advanced AI models.
+
+## Run it locally
+
+You need **Node.js 24** and **pnpm 11.22**.
 
 ```sh
 pnpm install --frozen-lockfile
 ```
 
-Configure environment variables inside each project. API, admin, and mobile include
-`.env.example` files; web has its existing project setup instructions.
-Local `.env` files remain ignored.
-Admin requires a unique `SESSION_SECRET` of at least 32 characters during builds
-and at runtime; copy `apps/admin/.env.example` to `apps/admin/.env.local` and configure it.
+Copy the example env files and fill in your values:
 
-## Development
+- `apps/api/.env.example` → `apps/api/.env`
+- `apps/admin/.env.example` → `apps/admin/.env.local`
+- `apps/mobile/.env.example` → `apps/mobile/.env`
 
-```sh
-pnpm dev:web       # http://localhost:3000
-pnpm dev:api       # http://localhost:3001 (unless PORT overrides it)
-pnpm dev:admin     # http://localhost:3002
-pnpm dev:mobile    # Expo / Metro on port 8081
-```
-
-`pnpm dev` runs all four development tasks through Turborepo. For mobile's
-interactive Expo terminal, run `pnpm dev:mobile` separately. After migrating an
-existing checkout, run `pnpm dev:mobile --clear` once to clear Metro's old cache.
-
-For a physical mobile device, its API URL must point at a reachable host or your
-computer's LAN address; the device's `localhost` is not your computer.
-
-## Builds and checks
+Then start what you need:
 
 ```sh
-pnpm build             # Web, admin, and API
-pnpm build:web
-pnpm build:admin
-pnpm build:api
-pnpm export:mobile     # Expo export; separate from native builds
-pnpm android           # Local Android build
-pnpm ios               # Local iOS build (macOS required)
-pnpm lint
-pnpm typecheck
-pnpm test              # Existing API Jest suite
+pnpm dev:web       # student app — http://localhost:3000
+pnpm dev:api       # API — http://localhost:3001
+pnpm dev:admin     # admin — http://localhost:3002
+pnpm dev:mobile    # Expo / mobile
 ```
 
-Run project checks directly when working on just one project:
+## What's in this repo
 
-```sh
-pnpm --filter mobile typecheck
-pnpm --filter api test -- --runInBand
+```text
+apps/web      Student website and learning app
+apps/admin    Admin dashboard
+apps/api      Backend
+apps/mobile   Mobile app
 ```
 
-Build caching is disabled while build-time environment variables and remote
-inputs remain project-specific. Turborepo still coordinates builds and caches
-read-only lint tasks. Development, typechecking, and tests are not cached.
+## Links
 
-The migration was verified with frozen lockfile checks, web and API production
-builds, an admin production build using a temporary process-only `SESSION_SECRET`,
-all three server/web typechecks, mobile's Android JavaScript export and lint,
-and 31 existing API tests. Mobile still has 16 source type errors; web, admin,
-and API lint checks report existing application and formatting issues.
-Native mobile builds and Linux standalone packaging have not been executed.
-
-## Dependencies and mobile
-
-The root workspace uses isolated dependencies so each project resolves its own
-React and framework versions. Expo's default Metro configuration handles the
-workspace; the existing package-exports compatibility setting remains in place.
-Metro excludes sibling app folders, local stores, and migration backups from its
-file scan, while retaining root dependency resolution.
-Mobile's worklets override lives in the root workspace configuration. Its Babel
-preset is declared directly rather than relying on npm hoisting.
-
-```sh
-pnpm --filter web add <dependency>
-pnpm --filter admin add <dependency>
-pnpm --filter api add <dependency>
-pnpm --filter mobile exec expo install <dependency> --pnpm
-```
-
-Commit the owning project's `package.json` and the root `pnpm-lock.yaml` together.
-Dependency build scripts require explicit entries in `allowBuilds` in the root
-workspace configuration; do not broadly enable every dependency's build scripts.
-
-## Deployment and repository history
-
-Set `NEXT_STANDALONE=1` when
-building a Next.js app for a standalone deployment artifact; normal local builds
-use Next.js's standard output.
-
-The root `main` branch imports the checked-out heads of all four original
-repositories without rewriting their commits. The source web checkout was on
-`feature/web3-hero-store-ctas`; admin was on `master`; API and mobile were on `main`.
-Other original refs are preserved under `refs/archive/<project>/`:
-
-```sh
-git log refs/archive/web/heads/feature/web3-hero-store-ctas
-git for-each-ref refs/archive/
-```
-
-Sanitized original Git repositories and pre-migration lockfiles are also preserved
-in the ignored local `.repo-backups/` folder. That folder is not uploaded in a
-normal clone or push. The imported current histories are reachable from `main`;
-archived refs require explicit publication if they are needed on another machine.
-
-The monorepo remote is `https://github.com/dovidmoishe/edulearn`.
-Historical `google-credentials.json` files were removed from all local repository
-refs and Git backups before publication. Affected commit IDs have changed; the
-backup repositories are now bare repositories. Service account credentials belong
-in local environment configuration and must never be committed.
+- Website: [edulearn.fun](https://www.edulearn.fun)
+- Support: [support.edulearn.fun](https://support.edulearn.fun)
