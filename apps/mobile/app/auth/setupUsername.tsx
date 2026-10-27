@@ -38,29 +38,36 @@ export default function SetupUsername() {
   }, []);
 
   useEffect(() => {
-    if (username.length < 3) {
-      setIsAvailable(null);
-      return;
-    }
+    // A response for a previous value must not enable a different handle.
+    setIsAvailable(null);
+    setChecking(false);
+    if (username.length < 3) return;
 
+    const controller = new AbortController();
+    setChecking(true);
     const timeoutId = setTimeout(async () => {
-      setChecking(true);
       try {
         const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
         const response = await fetch(`${API_URL}/auth/check-availability`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username }),
+          signal: controller.signal,
         });
+        if (!response.ok) throw new Error("Unable to check username availability");
         const data = await response.json();
-        setIsAvailable(data.usernameAvailable);
-      } catch (error) {
+        if (!controller.signal.aborted) setIsAvailable(data.usernameAvailable === true);
+      } catch {
+        if (!controller.signal.aborted) setIsAvailable(null);
       } finally {
-        setChecking(false);
+        if (!controller.signal.aborted) setChecking(false);
       }
     }, 500);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [username]);
 
   const sanitizeUsername = (value: string): string => {
@@ -155,12 +162,12 @@ export default function SetupUsername() {
             Complete Your Profile
           </Text>
           <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
-            Add your X (Twitter) username to continue
+            Add your EduLearn username to continue
           </Text>
 
           <View style={styles.formContainer}>
             <Text style={[styles.inputLabel, isDark && styles.inputLabelDark]}>
-              X Username
+              EduLearn Username
             </Text>
             <View
               style={[

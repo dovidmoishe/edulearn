@@ -73,7 +73,7 @@ const Auth = () => {
     if (field === "email") {
       sanitizedValue = value.trim().toLowerCase();
     } else if (field === "username") {
-      sanitizedValue = value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase();
+      sanitizedValue = value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase().slice(0, 30);
     } else if (field === "referralCode") {
       sanitizedValue = value.trim().toUpperCase();
     }
@@ -120,7 +120,7 @@ const Auth = () => {
       }
 
       if (!formData.username.trim()) {
-        Alert.alert("Username Required", "Please enter your X username");
+        Alert.alert("Username Required", "Please enter your EduLearn username");
         return false;
       }
 
@@ -478,7 +478,7 @@ const Auth = () => {
                     styles.usernameInput,
                     theme === "dark" && styles.inputDark,
                   ]}
-                  placeholder="X username"
+                  placeholder="EduLearn username"
                   placeholderTextColor={
                     theme === "dark" ? "#B3B3B3" : "#61728C"
                   }

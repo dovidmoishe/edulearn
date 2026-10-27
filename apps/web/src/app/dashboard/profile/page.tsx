@@ -15,7 +15,6 @@ import walletIcon from "@/../public/assets/icons/wallet.png";
 import roadmapIcon from "@/../public/assets/icons/roadmap.png"
 import useActivityStore from "@/../core/activityState";
 import useWalletStore from "@/../core/walletStore";
-import useTwitterStore from "@/../core/twitterStore";
 import useRoadmapStore from "@/../core/roadmapStore";
 import useAgentStore from "@/../core/agentStore";
 import {
@@ -27,7 +26,6 @@ import {
 } from "@/components/ui/dialog";
 import userIcon from "@/../public/assets/icons/user.png";
 import warningIcon from "@/../public/assets/icons/warning.png";
-import { FaXTwitter } from "react-icons/fa6";
 import { Roadmap, RoadmapStep, RoadmapWithSteps } from "@/../interfaces/Roadmap";
 import { useRouter } from "next/navigation";
 import { getHighQualityImageUrl } from "@/../utils/imageHelper";
@@ -46,7 +44,6 @@ export default function ProfilePage() {
   const swapSolToEDLN = useWalletStore((s) => s.swapSolToEDLN);
   const burnEDLN = useWalletStore((s) => s.burnEDLN);
   const decryptPrivateKey = useWalletStore((s) => s.decryptPrivateKey);
-  const connectTwitter = useTwitterStore((s) => s.initiateAuth);
   const fetchRoadmaps = useRoadmapStore((s) => s.fetchRoadmaps);
   const fetchRoadmapById = useRoadmapStore((s) => s.fetchRoadmapById);
   const startRoadmapStep = useRoadmapStore((s) => s.startRoadmapStep);
@@ -86,7 +83,6 @@ export default function ProfilePage() {
   const [confirmExportModalVisible, setConfirmExportModalVisible] = useState(false);
   const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [isExportingWallet, setIsExportingWallet] = useState(false);
-  const [isConnectingTwitter, setIsConnectingTwitter] = useState(false);
   const [solBuyAmount, setSolBuyAmount] = useState(0);
 
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
@@ -274,6 +270,11 @@ export default function ProfilePage() {
       return;
     }
 
+    if (editFormData.username !== user?.username && !/^[a-z0-9_]{3,30}$/.test(editFormData.username)) {
+      alert("Username must be 3–30 characters using lowercase letters, numbers, and underscores");
+      return;
+    }
+
     setIsUpdatingProfile(true);
 
     try {
@@ -320,19 +321,6 @@ export default function ProfilePage() {
       alert("Failed to export private key. Please try again later.");
     } finally {
       setIsExportingWallet(false);
-    }
-  };
-
-  const handleConnectTwitter = async () => {
-    if (isConnectingTwitter) return;
-    
-    try {
-      setIsConnectingTwitter(true);
-      await connectTwitter();
-    } catch (error) {
-      console.error("Error connecting Twitter:", error);
-      alert("Failed to connect to X. Please try again.");
-      setIsConnectingTwitter(false);
     }
   };
 
@@ -858,21 +846,6 @@ export default function ProfilePage() {
                 <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">Delete Account</p>
               </button>
 
-              <button 
-                onClick={handleConnectTwitter}
-                disabled={isConnectingTwitter || user?.isVerified}
-                className={`flex items-center gap-[12px] py-[10px] px-[16px] rounded-[8px] w-full transition-colors cursor-pointer ${
-                  user?.isVerified 
-                    ? 'bg-[#00FF80] bg-opacity-20 border border-[#00FF80] cursor-default' 
-                    : 'bg-transparent border border-[#00FF80] hover:bg-opacity-10'
-                } disabled:opacity-70`}
-              >
-                <FaXTwitter className="text-[#00FF80]" size={20} />
-                <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">
-                  {isConnectingTwitter ? 'Connecting...' : user?.isVerified ? 'X Connected ✓' : 'Connect X Account'}
-                </p>
-              </button>
-
               <label className="flex items-center gap-[12px] bg-transparent border border-[#00FF80] py-[10px] px-[16px] rounded-[8px] w-full hover:bg-opacity-10 transition-colors cursor-pointer">
                 <Image src={userIcon} alt="upload avatar" width={20} height={20} />
                 <p className="text-[#00FF80] text-[16px] font-[500] leading-[24px]">
@@ -1071,6 +1044,9 @@ export default function ProfilePage() {
                 disabled={isUpdatingProfile}
                 className="bg-[#F9FBFC] dark:bg-[#2E3033] border border-[#EDF3FC] dark:border-[#2E3033] rounded-[12px] p-[12px] w-full text-[16px] font-[400] text-[#2D3C52] dark:text-[#E0E0E0] placeholder:text-[#61728C] dark:placeholder:text-[#B3B3B3] focus:outline-none focus:ring-2 focus:ring-[#00FF80] focus:border-transparent disabled:opacity-50"
               />
+              <p className="text-sm text-[#61728C] dark:text-[#B3B3B3]">
+                Your EduLearn username. New usernames use 3–30 lowercase letters, numbers, or underscores.
+              </p>
             </div>
 
             <div className="flex flex-col gap-[8px]">

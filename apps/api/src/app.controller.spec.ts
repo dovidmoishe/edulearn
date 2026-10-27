@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { GoneException } from '@nestjs/common';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -18,5 +19,11 @@ describe('AppController', () => {
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
+  });
+
+  it('retires account linking for older clients without processing a callback', () => {
+    expect(() => appController.retiredAccountConnection()).toThrow(
+      GoneException,
+    );
   });
 });

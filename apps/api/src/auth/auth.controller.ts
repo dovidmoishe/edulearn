@@ -9,6 +9,7 @@ import {
   Query,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
   UseGuards,
   Request,
   HttpCode,
@@ -102,6 +103,7 @@ export class AuthController {
   @Put('edit')
   @UseGuards(FlexibleAuthGuard)
   async editUser(
+    @Request() req,
     @Body()
     body: {
       name: string;
@@ -114,6 +116,11 @@ export class AuthController {
 
     if (!name || !email) {
       throw new BadRequestException('Name and email are required');
+    }
+
+    const authenticatedEmail = await verifyUserEmail(req.user);
+    if (email !== authenticatedEmail) {
+      throw new ForbiddenException('You can only edit your own profile');
     }
 
     const updatedUser = await this.authService.editUser({
@@ -378,15 +385,6 @@ export class AuthController {
     }
 
     await verifyUserAuthorization(req.user, body.userId, 'completing profile');
-
-    const availability = await this.authService.checkUserAvailability(
-      undefined,
-      body.username,
-    );
-
-    if (!availability.usernameAvailable) {
-      throw new BadRequestException('Username already taken');
-    }
 
     const updatedUser = await this.authService.updateUsername(
       body.userId,

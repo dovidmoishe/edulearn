@@ -26,30 +26,36 @@ export default function SetupUsername() {
   }, [router]);
 
   useEffect(() => {
-    if (username.length < 3) {
-      setIsAvailable(null);
-      return;
-    }
+    // A response for a previous value must not enable a different handle.
+    setIsAvailable(null);
+    setChecking(false);
+    if (username.length < 3) return;
 
+    const controller = new AbortController();
+    setChecking(true);
     const timeoutId = setTimeout(async () => {
-      setChecking(true);
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
         const response = await fetch(`${API_URL}auth/check-availability`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username })
+          body: JSON.stringify({ username }),
+          signal: controller.signal,
         });
+        if (!response.ok) throw new Error('Unable to check username availability');
         const data = await response.json();
-        setIsAvailable(data.usernameAvailable);
-      } catch (error) {
-        console.error('Availability check error:', error);
+        if (!controller.signal.aborted) setIsAvailable(data.usernameAvailable === true);
+      } catch {
+        if (!controller.signal.aborted) setIsAvailable(null);
       } finally {
-        setChecking(false);
+        if (!controller.signal.aborted) setChecking(false);
       }
     }, 500);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [username]);
 
   const sanitizeUsername = (value: string): string => {
@@ -163,7 +169,7 @@ export default function SetupUsername() {
                   Complete Your Profile
                 </p>
                 <p className="text-[#61728C] dark:text-[#B3B3B3] text-[18px] leading-[26px] text-center font-medium opacity-[0.7]">
-                  Add your X (Twitter) username to continue
+                  Add your EduLearn username to continue
                 </p>
               </div>
             </div>
@@ -171,7 +177,7 @@ export default function SetupUsername() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[#61728C] dark:text-[#B3B3B3] font-[Satoshi] text-[16px] font-medium leading-[24px] block">
-                  X Username
+                  EduLearn Username
                 </label>
                 <div className="relative w-full">
                   <span className="absolute left-[16px] top-1/2 transform -translate-y-1/2 text-[#61728C] dark:text-[#B3B3B3]">

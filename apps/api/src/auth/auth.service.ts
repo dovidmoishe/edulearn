@@ -3,8 +3,20 @@ import {
   Inject,
   forwardRef,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
-import { and, eq, desc, ilike, or, inArray, count, SQL } from 'drizzle-orm';
+import {
+  and,
+  eq,
+  ne,
+  desc,
+  ilike,
+  or,
+  inArray,
+  count,
+  sql,
+  SQL,
+} from 'drizzle-orm';
 import db from '../../drizzle';
 import {
   user,
@@ -45,6 +57,7 @@ import { SocialService } from 'src/social/social.service';
 import { LeaderboardService } from 'src/leaderboard/leaderboard.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { RemindersService } from 'src/reminders/reminders.service';
+import { rethrowUsernameConflict, validateUsername } from './username';
 
 export interface UserResponse extends User {
   quizLimit: number;
@@ -321,6 +334,7 @@ export class AuthService {
   }
 
   async createUser(data: signUpDetails): Promise<UserResponse | Error> {
+    await this.ensureUsernameAvailable(data.username);
     try {
       console.log('Creating user in database with data:', data);
       const userExists = await db
@@ -344,7 +358,7 @@ export class AuthService {
         email: data.email,
         referralCode: referralCode,
         referredBy: referredByCode,
-        username: data.username || '',
+        username: data.username,
         address: userWallet.publicKey,
         encryptedPrivateKey: userWallet.encryptedSecret,
       });
@@ -465,6 +479,7 @@ export class AuthService {
         );
       }
 
+      rethrowUsernameConflict(error);
       throw error;
     }
   }
@@ -522,7 +537,10 @@ export class AuthService {
     const conditions: SQL[] = [];
 
     if (email) conditions.push(eq(user.email, email));
-    if (username) conditions.push(eq(user.username, username));
+    if (username !== undefined) {
+      validateUsername(username);
+      conditions.push(sql`lower(${user.username}) = ${username}`);
+    }
 
     const existingUsers = await db
       .select({
@@ -538,7 +556,7 @@ export class AuthService {
       : false;
 
     const usernameTaken = username
-      ? existingUsers.some((u) => u.username === username)
+      ? existingUsers.some((u) => u.username?.toLowerCase() === username)
       : false;
 
     if (emailTaken) messages.push('Email is already registered');
@@ -549,6 +567,24 @@ export class AuthService {
       usernameAvailable: !usernameTaken,
       message: messages.length > 0 ? messages.join('. ') : undefined,
     };
+  }
+
+  private async ensureUsernameAvailable(
+    username: string,
+    currentUser?: Pick<User, 'id' | 'username'>,
+  ): Promise<void> {
+    validateUsername(username, currentUser?.username);
+    if (currentUser?.username === username) return;
+
+    const conditions = [sql`lower(${user.username}) = ${username}`];
+    if (currentUser) conditions.push(ne(user.id, currentUser.id));
+    const existing = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(and(...conditions))
+      .limit(1);
+    if (existing.length)
+      throw new ConflictException('Username is already taken');
   }
   async getUserByAddress(address: string): Promise<User | null> {
     try {
@@ -578,6 +614,9 @@ export class AuthService {
     username: string;
     learning: string;
   }): Promise<User | null> {
+    const currentUser = await this.getUserByEmail(email);
+    if (!currentUser) return null;
+    await this.ensureUsernameAvailable(username, currentUser);
     try {
       const result = await db
         .update(user)
@@ -617,6 +656,7 @@ export class AuthService {
       } as any;
     } catch (error) {
       console.error('Failed to edit user');
+      rethrowUsernameConflict(error);
       throw error;
     }
   }
@@ -1022,26 +1062,6 @@ export class AuthService {
     }
   }
 
-  async verifyUser(email: string): Promise<User | null> {
-    try {
-      const result = await db
-        .update(user)
-        .set({ verified: true })
-        .where(eq(user.email, email))
-        .returning();
-
-      if (!result[0]) return null;
-
-      return {
-        ...result[0],
-        quizLimit: result[0].quizLimits,
-      } as any;
-    } catch (error) {
-      console.error('Failed to verify user', error);
-      throw error;
-    }
-  }
-
   async searchUsersByUsername(
     usernameQuery: string,
     limit: number = 10,
@@ -1381,15 +1401,21 @@ export class AuthService {
   }
 
   private generateTempUsername(email: string): string {
-    const emailPrefix = email
-      .split('@')[0]
-      .replace(/[^a-z0-9]/gi, '')
-      .toLowerCase();
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const emailPrefix =
+      email
+        .split('@')[0]
+        .replace(/[^a-z0-9]/gi, '')
+        .toLowerCase()
+        .slice(0, 23) || 'user';
+    const randomSuffix = Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .padEnd(6, '0');
     return `${emailPrefix}_${randomSuffix}`;
   }
 
   async createOAuthUser(data: signUpDetails): Promise<User | Error> {
+    await this.ensureUsernameAvailable(data.username);
     try {
       const userExists = await db
         .select()
@@ -1438,11 +1464,15 @@ export class AuthService {
       } as any;
     } catch (error) {
       console.error('Failed to create OAuth user:', error);
+      rethrowUsernameConflict(error);
       throw error;
     }
   }
 
   async updateUsername(userId: string, username: string): Promise<User | null> {
+    const currentUser = await this.getUserById(userId);
+    if (!currentUser) return null;
+    await this.ensureUsernameAvailable(username, currentUser);
     try {
       const result = await db
         .update(user)
@@ -1455,39 +1485,6 @@ export class AuthService {
 
       const updatedUser = result[0] ?? null;
 
-      if (updatedUser && username && username.trim() !== '') {
-        try {
-          const axios = require('axios');
-          const bearerToken = process.env.TWITTER_BEARER_TOKEN;
-          if (bearerToken) {
-            const response = await axios.get(
-              `https://api.twitter.com/2/users/by/username/${username}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${bearerToken}`,
-                },
-                params: {
-                  'user.fields': 'profile_image_url',
-                },
-              },
-            );
-
-            if (response.data?.data?.profile_image_url) {
-              const profilePictureURL = response.data.data.profile_image_url;
-              await db
-                .update(user)
-                .set({ profilePictureURL })
-                .where(eq(user.id, userId));
-            }
-          }
-        } catch (error) {
-          console.error(
-            'Failed to fetch Twitter profile picture:',
-            error.response?.data || error.message,
-          );
-        }
-      }
-
       if (!updatedUser) return null;
 
       return {
@@ -1496,6 +1493,7 @@ export class AuthService {
       } as any;
     } catch (error) {
       console.error('Failed to update username', error);
+      rethrowUsernameConflict(error);
       throw error;
     }
   }

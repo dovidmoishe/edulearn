@@ -36,51 +36,17 @@ $ pnpm install --frozen-lockfile
 
 ## Environment Variables
 
-Create a `.env` file in `apps/api/` with the following variables:
+Create a `.env` file in `apps/api/` using `.env.example` as the configuration reference.
 
-### Twitter/X Integration (for posting tweets)
+## Usernames
 
-⚠️ **IMPORTANT**: Twitter uses TWO different authentication systems. Make sure you get the right credentials!
-
-#### For Posting Tweets (OAuth 1.0a - Required)
-
-```env
-# OAuth 1.0a - Consumer Keys (for posting tweets)
-TWITTER_API_KEY=your_consumer_api_key
-TWITTER_API_SECRET=your_consumer_api_secret
-TWITTER_ACCESS_TOKEN=your_access_token
-TWITTER_ACCESS_TOKEN_SECRET=your_access_token_secret
-```
-
-#### For User Authentication (OAuth 2.0 - Optional, already configured if you have user login)
-
-```env
-TWITTER_CLIENT_ID=your_oauth2_client_id
-TWITTER_CLIENT_SECRET=your_oauth2_client_secret
-TWITTER_REDIRECT_URI=your_redirect_uri
-```
-
-**How to get these credentials:**
-
-1. Go to the [Twitter Developer Portal](https://developer.twitter.com/en/portal/dashboard)
-2. Create or select your app
-3. **IMPORTANT:** Set app permissions to **"Read and Write"** in Settings → User authentication settings
-4. In the app settings, you'll find:
-   - **API Key** (Consumer Key) → `TWITTER_API_KEY`
-   - **API Secret** (Consumer Secret) → `TWITTER_API_SECRET`
-5. Under "Keys and tokens", generate (or regenerate if permissions changed):
-   - **Access Token** → `TWITTER_ACCESS_TOKEN`
-   - **Access Token Secret** → `TWITTER_ACCESS_TOKEN_SECRET`
-
-**⚠️ Common Issues:**
-
-- **401 Unauthorized Error**:
-  - Your app must have "Read and Write" permissions
-  - If you changed permissions, you MUST regenerate the Access Token and Access Token Secret
-  - Make sure all 4 credentials (API Key, API Secret, Access Token, Access Token Secret) are correctly copied to your `.env` file
-  - Ensure there are no extra spaces or quotes in your `.env` file
-
-**Note:** The `TWITTER_CLIENT_ID` and `TWITTER_CLIENT_SECRET` are for OAuth 2.0 user authentication (different from posting tweets). For posting, you need OAuth 1.0a credentials: `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, and `TWITTER_ACCESS_TOKEN_SECRET`.
+Usernames belong to EduLearn and do not require a social account. New usernames
+must contain 3–30 lowercase letters, numbers, or underscores. Signup, profile
+completion, and profile editing enforce these rules on the API. Availability
+checks also reserve existing mixed-case handles, and duplicate writes return a
+conflict response. Existing usernames can remain unchanged, including legacy
+formats. Changing a username preserves the profile photo; users can upload a
+photo separately.
 
 ## Compile and run the project
 

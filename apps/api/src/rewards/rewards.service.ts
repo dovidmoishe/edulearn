@@ -34,7 +34,6 @@ import {
   getOrCreateAssociatedTokenAccount,
 } from '@solana/spl-token';
 import { ResendService } from '../resend/resend.service';
-import { TwitterService } from '../twitter/twitter.service';
 import { AuthService } from '../auth/auth.service';
 import { SocialService } from '../social/social.service';
 
@@ -58,7 +57,6 @@ export class RewardsService {
 
   constructor(
     private readonly resendService: ResendService,
-    private readonly twitterService: TwitterService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     @Inject(forwardRef(() => SocialService))
@@ -381,30 +379,6 @@ export class RewardsService {
         throw new Error(
           'Failed to create user-reward relationship. Database insertion returned no result',
         );
-      }
-
-      const postText = [
-        `Congratulations to @${userExists[0].username} for earning the ${rewardExists[0].title} NFT certificate! 🎉`,
-        ``,
-        `You can claim the Badge in the rewards tab of the web and mobile app`,
-      ].join('\n');
-
-      try {
-        if (rewardExists[0].imageUrl) {
-          const mediaId = await this.twitterService.uploadMedia(
-            rewardExists[0].imageUrl,
-          );
-          await this.twitterService.postTweet(postText, {
-            media: {
-              media_ids: [mediaId],
-            },
-          });
-        } else {
-          await this.twitterService.postTweet(postText);
-        }
-        console.log('Successfully posted to X');
-      } catch (twitterError) {
-        console.error('Failed to post to Twitter:', twitterError);
       }
 
       await this.resendService.sendNFTAwardEmail(

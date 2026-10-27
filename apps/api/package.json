@@ -28,7 +28,6 @@
     "cleanup:orphaned-users": "ts-node -r tsconfig-paths/register scripts/cleanup-orphaned-users.ts",
     "migrate:user-ids:plan": "ts-node -r tsconfig-paths/register scripts/migrate-user-ids-to-supabase.ts",
     "migrate:user-ids:apply": "ts-node -r tsconfig-paths/register scripts/migrate-user-ids-to-supabase.ts --apply",
-    "updatepfps": "ts-node -r tsconfig-paths/register scripts/updatepfps.ts",
     "migrate": "drizzle-kit push",
     "migrate:legacy": "ts-node -r tsconfig-paths/register lib/db/migrate.ts",
     "migrate:fix": "ts-node -r tsconfig-paths/register scripts/fix-migrations.ts",
@@ -111,7 +110,6 @@
     "rxjs": "^7.8.1",
     "satori": "^0.18.3",
     "socket.io": "^4.8.1",
-    "twitter-api-v2": "^1.27.0",
     "uuid": "^11.1.0",
     "wawoff2": "^2.0.1"
   },
