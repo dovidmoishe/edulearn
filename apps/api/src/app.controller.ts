@@ -1,6 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, GoneException, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiKeyGuard } from './auth/guards/api-key.guard';
 
 @Controller()
 export class AppController {
@@ -9,5 +8,13 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  // Retired endpoint for installed clients that still offer account linking.
+  @Post('twitter/callback')
+  retiredAccountConnection(): never {
+    throw new GoneException(
+      'Account linking is no longer available. Your EduLearn username is independent. Please update the app.',
+    );
   }
 }

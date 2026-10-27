@@ -2,16 +2,6 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  const state = request.nextUrl.searchParams.get('state')
-  const isTwitterCallback = request.nextUrl.pathname.includes('/twitter-callback')
-  const hasTwitterState = state?.startsWith('TWITTER_')
-  
-  if (isTwitterCallback && (request.nextUrl.searchParams.has('code') || hasTwitterState)) {
-    return NextResponse.next({
-      request,
-    })
-  }
-
   let supabaseResponse = NextResponse.next({
     request,
   })

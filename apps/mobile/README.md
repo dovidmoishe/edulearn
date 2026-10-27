@@ -63,7 +63,6 @@ and user progression features.
    - `EXPO_PUBLIC_SUPABASE_URL`
    - `EXPO_PUBLIC_SUPABASE_ANON`
    - `EXPO_PUBLIC_API_BASE_URL`
-   - `EXPO_PUBLIC_TWITTER_CLIENT_ID`
 
 4. Start the app:
 

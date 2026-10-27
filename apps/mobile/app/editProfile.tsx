@@ -51,6 +51,13 @@ const EditProfile = (_props: Props) => {
       return;
     }
 
+    if (formData.username !== user?.username && !/^[a-z0-9_]{3,30}$/.test(formData.username)) {
+      setIsError(true);
+      setModalMessage("Username must be 3–30 characters using lowercase letters, numbers, and underscores");
+      setShowModal(true);
+      return;
+    }
+
     setIsLoading(true);
 
     try {

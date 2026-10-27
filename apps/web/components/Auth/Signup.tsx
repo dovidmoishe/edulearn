@@ -396,11 +396,11 @@ const Signup = () => {
 
             <div className="space-y-2">
               <label className="text-[#61728C] dark:text-[#B3B3B3] font-[Satoshi] text-[16px] font-medium leading-[24px] block">
-                X Username
+                EduLearn Username
               </label>
               <div className="relative w-full">
                 <input
-                  placeholder="@username"
+                  placeholder="username"
                   type="text"
                   value={formData.username}
                   onChange={(e) =>

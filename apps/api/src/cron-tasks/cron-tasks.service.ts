@@ -2,16 +2,13 @@ import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import type { AuthService } from '../auth/auth.service';
 import { WalletService } from 'src/wallet/wallet.service';
-import { TwitterService } from 'src/twitter/twitter.service';
 import db from '../../drizzle';
-import { desc, and, eq, lt, gt } from 'drizzle-orm';
+import { desc, and, eq, lt } from 'drizzle-orm';
 import { roadmap, roadMapStep, user } from '../../lib/db/schema';
 import { ExpoPushService } from 'src/common/services/expo-push.service';
 import { NotificationsService } from 'src/common/services/notifications.service';
 import { ResendService } from 'src/resend/resend.service';
-import { CardsService } from 'src/cards/cards.service';
 import { LeaderboardService } from 'src/leaderboard/leaderboard.service';
-import { MonthlyLeaderboardService } from 'src/monthly-leaderboard/monthly-leaderboard.service';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 
 @Injectable()
@@ -29,49 +26,16 @@ export class CronTasksService {
     )
     private authService: AuthService,
     private walletService: WalletService,
-    private twitterService: TwitterService,
     private expoPushService: ExpoPushService,
     private notificationsService: NotificationsService,
     private resendService: ResendService,
-    private cardService: CardsService,
     private leaderboardService: LeaderboardService,
-    private monthlyLeaderboardService: MonthlyLeaderboardService,
     @Inject(forwardRef(() => SubscriptionService))
     private subscriptionService: SubscriptionService,
   ) {}
 
-  @Cron('0 0 1 * *', { timeZone: 'UTC' })
-  async handleMonthlyLeaderboardPost() {
-    this.logger.log('Running monthly leaderboard X post');
-    try {
-      await this.monthlyLeaderboardService.postPreviousMonthToX();
-    } catch (error) {
-      this.logger.error('Failed monthly leaderboard post', error);
-    }
-  }
-
-  @Cron(CronExpression.EVERY_WEEKEND)
-  async handleUserShoutout() {
-    const users = await db.select().from(user).where(gt(user.xp, 50));
-
-    const randomUser = users[Math.floor(Math.random() * users.length)];
-
-    const userStreakCard = await this.cardService.generateStreakCard({
-      userId: randomUser.id,
-    });
-
-    await this.twitterService.postTweet(
-      `🔥 Shoutout to @${randomUser.username} for being a top user with ${randomUser.xp} XP! 🔥`,
-      {
-        media: {
-          media_ids: [userStreakCard.toString('base64')],
-        },
-      },
-    );
-  }
-
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleLeaderboardPost() {
+  async notifyDailyLeaderboardLeaders() {
     const topUsers = await db
       .select()
       .from(user)
@@ -94,50 +58,6 @@ export class CronTasksService {
           },
         );
       }
-    }
-
-    const dateLabel = new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-
-    const entries = topUsers.map((u, i) => ({
-      rank: (i + 1) as 1 | 2 | 3,
-      username: u.username || 'user',
-      name: u.name || u.username || 'User',
-      xp: u.xp ?? 0,
-      avatarUrl: u.profilePictureURL,
-    }));
-
-    const medals = ['🥇', '🥈', '🥉'];
-    const lines = topUsers.map(
-      (u, i) =>
-        `${medals[i] ?? '🏅'} @${u.username || 'user'} — ${(u.xp ?? 0).toLocaleString()} XP`,
-    );
-    const postFormat = [
-      'EduLearn Daily Leaderboard 🏆',
-      '',
-      ...lines,
-      '',
-      'Sign up at edulearn.fun — learn and earn!',
-    ].join('\n');
-
-    try {
-      const png = await this.cardService.generateMonthlyLeaderboardCard({
-        monthLabel: dateLabel,
-        theme: 'dark',
-        variant: 'daily',
-        entries,
-      });
-      const mediaId = await this.twitterService.uploadMediaBuffer(png);
-      await this.twitterService.postTweet(postFormat, {
-        media: { media_ids: [mediaId] },
-      });
-      this.logger.log('Successfully posted daily leaderboard to X with image');
-    } catch (error) {
-      this.logger.error('Failed to post to social media', error);
     }
   }
 
@@ -325,14 +245,6 @@ export class CronTasksService {
           }
         } catch (err) {
           this.logger.error(`Failed to award prize to user ${u.userId}`, err);
-        }
-      }
-      if (topUsers.length >= 3) {
-        const tweetText = `📊 EduLearn Weekly Leaderboard Winners!\n\n🥇 @${topUsers[0].user.username || 'User'} - ${topUsers[0].xpEarned} XP\n🥈 @${topUsers[1].user.username || 'User'} - ${topUsers[1].xpEarned} XP\n🥉 @${topUsers[2].user.username || 'User'} - ${topUsers[2].xpEarned} XP\n\nJoin edulearn.fun to compete!`;
-        try {
-          await this.twitterService.postTweet(tweetText);
-        } catch (err) {
-          this.logger.error('Failed to post weekly leaderboard tweet', err);
         }
       }
     } catch (error) {

@@ -15,7 +15,6 @@ export { default as ScreenContainer } from "./layout/ScreenContainer";
 export { default as BottomTabBar } from "./layout/BottomTabBar";
 export { default as AnimatedTabIcon } from "./layout/AnimatedTabIcon";
 
-export { default as ConnectX } from "./auth/ConnectX";
 export { default as OAuthButtons } from "./auth/OAuthButtons";
 
 export { default as Chat } from "./chat/Chat";

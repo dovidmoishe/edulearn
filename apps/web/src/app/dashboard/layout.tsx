@@ -20,16 +20,9 @@ export default function DashboardLayout({
   const [authChecked, setAuthChecked] = useState(false);
   const [hasAuth, setHasAuth] = useState(false);
 
-  const isTwitterCallback = pathname?.includes('/twitter-callback');
   const isChatRoute = pathname?.startsWith('/dashboard/chat');
 
   useEffect(() => {
-    if (isTwitterCallback) {
-      setAuthChecked(true);
-      setHasAuth(true);
-      return;
-    }
-
     let mounted = true;
     let retryCount = 0;
     const MAX_RETRIES = 3;
@@ -97,9 +90,9 @@ export default function DashboardLayout({
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [router, setUserAsync, isTwitterCallback]);
+  }, [router, setUserAsync]);
 
-  const isLoading = !isTwitterCallback && (!authChecked || (hasAuth && !storeUser));
+  const isLoading = !authChecked || (hasAuth && !storeUser);
   
   if (isLoading) {
     return (

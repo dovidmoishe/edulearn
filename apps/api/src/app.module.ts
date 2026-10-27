@@ -12,7 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './wallet/wallet.module';
 import { CronTasksModule } from './cron-tasks/cron-tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TwitterModule } from './twitter/twitter.module';
 import { RoadmapModule } from './roadmap/roadmap.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { ResendModule } from './resend/resend.module';
@@ -62,7 +61,6 @@ import { SurveysModule } from './surveys/surveys.module';
     ScheduleModule.forRoot(),
     WalletModule,
     CronTasksModule,
-    TwitterModule,
     RoadmapModule,
     SubscriptionModule,
     ResendModule,

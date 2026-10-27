@@ -29,7 +29,6 @@ import {
 import { eq, sql } from 'drizzle-orm';
 import axios from 'axios';
 import { transactionSenderAndConfirmationWaiter } from '../../lib/transaction/transactionSender';
-import { TwitterService } from 'src/twitter/twitter.service';
 import { ResendService } from 'src/resend/resend.service';
 import {
   initializeSDK,
@@ -100,7 +99,6 @@ export class WalletService {
   constructor(
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
-    private twitterService: TwitterService,
     private resendService: ResendService,
     @Inject(forwardRef(() => SocialService))
     private socialService: SocialService,
@@ -966,13 +964,6 @@ export class WalletService {
         }
         throw transferError;
       }
-      const post = [
-        `.@${user.username} just claimed ${totalSol} USDC on EduLearn 💰💚`,
-        `Total earnings: ${Number(user.totalEarnings).toFixed(2)} USDC`,
-        ``,
-        `Start learning & earning → edulearn.fun`,
-      ].join('\n');
-
       const html = this.getEarningsClaimEmailTemplate(
         user.name,
         totalSol,
@@ -987,8 +978,6 @@ export class WalletService {
         html,
       );
 
-      await this.twitterService.postTweet(post);
-      console.log('Successfully posted earnings to X');
       console.log(
         `Successfully claimed earnings for user ${userId}`,
         transactions,
