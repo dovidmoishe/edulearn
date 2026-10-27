@@ -169,6 +169,16 @@ describe('AuthService username ownership', () => {
     ).resolves.toMatchObject({ usernameAvailable: false });
   });
 
+  it('treats an empty username as omitted during email availability checks', async () => {
+    selectRows([{ email: 'ada@example.com', username: 'ada' }]);
+    await expect(
+      service.checkUserAvailability('ada@example.com', ''),
+    ).resolves.toMatchObject({
+      emailAvailable: false,
+      usernameAvailable: true,
+    });
+  });
+
   it('rejects duplicate username writes from the edit path', async () => {
     selectRows([]);
     returning.mockRejectedValue({

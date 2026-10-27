@@ -537,7 +537,7 @@ export class AuthService {
     const conditions: SQL[] = [];
 
     if (email) conditions.push(eq(user.email, email));
-    if (username !== undefined) {
+    if (username) {
       validateUsername(username);
       conditions.push(sql`lower(${user.username}) = ${username}`);
     }

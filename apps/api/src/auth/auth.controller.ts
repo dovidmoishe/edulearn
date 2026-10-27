@@ -36,7 +36,8 @@ export class AuthController {
   @Throttle({ default: { limit: 15, ttl: 60_000 } })
   @Post('check-availability')
   async checkAvailability(@Body() body: { email?: string; username?: string }) {
-    const { email, username } = body;
+    const email = body.email?.trim() || undefined;
+    const username = body.username?.trim() || undefined;
 
     if (!email && !username) {
       throw new BadRequestException('Either email or username is required');
