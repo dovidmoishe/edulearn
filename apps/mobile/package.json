@@ -40,7 +40,6 @@
     "expo-application": "~55.0.10",
     "expo-asset": "~55.0.10",
     "expo-audio": "~55.0.9",
-    "expo-auth-session": "~55.0.9",
     "expo-blur": "~55.0.10",
     "expo-build-properties": "~55.0.10",
     "expo-clipboard": "~55.0.9",

@@ -1,16 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Res,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { FastifyReply } from 'fastify';
 import { MonthlyLeaderboardService } from './monthly-leaderboard.service';
-import { AdminApiKeyGuard } from '../auth/guards/admin-api-key.guard';
 
 @Controller('monthly-leaderboard')
 export class MonthlyLeaderboardController {
@@ -41,21 +32,5 @@ export class MonthlyLeaderboardController {
     res.header('Content-Type', 'image/png');
     res.header('Cache-Control', 'no-store');
     res.send(png);
-  }
-
-  @Post('post')
-  @UseGuards(AdminApiKeyGuard)
-  async postTest(
-    @Body()
-    body: {
-      year?: number;
-      month?: number;
-    },
-  ) {
-    const now = new Date();
-    const year = body?.year ?? now.getFullYear();
-    const month = body?.month ?? now.getMonth() + 1;
-    await this.monthlyLeaderboardService.postMonthToX(year, month);
-    return { ok: true, year, month };
   }
 }

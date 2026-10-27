@@ -50,7 +50,7 @@ export class UserService extends BaseService {
     const response = await this.executeRequest<User>(
       this.getClient().put("/auth/edit", userData),
     );
-    if (response.error) throw response.error;
+    if (response.error) throw new Error(response.error.message);
     return response.data!;
   }
 

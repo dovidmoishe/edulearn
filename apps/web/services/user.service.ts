@@ -1,4 +1,5 @@
 import httpClient from "../utils/httpClient";
+import { isAxiosError } from "axios";
 
 export interface User {
     id: string;
@@ -17,7 +18,6 @@ export interface User {
     isPremium: boolean;
     learning?: string;
     lastLoggedIn?: string | Date;
-    isVerified?: boolean;
     profilePictureURL: string | null;
 }
 
@@ -82,6 +82,9 @@ export class UserService {
             return response.data;
         } catch (error) {
             console.error("Error editing user:", error);
+            if (isAxiosError(error) && typeof error.response?.data?.message === 'string') {
+                throw new Error(error.response.data.message);
+            }
             throw error;
         }
     }

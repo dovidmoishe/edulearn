@@ -3,11 +3,8 @@ import { CronTasksService } from './cron-tasks.service';
 import { CronTasksController } from './cron-tasks.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { WalletModule } from 'src/wallet/wallet.module';
-import { TwitterModule } from 'src/twitter/twitter.module';
 import { ExpoPushService } from 'src/common/services/expo-push.service';
-import { CardsModule } from 'src/cards/cards.module';
 import { LeaderboardModule } from 'src/leaderboard/leaderboard.module';
-import { MonthlyLeaderboardModule } from 'src/monthly-leaderboard/monthly-leaderboard.module';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 
 @Module({
@@ -15,10 +12,7 @@ import { SubscriptionModule } from 'src/subscription/subscription.module';
     forwardRef(() => AuthModule),
     forwardRef(() => WalletModule),
     forwardRef(() => SubscriptionModule),
-    TwitterModule,
-    CardsModule,
     LeaderboardModule,
-    MonthlyLeaderboardModule,
   ],
   providers: [CronTasksService, ExpoPushService],
   controllers: [CronTasksController],

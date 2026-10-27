@@ -29,30 +29,6 @@ Database migrations, seeders, and cleanup scripts are explicit operations, never
 Keep credentials in each project's environment files, outside Git.
 Admin requires `SESSION_SECRET` (32+ characters) during builds and at runtime.
 
-## Feature buildboards
-
-Before starting any new feature, create a local HTML buildboard at
-`.buildboards/<feature-slug>.html`. Reuse that board for all subsequent work on
-the same feature. Keep it self-contained and readable in a browser.
-
-Track every phase of the feature build and rollout, including planning,
-implementation, validation, rollout preparation, deployment, and post-rollout
-verification. Include phase tasks, their statuses (`not started`, `in progress`,
-`blocked`, or `complete`), completion criteria, and the next action. Mark phases
-that do not apply explicitly, with a reason.
-
-At the start of every agent turn working on that feature, read its buildboard to
-establish the current progress, blockers, and next steps before doing feature
-work. If the board is missing, create it from the available context first.
-Before ending each turn, update the statuses of the tasks worked on and append
-dated comments or logs covering changes, decisions, validation results, blockers,
-and remaining work. Keep pending rollout steps visible until they are verified;
-the buildboard does not authorize deployment or publication.
-
-Buildboards and their supporting files must remain local and untracked. Keep
-them inside the ignored `.buildboards/` directory; never stage, force-add,
-commit, or push them into Git history.
-
 ## Deployment
 
 Deploy each project independently from this single repository.
